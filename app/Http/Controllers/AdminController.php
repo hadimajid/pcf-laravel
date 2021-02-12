@@ -1053,6 +1053,8 @@ class AdminController extends Controller
                             }
                         }
                     }
+                    $p->New=1;
+                    $p->save();
                 }
             } catch (\Exception $ex) {
                 return Response::json(['error' => [
@@ -2212,7 +2214,7 @@ class AdminController extends Controller
         $material=$request->input('material');
         $color=$request->input('color');
         $warehouse=$request->input('warehouse');
-        $hide=$request->input('hide');
+        $type=$request->input('type');
         $page=0;
         $limit=Product::whereNotNull('ProductNumber')->get()->count();
         $count=Product::whereNotNull('ProductNumber')->get()->count();
@@ -2288,14 +2290,33 @@ class AdminController extends Controller
 
         }
 //        if hide
-        if(!empty($hide)){
-            if($where=='') {
-                $where .= " Hide = $hide ";
-            }else{
-                $where .= " and Hide = $hide  ";
-            }
+       if($type===1){
 
-        }
+               if($where=='') {
+                   $where .= " Hide = 1 ";
+               }else{
+                   $where .= " and Hide = 1  ";
+               }
+
+       }
+       if($type===2){
+
+               if($where=='') {
+                   $where .= " Hide = 0 ";
+               }else{
+                   $where .= " and Hide = 0 ";
+               }
+
+       }
+       if($type===2){
+
+               if($where=='') {
+                   $where .= " New = 1 ";
+               }else{
+                   $where .= " and New =  1 ";
+               }
+
+       }
 //        if category subcategory and product
         if(!empty($product_name)){
 //            $product_name=str_replace('"','\"',$product_name);
