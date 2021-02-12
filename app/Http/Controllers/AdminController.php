@@ -2215,7 +2215,6 @@ class AdminController extends Controller
         $color=$request->input('color');
         $warehouse=$request->input('warehouse');
         $type=$request->input('type');
-        return Response::json($type) ;
         $page=0;
         $limit=Product::whereNotNull('ProductNumber')->get()->count();
         $count=Product::whereNotNull('ProductNumber')->get()->count();
@@ -2291,7 +2290,7 @@ class AdminController extends Controller
 
         }
 //        if hide
-       if($type==="1"){
+       if($type=="1"){
 
                if($where=='') {
                    $where .= " Hide = 1 ";
@@ -2300,7 +2299,7 @@ class AdminController extends Controller
                }
 
        }
-       if($type==="2"){
+       if($type=="2"){
 
                if($where=='') {
                    $where .= " Hide = 0 ";
@@ -2309,7 +2308,7 @@ class AdminController extends Controller
                }
 
        }
-       if($type==="3"){
+       if($type=="3"){
 
                if($where=='') {
                    $where .= " New = 1 ";
@@ -2512,6 +2511,65 @@ class AdminController extends Controller
                     ->whereHas('materials', function ($query) use ($material) {
                         $query->where('Value', 'like', "%$material%");
                     })
+                    ->offset($page)->limit($limit)
+                    ->orderBy($sort[0],$sort[1])
+                    ->with('measurements'
+                        ,'materials'
+                        ,'additionalFields'
+                        ,'relatedProducts'
+                        ,'relatedProducts.relatedProduct'
+                        ,'components'
+                        ,'nextGenImages'
+                        ,'category'
+                        ,'subCategory'
+                        ,'piece'
+                        ,'collection'
+                        ,'style'
+                        ,'productLine'
+                        ,'group'
+                        ,'inventory'
+                        ,'productInfo'
+                        ,'productInfo.highlights'
+                        ,'productInfo.bullets'
+                        ,'productInfo.features'
+                    )
+                    ->get();
+
+            }
+            $count=$products->count();
+
+        }if(empty($material) && empty($warehouse)){
+            if($where!=''){
+
+                $products=Product::whereNotNull('ProductNumber')
+                    ->whereRaw($where)
+                    ->offset($page)->limit($limit)
+                    ->orderBy($sort[0],$sort[1])
+                    ->with('measurements'
+                        ,'materials'
+                        ,'additionalFields'
+                        ,'relatedProducts'
+                        ,'relatedProducts.relatedProduct'
+                        ,'components'
+                        ,'nextGenImages'
+                        ,'category'
+                        ,'subCategory'
+                        ,'piece'
+                        ,'collection'
+                        ,'style'
+                        ,'productLine'
+                        ,'group'
+                        ,'inventory'
+                        ,'productInfo'
+                        ,'productInfo.highlights'
+                        ,'productInfo.bullets'
+                        ,'productInfo.features'
+                    )
+                    ->get();
+
+            }
+            else{
+                $products=Product::whereNotNull('ProductNumber')
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
                     ->with('measurements'
