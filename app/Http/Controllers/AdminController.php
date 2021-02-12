@@ -2290,7 +2290,7 @@ class AdminController extends Controller
 
         }
 //        if hide
-       if($type===1){
+       if($type==="1"){
 
                if($where=='') {
                    $where .= " Hide = 1 ";
@@ -2299,7 +2299,7 @@ class AdminController extends Controller
                }
 
        }
-       if($type===2){
+       if($type==="2"){
 
                if($where=='') {
                    $where .= " Hide = 0 ";
@@ -2308,7 +2308,7 @@ class AdminController extends Controller
                }
 
        }
-       if($type===3){
+       if($type==="3"){
 
                if($where=='') {
                    $where .= " New = 1 ";
