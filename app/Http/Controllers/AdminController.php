@@ -2212,7 +2212,7 @@ class AdminController extends Controller
         $material=$request->input('material');
         $color=$request->input('color');
         $warehouse=$request->input('warehouse');
-
+        $hide=$request->input('hide');
         $page=0;
         $limit=Product::whereNotNull('ProductNumber')->get()->count();
         $count=Product::whereNotNull('ProductNumber')->get()->count();
@@ -2278,12 +2278,21 @@ class AdminController extends Controller
                 $where.=" and CategoryId = $category_name ";
             }
         }
-//        if category name and sub category name
+//        if hide
         if(!empty($subcategory_name)){
             if($where=='') {
                 $where .= " SubCategoryId = $subcategory_name ";
             }else{
                 $where .= " and SubCategoryId = $subcategory_name ";
+            }
+
+        }
+//        if hide
+        if(!empty($hide)){
+            if($where=='') {
+                $where .= " Hide = $hide ";
+            }else{
+                $where .= " and Hide = $hide  ";
             }
 
         }
@@ -3720,5 +3729,20 @@ class AdminController extends Controller
             'product_info'=>ProductInfo::whereNotNull('ProductNumber')->with('highlights','bullets','features')->get()
         ]);
     }
+    public function hideProduct(Request $request){
+        $request->validate([
+           'product_id'=>['required','array','min:1'],
+           'product_id.*'=>['required']
+        ]);
+        $productIds=$request->input('product_id');
 
+        foreach ($productIds as $id){
+            $product=Product::find($id);
+            if($product){
+                $product->Hide=!($product->Hide);
+                $product->save();
+            }
+        }
+        return Response::json(['message'=>'Product Hidden Status Updated.']);
+    }
 }
