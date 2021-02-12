@@ -2308,7 +2308,7 @@ class AdminController extends Controller
                }
 
        }
-       if($type===2){
+       if($type===3){
 
                if($where=='') {
                    $where .= " New = 1 ";
