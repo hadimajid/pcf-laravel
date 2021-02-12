@@ -2215,6 +2215,7 @@ class AdminController extends Controller
         $color=$request->input('color');
         $warehouse=$request->input('warehouse');
         $type=$request->input('type');
+        dd($type);
         $page=0;
         $limit=Product::whereNotNull('ProductNumber')->get()->count();
         $count=Product::whereNotNull('ProductNumber')->get()->count();
