@@ -404,7 +404,6 @@ class AdminController extends Controller
         if($request->input('type')==0){
             $warehouse=Warehouse::select('id','Name')->whereNull('WarehouseCode')->orderBy('id','asc')->get();
 
-
         }else{
             $warehouse=Warehouse::select('id','Name')->whereNotNull('WarehouseCode')->orderBy('id','asc')->get();
         }
@@ -3720,5 +3719,8 @@ class AdminController extends Controller
         return Response::json([
             'product_info'=>ProductInfo::whereNotNull('ProductNumber')->with('highlights','bullets','features')->get()
         ]);
+    }
+    public function test(){
+
     }
 }
