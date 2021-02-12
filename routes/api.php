@@ -4,22 +4,22 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Route;
 
-//Guest routes
+//      Guest routes
         Route::middleware('guest:user')->group(function (){
             Route::prefix('user')->group(function (){
                 Route::post('login',[UserController::class,'login']);
                 Route::post('registration',[UserController::class,'register']);
             });
-            Route::prefix('admin')->group(function (){
+        Route::prefix('admin')->group(function (){
                 Route::post('login',[AdminController::class,'login'])->name('admin.login');
                 Route::post('password-reset',[AdminController::class,'resetPassword']);
                 Route::post('verify-token/{token?}',[AdminController::class,'verifyForgotPasswordToken']);
                 Route::post('verify-code',[AdminController::class,'verifyCode']);
-//                Route::post('password-reset-update-code/{email}',[AdminController::class,'verifyCodeUpdate']);
+//              Route::post('password-reset-update-code/{email}',[AdminController::class,'verifyCodeUpdate']);
                 Route::post('password-reset-update',[AdminController::class,'resetPasswordUpdate']);
             });
         });
-//User routes
+//      User routes
         Route::middleware('auth:user')->prefix('user')->group(function (){
                 Route::post('logout',[UserController::class,'logout']);
                 Route::get('get-billing-address',[UserController::class,'getBillingAddress']);
@@ -31,24 +31,22 @@ use Illuminate\Support\Facades\Route;
                 Route::put('update-user-details',[UserController::class,'updateYourProfile']);
                 Route::put('update-user-password',[UserController::class,'updateYourPassword']);
         });
-//Admin routes
+//      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
             Route::get('/count',[AdminController::class,'dashboardCount']);
             Route::post('logout',[AdminController::class,'logout']);
             Route::post('is-logged-in',[AdminController::class,'checkLoggedIn']);
-
-
 //      API CALLS
-                Route::get('/store-product-data',[AdminController::class,'storeProductApiData']);
-                Route::get('/store-category-data',[AdminController::class,'storeCategoryApiData']);
-                Route::get('/store-style-data',[AdminController::class,'storeStyleApiData']);
-                Route::get('/store-collection-data',[AdminController::class,'storeCollectionApiData']);
-                Route::get('/store-product-line-data',[AdminController::class,'storeProductLineApiData']);
-                Route::get('/store-group-data',[AdminController::class,'storeGroupApiData']);
-                Route::get('/store-warehouse-data',[AdminController::class,'storeWareHouse']);
-                Route::get('/store-warehouse-inventory-data',[AdminController::class,'storeWareHouseInventory']);
-                Route::get('/store-product-info-data',[AdminController::class,'storeProductInfoApiData']);
-//            Warehouse
+            Route::get('/store-product-data',[AdminController::class,'storeProductApiData']);
+            Route::get('/store-category-data',[AdminController::class,'storeCategoryApiData']);
+            Route::get('/store-style-data',[AdminController::class,'storeStyleApiData']);
+            Route::get('/store-collection-data',[AdminController::class,'storeCollectionApiData']);
+            Route::get('/store-product-line-data',[AdminController::class,'storeProductLineApiData']);
+            Route::get('/store-group-data',[AdminController::class,'storeGroupApiData']);
+            Route::get('/store-warehouse-data',[AdminController::class,'storeWareHouse']);
+            Route::get('/store-warehouse-inventory-data',[AdminController::class,'storeWareHouseInventory']);
+            Route::get('/store-product-info-data',[AdminController::class,'storeProductInfoApiData']);
+//      Warehouse
             Route::prefix('warehouse')->group(function (){
                 Route::post('',[AdminController::class,'submitWarehouse']);
                 Route::post('update/{id}',[AdminController::class,'updateWarehouse']);
@@ -78,7 +76,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('name',[AdminController::class,'getSubCategoriesByCoasterName']);
         });
 //     Product
-            Route::prefix('product')->group(function (){
+        Route::prefix('product')->group(function (){
                 Route::post('/store',[AdminController::class,'storeProduct'])->middleware('scope:add-new-products');
                 Route::delete('/delete/{id}',[AdminController::class,'removeProduct'])->middleware('scope:remove-products');
                 Route::post('selected-product-price',[AdminController::class,'changePriceOfSelectedProducts'])->middleware('scope:edit-product');
@@ -90,57 +88,57 @@ use Illuminate\Support\Facades\Route;
                 Route::post('name',[AdminController::class,'getProductName']);
                 Route::post('/{id}',[AdminController::class,'getProductById']);
                 Route::delete('/image/{id}',[AdminController::class,'deleteImageById']);
+                Route::post('hide',[AdminController::class,'']);
             });
-//        Style
+//      Style
             Route::post('style',[AdminController::class,'getStyle']);
             Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
-//        Collection
+//      Collection
             Route::post('collection/coaster',[AdminController::class,'getCollectionByCoaster']);
-//        Group
+//      Group
             Route::post('group/coaster',[AdminController::class,'getGroupByCoaster']);
 
-//        Warehouse inventories
+//      Warehouse inventories
             Route::post('inventories/coaster',[AdminController::class,'getInventoryByCoaster']);
             Route::post('product-info/coaster',[AdminController::class,'getProductInfo']);
 
-            //    Change password admin
+//      Change password admin
         Route::post('change-password',[AdminController::class,'changePassword']);
 
-//  Materials
+//      Materials
             Route::post('material',[AdminController::class,'getMaterial']);
-//  Color
+//       Color
             Route::post('color',[AdminController::class,'getColor']);
-//    Get Permission
+//      Get Permission
         Route::get('/permissions',[AdminController::class,'getPermission']);
 //      Website Settings
         Route::middleware('scope:edit-site')->group(function (){
-        // Update logo
+//      Update logo
         Route::post('/logo',[AdminController::class,'addHeader']);
 //        Contact Information
-        Route::post('add-contact-information',[AdminController::class,'addContactInformation']) ;
-//    Banners
-        Route::post('add-banner',[AdminController::class,'addBanner']) ;;
-        Route::post('delete-banner/{id}',[AdminController::class,'deleteBanner']) ;;
-//   Testimonial
-        Route::post('add-testimonial',[AdminController::class,'addTestimonial']) ;;
-        Route::post('delete-testimonial/{id}',[AdminController::class,'deleteTestimonial']) ;;
-//   Footer
-        Route::post('add-footer-first',[AdminController::class,'addFooterColumnOne']) ;;
-        Route::post('add-footer-second',[AdminController::class,'addFooterColumnTwo']) ;;
-        Route::post('add-footer-third',[AdminController::class,'addFooterColumnThree']) ;;
-        Route::post('delete-footer/{id}',[AdminController::class,'deleteFooter']) ;;
-
-//    Weekend Special
-        Route::post('add-weekend-special',[AdminController::class,'addWeekendSpecial']) ;;
-//      Delivery Fees
-        Route::post('delivery-fees',[AdminController::class,'addDeliveryFees']) ;;
-//    Title
-        Route::post('title',[AdminController::class,'addTitle']) ;;
-//    Hours
-        Route::post('add-hours',[AdminController::class,'addHours']) ;;
+        Route::post('add-contact-information',[AdminController::class,'addContactInformation']);
+//          Banners
+        Route::post('add-banner',[AdminController::class,'addBanner']);
+        Route::post('delete-banner/{id}',[AdminController::class,'deleteBanner']);
+//          Testimonial
+        Route::post('add-testimonial',[AdminController::class,'addTestimonial']);
+        Route::post('delete-testimonial/{id}',[AdminController::class,'deleteTestimonial']);
+//          Footer
+        Route::post('add-footer-first',[AdminController::class,'addFooterColumnOne']);
+        Route::post('add-footer-second',[AdminController::class,'addFooterColumnTwo']);
+        Route::post('add-footer-third',[AdminController::class,'addFooterColumnThree']);
+        Route::post('delete-footer/{id}',[AdminController::class,'deleteFooter']);
+//          Weekend Special
+        Route::post('add-weekend-special',[AdminController::class,'addWeekendSpecial']);
+//           Delivery Fees
+        Route::post('delivery-fees',[AdminController::class,'addDeliveryFees']) ;
+//           Title
+        Route::post('title',[AdminController::class,'addTitle']);
+//              Hours
+        Route::post('add-hours',[AdminController::class,'addHours']);
 //    Social Network
-        Route::post('add-social',[AdminController::class,'addSocialNetworks']) ;;
-        Route::post('delete-social/{id}',[AdminController::class,'deleteSocialNetwork']) ;;
+        Route::post('add-social',[AdminController::class,'addSocialNetworks']);
+        Route::post('delete-social/{id}',[AdminController::class,'deleteSocialNetwork']);
 //    Store api key and paypal email
         Route::post('api',[AdminController::class,'addApiKey']);
     });
@@ -151,11 +149,8 @@ use Illuminate\Support\Facades\Route;
         Route::post('sub-admin/get',[AdminController::class,'getSubAdmin']);
         Route::post('sub-admin/{id}',[AdminController::class,'getSubAdminById']);
         Route::delete('sub-admin/delete/{id}',[AdminController::class,'deleteSubAdminById'])->middleware('scope:remove-sub-admin');
-
-
 //        Block User
         Route::post('block-user/{id}',[AdminController::class,'blockUser'])->middleware('scope:user-block');
-
 });
         //Site Getter
         Route::get('/logo',[AdminController::class,'getHeader']);
@@ -172,7 +167,6 @@ use Illuminate\Support\Facades\Route;
         Route::get('title',[AdminController::class,'getTitle']);
         Route::post('products',[AdminController::class,'getProducts']);
         Route::get('contact-information',[AdminController::class,'getContactInformation']) ;
-
         Route::fallback(function(){
                 return response()->json([
                     'message' => 'Invalid Route.'], 404);
