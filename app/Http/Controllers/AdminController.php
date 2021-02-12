@@ -3720,7 +3720,5 @@ class AdminController extends Controller
             'product_info'=>ProductInfo::whereNotNull('ProductNumber')->with('highlights','bullets','features')->get()
         ]);
     }
-    public function test(){
 
-    }
 }
