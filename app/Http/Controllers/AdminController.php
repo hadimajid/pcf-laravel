@@ -2387,6 +2387,7 @@ class AdminController extends Controller
                     )
                     ->get();
             }
+
             else{
                 $products = Product::whereNotNull('ProductNumber')
                     ->whereRaw($where)
