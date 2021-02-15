@@ -2323,7 +2323,7 @@ class AdminController extends Controller
        }
 //          if  product
         if(!empty($product_name)){
-//            $product_name=str_replace('"','\"',$product_name);
+
             if($where=='') {
                 $where.=" Name like '%$product_name%' ";
             }else{
@@ -2332,7 +2332,6 @@ class AdminController extends Controller
             $b=1;
         }
 //          if style
-
         if(!empty($style)){
             if($where=='') {
                 $where.=" StyleId = $style ";
