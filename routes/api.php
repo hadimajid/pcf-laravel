@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Route;
 //    Category routes
         Route::prefix('category')->group(function (){
                 Route::post('',[AdminController::class,'storeCategory'])->middleware('scope:add-new-categories');
-                Route::post('update/{id}',[AdminController::class,'updateCategory'])->middleware('scope:edit-categories');;
+                Route::post('update/{id}',[AdminController::class,'updateCategory'])->middleware('scope:edit-categories');
                 Route::post('get',[AdminController::class,'getCategories']);
                 Route::delete('delete/{id}',[AdminController::class,'deleteCategory']);
                 Route::post('coaster',[AdminController::class,'getCategoriesByCoaster']);
