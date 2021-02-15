@@ -886,7 +886,7 @@ class AdminController extends Controller
                                 file_put_contents(public_path('uploads/product/' . $name), $img);
                                 NextGenImage::create([
                                     'Name' => 'uploads/product/' . $name,
-                                    'ProductId' => $p->id
+                                    'ProductId' => $productCheck->id
                                 ]);
 
                             }catch (\Exception $ex){
