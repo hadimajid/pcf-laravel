@@ -3836,7 +3836,7 @@ class AdminController extends Controller
         foreach ($productIds as $id){
             $product=Product::find($id);
             if($product){
-                $product->Hide=1;
+                $product->Hide=!($product->Hide);
                 $product->save();
             }
         }
