@@ -2613,6 +2613,7 @@ class AdminController extends Controller
                 $count=$products->count();
             }
 
+
         }
 
         return Response::json([
