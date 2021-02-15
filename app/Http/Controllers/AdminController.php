@@ -894,7 +894,7 @@ class AdminController extends Controller
                             }
                         }
                     }
-                    $productCheck->New=0;
+
                     $productCheck->save();
 //                    return Response::json(['message'=>'Product Details Updated'],200);
 
@@ -2141,7 +2141,7 @@ class AdminController extends Controller
         $rules=[
             'products'=>'required|array|min:1',
             'products.*'=>'required',
-            'price'=>'required|numeric|min:0|max:100',
+            'price'=>'required',
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
@@ -2164,7 +2164,7 @@ class AdminController extends Controller
     public function changePriceOfProductsWithCategory(Request $request){
         $rules=[
             'category'=>'required|exists:categories,id',
-            'price'=>'required|numeric|min:0|max:100',
+            'price'=>'required',
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
@@ -2186,7 +2186,7 @@ class AdminController extends Controller
     public function changePriceOfProductsWithSubCategory(Request $request){
         $rules=[
             'subcategory'=>'required|exists:sub_categories,id',
-            'price'=>'required|numeric|min:0|max:100',
+            'price'=>'required',
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
@@ -2295,6 +2295,7 @@ class AdminController extends Controller
 //        if hide
         $a=0;
        if($type=="1"){
+            $count = Product::whereNotNull('ProductNumber')->where('Hide','=','1')->get()->count();
 
                if($where=='') {
                    $where .= " Hide = 1 ";
@@ -2304,6 +2305,7 @@ class AdminController extends Controller
         $a=1;
        }
        if($type=="2"){
+            $count = Product::whereNotNull('ProductNumber')->where('Hide','=','0')->get()->count();
 
                if($where=='') {
                    $where .= " Hide = 0 ";
@@ -2313,7 +2315,7 @@ class AdminController extends Controller
            $a=1;
        }
        if($type=="3"){
-
+            $count = Product::whereNotNull('ProductNumber')->where('New','=','1')->get()->count();
                if($where=='') {
                    $where .= " New = 1 ";
                }else{
@@ -2323,8 +2325,11 @@ class AdminController extends Controller
        }
 //          if  product
         if(!empty($product_name)){
+            //            $product_name=str_replace('"','\"',$product_name);
 
-            if($where=='') {
+            $count = Product::whereNotNull('ProductNumber')->where('Name', 'like',"'%$product_name%'")->get()->count();
+
+        if($where=='') {
                 $where.=" Name like '%$product_name%' ";
             }else{
                 $where.=" and Name like' %$product_name%' ";
@@ -2332,7 +2337,10 @@ class AdminController extends Controller
             $b=1;
         }
 //          if style
+
         if(!empty($style)){
+            $count = Product::whereNotNull('ProductNumber')->where('StyleId', '=', "$style")->get()->count();
+            
             if($where=='') {
                 $where.=" StyleId = $style ";
             }
@@ -2623,15 +2631,12 @@ class AdminController extends Controller
 
     public function productsAddedByAdmin(Request $request){
 
-
         $category_name=$request->input('category_id');
         $subcategory_name=$request->input('subcategory_id');
         $product_name=$request->input('product_name');
         $style=$request->input('style_id');
         $material=$request->input('material');
         $color=$request->input('color');
-        $warehouse=$request->input('warehouse');
-        $type=$request->input('type');
         $page=0;
         $limit=Product::whereNull('ProductNumber')->get()->count();
         $count=Product::whereNull('ProductNumber')->get()->count();
@@ -2655,17 +2660,10 @@ class AdminController extends Controller
                 $sort=['SalePrice','desc'];
             }
         }
-        if(!empty($request->input('limit'))){
-            $limit=$request->input('limit');
-            if($request->input('page')){
-                $page=($request->input('page')-1)*$limit;
-            }
-        }
         $products=Product::whereNull('ProductNumber')
-            ->offset($page)->limit($limit)
             ->orderBy($sort[0],$sort[1])
-            ->with(
-                'measurements'
+            ->offset($page)->limit($limit)
+            ->with('measurements'
                 ,'materials'
                 ,'additionalFields'
                 ,'relatedProducts'
@@ -2687,68 +2685,40 @@ class AdminController extends Controller
             )
             ->get();
 
-
-        $where='';
+        if(!empty($request->input('limit'))){
+            $limit=$request->input('limit');
+            if($request->input('page')){
+                $page=($request->input('page')-1)*$limit;
+            }
+        }
+            $where='';
 // If category id
-        $b=0;
         if(!empty($category_name)){
             if($where==''){
                 $where.=" CategoryId = $category_name ";
             }else{
                 $where.=" and CategoryId = $category_name ";
             }
-            $b=1;
         }
-//        if sub category
+//        if category name and sub category name
         if(!empty($subcategory_name)){
             if($where=='') {
                 $where .= " SubCategoryId = $subcategory_name ";
             }else{
                 $where .= " and SubCategoryId = $subcategory_name ";
             }
-            $b=1;
 
         }
-//        if hide
-        $a=0;
-        if($type=="1"){
-
-            if($where=='') {
-                $where .= " Hide = 1 ";
-            }else{
-                $where .= " and Hide = 1  ";
-            }
-            $a=1;
-        }
-        if($type=="2"){
-
-            if($where=='') {
-                $where .= " Hide = 0 ";
-            }else{
-                $where .= " and Hide = 0 ";
-            }
-            $a=1;
-        }
-        if($type=="3"){
-
-            if($where=='') {
-                $where .= " New = 1 ";
-            }else{
-                $where .= " and New =  1 ";
-            }
-            $a=1;
-        }
-//          if  product
+//        if category subcategory and product
         if(!empty($product_name)){
-//            $product_name=str_replace('"','\"',$product_name);
             if($where=='') {
                 $where.=" Name like '%$product_name%' ";
             }else{
-                $where.=" and Name like' %$product_name%' ";
+                $where.=" and Name like '%$product_name%' ";
             }
-            $b=1;
         }
-//          if style
+// if category subcategory product and style
+
         if(!empty($style)){
             if($where=='') {
                 $where.=" StyleId = $style ";
@@ -2756,7 +2726,6 @@ class AdminController extends Controller
             else{
                 $where.=" and StyleId = $style ";
             }
-            $b=1;
         }
         if(!empty($color)){
             if($where=='') {
@@ -2764,16 +2733,16 @@ class AdminController extends Controller
             }else{
                 $where.=" and (FabricColor like '%$color%' or FinishColor like '%$color%')";
             }
-            $b=1;
-
         }
-        if(!empty($material)  && empty($warehouse)){
+        if(!empty($material)){
             if($where==''){
                 $products=Product::whereNull('ProductNumber')
                     ->whereHas('materials',function ($query) use ($material){
                         $query->where('Value','like',"%$material%");
-                    })->offset($page)->limit($limit)
+                    })
+                    ->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
+
                     ->with('measurements'
                         ,'materials'
                         ,'additionalFields'
@@ -2797,47 +2766,47 @@ class AdminController extends Controller
                     ->get();
             }
             else{
-                $products = Product::whereNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
-                    ->get();
-            }
+                    $products = Product::whereNull('ProductNumber')
+                        ->whereRaw($where)
+                        ->whereHas('materials', function ($query) use ($material) {
+                            $query->where('Value', 'like', "%$material%");
+                        })
+                        ->offset($page)->limit($limit)
+                        ->orderBy($sort[0],$sort[1])
 
+                        ->with('measurements'
+                            ,'materials'
+                            ,'additionalFields'
+                            ,'relatedProducts'
+                            ,'relatedProducts.relatedProduct'
+                            ,'components'
+                            ,'nextGenImages'
+                            ,'category'
+                            ,'subCategory'
+                            ,'piece'
+                            ,'collection'
+                            ,'style'
+                            ,'productLine'
+                            ,'group'
+                            ,'inventory'
+                            ,'productInfo'
+                            ,'productInfo.highlights'
+                            ,'productInfo.bullets'
+                            ,'productInfo.features'
+                        )
+                        ->get();
+            }
             $count=$products->count();
 
         }
-        if(empty($material) && !empty($warehouse)){
+        if(empty($material)){
             if($where!=''){
 
                 $products=Product::whereNull('ProductNumber')
-                    ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
-                    })
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
+
                     ->with('measurements'
                         ,'materials'
                         ,'additionalFields'
@@ -2859,179 +2828,36 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
-            }
-            else{
-                $products=Product::whereNull('ProductNumber')
-                    ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
-                    })
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
-                    ->get();
-            }
-            $count=$products->count();
-
-        }if(!empty($material) && !empty($warehouse)){
-            if($where!=''){
-
-                $products=Product::whereNull('ProductNumber')
-                    ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
-                    ->get();
-
-            }
-            else{
-                $products=Product::whereNull('ProductNumber')
-                    ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
-                    ->get();
-
-            }
-            $count=$products->count();
-
-        }if(empty($material) && empty($warehouse)){
-            if($where!=''){
-                $products=Product::whereNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with(
-                        'measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
-                    ->get();
-
-            }
-            else{
-                $products=Product::whereNull('ProductNumber')
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
-                    ->get();
-
-            }
-            if($a==1 && $b==0){
-                $count=Product::whereNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->count();
-            }
-            if($a==1 && $b==1){
                 $count=$products->count();
+
+            }else{
+                $products=Product::whereNull('ProductNumber')
+                    ->offset($page)->limit($limit)
+                    ->orderBy($sort[0],$sort[1])
+
+                    ->with('measurements'
+                        ,'materials'
+                        ,'additionalFields'
+                        ,'relatedProducts'
+                        ,'relatedProducts.relatedProduct'
+                        ,'components'
+                        ,'nextGenImages'
+                        ,'category'
+                        ,'subCategory'
+                        ,'piece'
+                        ,'collection'
+                        ,'style'
+                        ,'productLine'
+                        ,'group'
+                        ,'inventory'
+                        ,'productInfo'
+                        ,'productInfo.highlights'
+                        ,'productInfo.bullets'
+                        ,'productInfo.features'
+                    )
+                    ->get();
             }
-
-
         }
-
         return Response::json([
             'products'=>$products,
             'total_number'=>$count,
@@ -3953,9 +3779,9 @@ class AdminController extends Controller
     public function getProductName(Request $request){
 
         if($request->input('id')){
-            $products=Product::select('id','Name')->where('id','!=',$request->input('id'))->get();
+            $products=Product::select('id','name')->where('id','!=',$request->input('id'))->get();
         }else{
-            $products=Product::select('id','Name')->get();
+            $products=Product::select('id','name')->get();
         }
         return Response::json(['products'=>$products]);
 
