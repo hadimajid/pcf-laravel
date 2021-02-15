@@ -2750,7 +2750,6 @@ class AdminController extends Controller
             $b=1;
         }
 //          if style
-
         if(!empty($style)){
             if($where=='') {
                 $where.=" StyleId = $style ";
