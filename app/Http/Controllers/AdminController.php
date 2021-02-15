@@ -3953,9 +3953,9 @@ class AdminController extends Controller
     public function getProductName(Request $request){
 
         if($request->input('id')){
-            $products=Product::select('id','name')->where('id','!=',$request->input('id'))->get();
+            $products=Product::select('id','Name')->where('id','!=',$request->input('id'))->get();
         }else{
-            $products=Product::select('id','name')->get();
+            $products=Product::select('id','Name')->get();
         }
         return Response::json(['products'=>$products]);
 
