@@ -3742,7 +3742,7 @@ class AdminController extends Controller
             'total_number'=>$count,
             'filtered'=>$products->count()]);
     }
-    public  function  dashboardCount(){
+    public function dashboardCount(){
         return Response::json([
             'categories'=>Category::all()->count(),
             'products'=>Product::all()->count(),
