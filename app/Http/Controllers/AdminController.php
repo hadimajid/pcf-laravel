@@ -2575,7 +2575,7 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-                $b=1;
+
             }
             else{
                 $products=Product::whereNotNull('ProductNumber')
