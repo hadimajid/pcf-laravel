@@ -2606,9 +2606,8 @@ class AdminController extends Controller
             }
             if($a==1 && $b==0){
                 $count=Product::whereNotNull('ProductNumber')
-                    ->orderBy($sort[0],$sort[1])
-                    ->count()
-                ;
+                    ->whereRaw($where)
+                    ->count();
             }
             if($a==1 && $b==1){
                 $count=$products->count();
