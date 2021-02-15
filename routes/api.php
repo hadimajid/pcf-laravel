@@ -91,24 +91,24 @@ use Illuminate\Support\Facades\Route;
                 Route::delete('/image/{id}',[AdminController::class,'deleteImageById']);
             });
 //      Style
-            Route::post('style',[AdminController::class,'getStyle']);
-            Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
+        Route::post('style',[AdminController::class,'getStyle']);
+        Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
 //      Collection
-            Route::post('collection/coaster',[AdminController::class,'getCollectionByCoaster']);
+        Route::post('collection/coaster',[AdminController::class,'getCollectionByCoaster']);
 //      Group
-            Route::post('group/coaster',[AdminController::class,'getGroupByCoaster']);
+        Route::post('group/coaster',[AdminController::class,'getGroupByCoaster']);
 
 //      Warehouse inventories
-            Route::post('inventories/coaster',[AdminController::class,'getInventoryByCoaster']);
-            Route::post('product-info/coaster',[AdminController::class,'getProductInfo']);
+        Route::post('inventories/coaster',[AdminController::class,'getInventoryByCoaster']);
+        Route::post('product-info/coaster',[AdminController::class,'getProductInfo']);
 
 //      Change password admin
         Route::post('change-password',[AdminController::class,'changePassword']);
 
 //      Materials
-            Route::post('material',[AdminController::class,'getMaterial']);
+        Route::post('material',[AdminController::class,'getMaterial']);
 //       Color
-            Route::post('color',[AdminController::class,'getColor']);
+        Route::post('color',[AdminController::class,'getColor']);
 //      Get Permission
         Route::get('/permissions',[AdminController::class,'getPermission']);
 //      Website Settings
