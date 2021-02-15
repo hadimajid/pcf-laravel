@@ -399,7 +399,8 @@ class AdminController extends Controller
 
         return Response::json(['sub_categories'=>$sub_categories]);
 
-    }public function getWarehouseName(Request $request){
+    }
+    public function getWarehouseName(Request $request){
 
         if($request->input('type')==0){
             $warehouse=Warehouse::select('id','Name')->whereNull('WarehouseCode')->orderBy('id','asc')->get();
@@ -2621,7 +2622,6 @@ class AdminController extends Controller
             'total_number'=>$count,
             'filtered'=>$products->count()]);
     }
-
     public function productsAddedByAdmin(Request $request){
 
 
