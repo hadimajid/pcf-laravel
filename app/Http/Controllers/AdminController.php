@@ -2273,23 +2273,27 @@ class AdminController extends Controller
 
         $where='';
 // If category id
+        $b=0;
         if(!empty($category_name)){
             if($where==''){
                 $where.=" CategoryId = $category_name ";
             }else{
                 $where.=" and CategoryId = $category_name ";
             }
+            $b=1;
         }
-//        if hide
+//        if sub category
         if(!empty($subcategory_name)){
             if($where=='') {
                 $where .= " SubCategoryId = $subcategory_name ";
             }else{
                 $where .= " and SubCategoryId = $subcategory_name ";
             }
+            $b=1;
 
         }
 //        if hide
+        $a=0;
        if($type=="1"){
 
                if($where=='') {
@@ -2297,7 +2301,7 @@ class AdminController extends Controller
                }else{
                    $where .= " and Hide = 1  ";
                }
-
+        $a=1;
        }
        if($type=="2"){
 
@@ -2306,7 +2310,7 @@ class AdminController extends Controller
                }else{
                    $where .= " and Hide = 0 ";
                }
-
+           $a=1;
        }
        if($type=="3"){
 
@@ -2315,9 +2319,9 @@ class AdminController extends Controller
                }else{
                    $where .= " and New =  1 ";
                }
-
+           $a=1;
        }
-//        if category subcategory and product
+//          if  product
         if(!empty($product_name)){
 //            $product_name=str_replace('"','\"',$product_name);
             if($where=='') {
@@ -2325,8 +2329,9 @@ class AdminController extends Controller
             }else{
                 $where.=" and Name like' %$product_name%' ";
             }
+            $b=1;
         }
-// if category subcategory product and style
+//          if style
 
         if(!empty($style)){
             if($where=='') {
@@ -2335,6 +2340,7 @@ class AdminController extends Controller
             else{
                 $where.=" and StyleId = $style ";
             }
+            $b=1;
         }
         if(!empty($color)){
             if($where=='') {
@@ -2342,6 +2348,8 @@ class AdminController extends Controller
             }else{
                 $where.=" and (FabricColor like '%$color%' or FinishColor like '%$color%')";
             }
+            $b=1;
+
         }
         if(!empty($material)  && empty($warehouse)){
             if($where==''){
@@ -2400,6 +2408,7 @@ class AdminController extends Controller
                     )
                     ->get();
             }
+
             $count=$products->count();
 
         }
@@ -2540,12 +2549,12 @@ class AdminController extends Controller
 
         }if(empty($material) && empty($warehouse)){
             if($where!=''){
-
                 $products=Product::whereNotNull('ProductNumber')
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
+                    ->with(
+                        'measurements'
                         ,'materials'
                         ,'additionalFields'
                         ,'relatedProducts'
@@ -2566,7 +2575,7 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                $b=1;
             }
             else{
                 $products=Product::whereNotNull('ProductNumber')
@@ -2595,7 +2604,15 @@ class AdminController extends Controller
                     ->get();
 
             }
-            $count=$products->count();
+            if($a==1 && $b==0){
+                $count=Product::whereNotNull('ProductNumber')
+                    ->orderBy($sort[0],$sort[1])
+                    ->count()
+                ;
+            }
+            if($a==1 && $b==1){
+                $count=$products->count();
+            }
 
         }
 
