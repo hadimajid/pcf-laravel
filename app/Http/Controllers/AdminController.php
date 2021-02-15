@@ -2141,7 +2141,7 @@ class AdminController extends Controller
         $rules=[
             'products'=>'required|array|min:1',
             'products.*'=>'required',
-            'price'=>'required',
+            'price'=>'required|numeric|min:0|max:100',
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
@@ -2164,7 +2164,7 @@ class AdminController extends Controller
     public function changePriceOfProductsWithCategory(Request $request){
         $rules=[
             'category'=>'required|exists:categories,id',
-            'price'=>'required',
+            'price'=>'required|numeric|min:0|max:100',
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
@@ -2186,7 +2186,7 @@ class AdminController extends Controller
     public function changePriceOfProductsWithSubCategory(Request $request){
         $rules=[
             'subcategory'=>'required|exists:sub_categories,id',
-            'price'=>'required',
+            'price'=>'required|numeric|min:0|max:100',
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
