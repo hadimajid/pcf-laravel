@@ -894,7 +894,7 @@ class AdminController extends Controller
                             }
                         }
                     }
-
+                    $productCheck->New=0;
                     $productCheck->save();
 //                    return Response::json(['message'=>'Product Details Updated'],200);
 
