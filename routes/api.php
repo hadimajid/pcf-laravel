@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('login',[UserController::class,'login']);
                 Route::post('registration',[UserController::class,'register']);
         });
+//      Admin
         Route::prefix('admin')->group(function (){
                 Route::post('login',[AdminController::class,'login'])->name('admin.login');
                 Route::post('password-reset',[AdminController::class,'resetPassword']);
