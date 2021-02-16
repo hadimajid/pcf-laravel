@@ -269,8 +269,8 @@ class AdminController extends Controller
             $image=$request->file('image');
             $imageName=time().uniqid().'.'.$image->getClientOriginalExtension();
             $image->move(public_path('uploads/category/'),$imageName);
-            $slug=strtolower($request->input('name'));
-            $slug=str_replace(' ','-',$slug);
+            $slug=Str::slug($request->input('name'),'-');
+
             $category=Category::create([
                 'CategoryName'=>$request->input('name'),
                 'Image'=>'uploads/category/'.$imageName,
@@ -307,8 +307,8 @@ class AdminController extends Controller
                 $cat=Category::where('id','!=',$category->id)->where('CategoryName','like',$request->name)->first();
 
                 if(empty($cat)){
-                    $slug=strtolower($request->input('name'));
-                    $slug=str_replace(' ','-',$slug);
+                    $slug=Str::slug($request->input('name'),'-');
+
                     $category->CategoryName=$request->name;
                     $category->slug=$slug;
                 }
@@ -442,8 +442,8 @@ class AdminController extends Controller
             $image=$request->file('image');
             $imageName=time().uniqid().'.'.$image->getClientOriginalExtension();
             $image->move(public_path('uploads/subcategory'),$imageName);
-            $slug=strtolower($request->name);
-            $slug=str_replace(' ','-',$slug);
+            $slug=Str::slug($request->input('name'),'-');
+
             $category=SubCategory::create([
                 'CategoryId'=>$request->category_id,
                 'SubCategoryName'=>$request->name,
@@ -484,8 +484,8 @@ class AdminController extends Controller
                 $subcat=SubCategory::where('id','!=',$subcategory->id)->where('SubCategoryName','like',$request->name)->first();
 
                 $subcategory->CategoryId=$request->category_id;
-                $slug=strtolower($request->name);
-                $slug=str_replace(' ','-',$slug);
+                $slug=Str::slug($request->input('name'),'-');
+
                 if(empty($subcat)){
                     $subcategory->SubCategoryName=$request->name;
                     $subcategory->slug=$slug;
@@ -1145,8 +1145,7 @@ class AdminController extends Controller
         ])->get('http://api.coasteramer.com/api/product/GetCategoryList');
         $categoriesDecode=json_decode($categories);
         foreach ($categoriesDecode as $category){
-            $slug=strtolower($category->CategoryName);
-            $slug=str_replace(' ','-',$slug);
+            $slug=Str::slug($category->CategoryName,'-');
             try {
                 $cat=Category::create([
                     'CategoryCode'=>$category->CategoryCode,
@@ -1163,8 +1162,7 @@ class AdminController extends Controller
 
             }
             foreach ($category->SubCategoryList as $subcategory){
-                $slug=strtolower($subcategory->SubCategoryName);
-                $slug=str_replace(' ','-',$slug);
+                $slug=Str::slug($subcategory->SubCategoryName,'-');
                 try {
                     $subcat=SubCategory::create([
                         'SubCategoryCode'=>$subcategory->SubCategoryCode,
