@@ -130,14 +130,11 @@ class AdminController extends Controller
                 }
                 MailController::sendAdminForgotPasswordMail($pr->email,$pr->token,$pr->code,$request->url,);
                 return Response::json(['message'=>"Password reset link sent on your mail."],200);
-
             }
             return Response::json(['message'=>'User does not exist.'],422);
         }
-
     }
     public function  verifyForgotPasswordToken(Request $request,$token=null){
-
         $passwordReset=null;
         if($token!=null){
             $passwordReset=PasswordReset::where('token',$token)->orderBy('created_at','desc')->first();
@@ -236,16 +233,13 @@ class AdminController extends Controller
                     return Response::json(['message'=>'Token Or Code Invalid.'],422);
                 }
             }
-
             if($passwordReset!=null){
                 $now=Carbon::now();
                 $diff=$now->diffInMinutes($passwordReset->created_at);
                 if($diff<env('PASSWORD_EXPIRE')){
                     $admin = Admin::where('email', $passwordReset->email)->first();
                     if(Hash::check($request->input('password'),$admin->password)){
-
                         return Response::json(['message' => 'Please use different password you already used this password.'], 422);
-
                     }
                     $admin->password = Hash::make($request->input('password'));
                     $admin->save();
@@ -254,15 +248,11 @@ class AdminController extends Controller
 
                 }else{
                     return Response::json(['message'=>'Your code is expired try to get another one.'],422);
-
                 }
-
             }else{
                 return Response::json(['message'=>'Token Or Code Invalid.'],422);
-
             }
         }
-
     }
 //    Category
     public function storeCategory(Request $request){
@@ -334,15 +324,12 @@ class AdminController extends Controller
 
     }
     public function deleteCategory(Request $request,$id){
-
         $category=Category::find($id);
         if($category!=null){
-
             if(file_exists(public_path($category->Image))){
                 unlink(public_path($category->Image));
             }
             try {
-
                 $category->delete();
                 return Response::json(['message'=>'Category Deleted.'],200);
             }
@@ -353,8 +340,6 @@ class AdminController extends Controller
         else{
             return Response::json(['message'=>'Category Not Found.'],404);
         }
-
-
     }
     public function getCategories(Request $request){
         $page=0;
