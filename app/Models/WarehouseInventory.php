@@ -16,6 +16,6 @@ class WarehouseInventory extends Model
         return $this->belongsTo(Warehouse::class,'WarehouseId');
     }
     public  function eta(){
-        return $this->hasOne(InventoryEta::class,'WarehouseInventoryId');
+        return $this->belongsTo(InventoryEta::class,'WarehouseInventoryId');
     }
 }
