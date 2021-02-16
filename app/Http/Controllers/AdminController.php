@@ -2563,6 +2563,7 @@ class AdminController extends Controller
                     ->get();
                 $count=Product::whereNotNull('ProductNumber')
                     ->whereRaw($where)->count();
+
             }
             else{
                 $products=Product::whereNotNull('ProductNumber')
