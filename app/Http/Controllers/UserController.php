@@ -223,16 +223,11 @@ class UserController extends Controller
         if(!empty($request->input('page'))){
             $page=($request->input('page')-1)*$limit;
         }
-
         if(empty($request->input('category_name'))) {
-            $categories = Category::with(['subCategories'=>function($query){
-                $query->limit(5);
-            }])->withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
+            $categories = Category::with('subCategories')->withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
         }
         else{
-            $categories=Category::with(['subCategories'=>function($query){
-                $query->limit(5);
-            }])->where('CategoryName','like','%'.$request->input('category_name').'%')->withCount('subCategories','products')->offset($page)->limit($limit)->get();
+            $categories=Category::with('subCategories')->where('CategoryName','like','%'.$request->input('category_name').'%')->withCount('subCategories','products')->offset($page)->limit($limit)->get();
             $count=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->count();
         }
 
