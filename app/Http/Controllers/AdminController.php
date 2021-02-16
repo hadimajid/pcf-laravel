@@ -3914,7 +3914,7 @@ class AdminController extends Controller
         }
         $name=$request->input('name');
         if($name){
-            $warehouses=Warehouse::whereNotNull('WarehouseCode')->where('name','like',"'%$name%'")->offset($offset)->limit($limit)->orderBy('id','asc')->get();
+            $warehouses=Warehouse::whereNotNull('WarehouseCode')->where('Name','like',"'%$name%'")->offset($offset)->limit($limit)->orderBy('id','asc')->get();
         $count=$warehouses->count();
         }else{
             $warehouses=Warehouse::whereNotNull('WarehouseCode')->offset($offset)->limit($limit)->orderBy('id','asc')->get();
