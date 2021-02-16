@@ -274,7 +274,7 @@ class AdminController extends Controller
             $category=Category::create([
                 'CategoryName'=>$request->input('name'),
                 'Image'=>'uploads/category/'.$imageName,
-                'Slug'=>$slug
+                'slug'=>$slug
             ]);
             return Response::json(['message'=>'Category Added.'],200);
         }
@@ -310,7 +310,7 @@ class AdminController extends Controller
                     $slug=strtolower($request->input('name'));
                     $slug=str_replace(' ','-',$slug);
                     $category->CategoryName=$request->name;
-                    $category->Slug=$slug;
+                    $category->slug=$slug;
                 }
                 $category->save();
 
@@ -363,6 +363,7 @@ class AdminController extends Controller
 
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
     }
+
     public function getCategoriesByCoasterName(Request $request){
 
         if($request->input('type')==0){
@@ -439,10 +440,13 @@ class AdminController extends Controller
             $image=$request->file('image');
             $imageName=time().uniqid().'.'.$image->getClientOriginalExtension();
             $image->move(public_path('uploads/subcategory'),$imageName);
+            $slug=strtolower($request->name);
+            $slug=str_replace(' ','-',$slug);
             $category=SubCategory::create([
                 'CategoryId'=>$request->category_id,
                 'SubCategoryName'=>$request->name,
-                'Image'=>'uploads/subcategory/'.$imageName
+                'Image'=>'uploads/subcategory/'.$imageName,
+                'slug'=>$slug
             ]);
             return Response::json(['message'=>'Sub Category Added.'],200);
 
@@ -478,8 +482,12 @@ class AdminController extends Controller
                 $subcat=SubCategory::where('id','!=',$subcategory->id)->where('SubCategoryName','like',$request->name)->first();
 
                 $subcategory->CategoryId=$request->category_id;
+                $slug=strtolower($request->name);
+                $slug=str_replace(' ','-',$slug);
                 if(empty($subcat)){
                     $subcategory->SubCategoryName=$request->name;
+                    $subcategory->slug=$slug;
+
                 }
                 $subcategory->save();
                 return Response::json(['message'=>'Sub Category Updated.'],200);
@@ -1138,7 +1146,7 @@ class AdminController extends Controller
                 $cat=Category::create([
                     'CategoryCode'=>$category->CategoryCode,
                     'CategoryName'=>$category->CategoryName,
-                    'Slug'=>$slug
+                    'slug'=>$slug
                     ]);
 
             }catch (\Exception $ex){
@@ -1150,16 +1158,20 @@ class AdminController extends Controller
 
             }
             foreach ($category->SubCategoryList as $subcategory){
+                $slug=strtolower($subcategory->SubCategoryName);
+                $slug=str_replace(' ','-',$slug);
                 try {
                     $subcat=SubCategory::create([
                         'SubCategoryCode'=>$subcategory->SubCategoryCode,
                         'SubCategoryName'=>$subcategory->SubCategoryName,
-                        'CategoryId'=>$cat->id
+                        'CategoryId'=>$cat->id,
+                        'slug'=>$slug
                     ]);
                 }
                 catch (\Exception $ex){
                     $subcat=SubCategory::where('SubCategoryCode',$subcategory->SubCategoryCode)->first();
                     $subcat->SubCategoryName=$subcategory->SubCategoryName;
+                    $subcat->slug=$slug;
                     $subcat->save();
                 }
 
