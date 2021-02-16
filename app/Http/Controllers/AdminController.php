@@ -347,7 +347,7 @@ class AdminController extends Controller
                 return Response::json(['message'=>'Category Deleted.'],200);
             }
             catch (\Exception $exception){
-                return Response::json(['message'=>'Some Error has Occurred'],422);
+                return Response::json(['message'=>$exception->getMessage()],422);
             }
         }
         else{
