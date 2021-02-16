@@ -426,7 +426,7 @@ class AdminController extends Controller
             $categories = Category::whereNotNull('CategoryCode')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->offset($page)->limit($limit)->orderBy('id','asc')->get();
         }
         else{
-            $categories=Category::whereNotNull('CategoryCode')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->offset($page)->limit($limit)->orderBy('id','asc')->get();
+            $categories=Category::whereNotNull('CategoryCode')->where('CategoryName','like','%'.$request->input('category_name').'%')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->offset($page)->limit($limit)->orderBy('id','asc')->get();
             $count=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->count();
         }
 
