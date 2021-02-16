@@ -1974,26 +1974,33 @@ class AdminController extends Controller
         return Response::json(['message'=>'Sub admin password updated.'],200);
     }
     public function getSubAdmin(Request $request){
-        $limit=$request->input('limit');
-        $page=0;
         $admin=Admin::find(Auth::guard('admin')->user()->id);
+        $limit=Admin::where('id','!=',$admin->id)->where('sub_admin', '=',1)->count();
+        $page=0;
+
         if(!empty($request->input('page')) && !empty($limit)){
             $page=(($request->input('page')-1)*$limit);
         }
+
         if(!empty($request->input('name'))) {
-            $subAdmin = Admin::with('permissions')->where('id','!=',$admin->id)->where('sub_admin', '=',1)->where('name', 'like', '%' . $request->input('name') . '%')->get();
-            if (!empty($limit)) {
-                $subAdmin = Admin::with('permissions')->where('id','!=',$admin->id)->where('sub_admin','=', 1)->where('name', 'like', '%' . $request->input('name') . '%')->offset($page)->limit($limit)->get();
-            }
-            $count=$subAdmin->count();
+            $subAdmin = Admin::with('permissions')
+                ->where('id','!=',$admin->id)->where('sub_admin', '=',1)
+                ->where('name', 'like', '%' . $request->input('name') . '%')
+                ->offset($page)->limit($limit)
+                ->get();
+
+            $count=Admin::where('id','!=',$admin->id)->where('sub_admin', '=',1)
+                ->where('name', 'like', '%' . $request->input('name') . '%')->count();
         }
         else{
 
-            $subAdmin=Admin::with('permissions')->where('id','!=',$admin->id)->where('sub_admin','=',1)->get();
-            $count=Admin::where('sub_admin',1)->get()->count();
-            if(!empty($limit)){
-                $subAdmin=Admin::with('permissions')->where('id','!=',$admin->id)->where('sub_admin','=',1)->offset($page)->limit($limit)->get();
-            }
+            $subAdmin=Admin::with('permissions')
+                ->where('id','!=',$admin->id)
+                ->where('sub_admin','=',1)
+                ->offset($page)->limit($limit)
+                ->get();
+            $count=Admin::where('id','!=',$admin->id)
+                ->where('sub_admin','=',1)->count();
         }
 
         return Response::json(['sub_admin'=>$subAdmin,'total_number'=>$count]);
@@ -2383,7 +2390,7 @@ class AdminController extends Controller
 
                 $products=Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
+                        $query->where('WarehouseId','=',$warehouse);
                     })
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
@@ -2411,7 +2418,7 @@ class AdminController extends Controller
                     ->get();
                 $count=Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
+                        $query->where('WarehouseId','=',$warehouse);
                     })
                     ->whereRaw($where)->count();
             }
@@ -2804,7 +2811,7 @@ class AdminController extends Controller
 
                 $products=Product::whereNull('ProductNumber')
                     ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
+                        $query->where('WarehouseId','=',$warehouse);
                     })
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
