@@ -130,14 +130,11 @@ class AdminController extends Controller
                 }
                 MailController::sendAdminForgotPasswordMail($pr->email,$pr->token,$pr->code,$request->url,);
                 return Response::json(['message'=>"Password reset link sent on your mail."],200);
-
             }
             return Response::json(['message'=>'User does not exist.'],422);
         }
-
     }
     public function  verifyForgotPasswordToken(Request $request,$token=null){
-
         $passwordReset=null;
         if($token!=null){
             $passwordReset=PasswordReset::where('token',$token)->orderBy('created_at','desc')->first();
