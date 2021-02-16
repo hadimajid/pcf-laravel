@@ -360,7 +360,7 @@ class AdminController extends Controller
         if(!empty($request->input('page'))){
             $page=($request->input('page')-1)*$limit;
         }
-        if(empty($request->input('name'))) {
+        if(empty($request->input('category_name'))) {
             $categories = Category::withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
         }
         else{
@@ -412,25 +412,27 @@ class AdminController extends Controller
 
     }
     public function getCategoriesByCoaster(Request $request){
+
         $page=0;
+        $limit=Category::all()->count();
+        $count=Category::all()->count();
+        if(!empty($request->input('limit'))){
+            $limit=$request->input('limit');
+        }
         if(!empty($request->input('page'))){
-            $page=($request->input('page')-1)*$request->input('limit');
+            $page=($request->input('page')-1)*$limit;
         }
-        $categories=Category::whereNotNull('CategoryCode')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->orderBy('id','asc')->get();
-
-        if($request->input('limit')){
-            $categories=Category::whereNotNull('CategoryCode')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->offset($page)->limit($request->input('limit'))->orderBy('id','asc')->get();
+        if(empty($request->input('category_name'))) {
+            $categories = Category::whereNotNull('CategoryCode')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->offset($page)->limit($limit)->orderBy('id','asc')->get();
         }
-        $count=Category::whereNotNull('CategoryCode')->count();
-        if($request->input('category_name')){
-
-            $categories=Category::whereNotNull('CategoryCode')->with('subCategories','subCategories.pieces')->where('CategoryName','like','%'.$request->input('category_name').'%')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->orderBy('id','asc')->get();
-            if($request->get('limit')) {
-                $categories=Category::whereNotNull('CategoryCode')->where('CategoryName','like','%'.$request->input('category_name').'%')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->offset($page)->limit($request->input('limit'))->orderBy('id','asc')->get();
-
-            }
-            $count=$categories->count();
+        else{
+            $categories=Category::whereNotNull('CategoryCode')->with('subCategories','subCategories.pieces')->withCount('subCategories','products')->offset($page)->limit($limit)->orderBy('id','asc')->get();
+            $count=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->count();
         }
+
+        //
+
+
 
 
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
