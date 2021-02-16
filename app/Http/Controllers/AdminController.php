@@ -439,10 +439,13 @@ class AdminController extends Controller
             $image=$request->file('image');
             $imageName=time().uniqid().'.'.$image->getClientOriginalExtension();
             $image->move(public_path('uploads/subcategory'),$imageName);
+            $slug=strtolower($request->name);
+            $slug=str_replace(' ','-',$slug);
             $category=SubCategory::create([
                 'CategoryId'=>$request->category_id,
                 'SubCategoryName'=>$request->name,
-                'Image'=>'uploads/subcategory/'.$imageName
+                'Image'=>'uploads/subcategory/'.$imageName,
+                'slug'=>$slug
             ]);
             return Response::json(['message'=>'Sub Category Added.'],200);
 
@@ -478,8 +481,12 @@ class AdminController extends Controller
                 $subcat=SubCategory::where('id','!=',$subcategory->id)->where('SubCategoryName','like',$request->name)->first();
 
                 $subcategory->CategoryId=$request->category_id;
+                $slug=strtolower($request->name);
+                $slug=str_replace(' ','-',$slug);
                 if(empty($subcat)){
                     $subcategory->SubCategoryName=$request->name;
+                    $subcategory->slug=$slug;
+
                 }
                 $subcategory->save();
                 return Response::json(['message'=>'Sub Category Updated.'],200);
@@ -1150,16 +1157,20 @@ class AdminController extends Controller
 
             }
             foreach ($category->SubCategoryList as $subcategory){
+                $slug=strtolower($subcategory->SubCategoryName);
+                $slug=str_replace(' ','-',$slug);
                 try {
                     $subcat=SubCategory::create([
                         'SubCategoryCode'=>$subcategory->SubCategoryCode,
                         'SubCategoryName'=>$subcategory->SubCategoryName,
-                        'CategoryId'=>$cat->id
+                        'CategoryId'=>$cat->id,
+                        'slug'=>$slug
                     ]);
                 }
                 catch (\Exception $ex){
                     $subcat=SubCategory::where('SubCategoryCode',$subcategory->SubCategoryCode)->first();
                     $subcat->SubCategoryName=$subcategory->SubCategoryName;
+                    $subcat->slug=$slug;
                     $subcat->save();
                 }
 
