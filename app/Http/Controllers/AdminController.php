@@ -527,102 +527,84 @@ class AdminController extends Controller
     }
     public function getSubCategories(Request $request){
         $page=0;
+        $sub=$request->input('subcategory_name');
+        $cat=$request->input('category_id');
+        $count=SubCategory::all()->count();
+        $limit=$count;
+        if(!empty($request->input('limit'))){
+            $limit=$request->input('limit');
+        }
         if(!empty($request->input('page'))){
             $page=($request->input('page')-1)*$request->input('limit');
         }
-        $sub=$request->input('subcategory_name');
-        $cat=$request->input('category_id');
-        $subcategories=SubCategory::with('Category')->withCount('products')->get();
-        $count=SubCategory::all()->count();
 
-        if(!empty($request->input('limit')) && empty($sub) && empty($cat)) {
-            $subcategories=SubCategory::with('Category')->withCount('products')->offset($page)->limit($request->input('limit'))->get();
+
+        if(empty($sub) && empty($cat)) {
+            $subcategories=SubCategory::with('Category')->withCount('products')->offset($page)->limit($limit)->get();
         }
         if(!empty($sub) && empty($cat)){
-            $subcategories=SubCategory::where('SubCategoryName','like',"%$sub%")->with('Category')->withCount('products')->get();
-
-            if(!empty($request->input('limit'))) {
-                $subcategories=SubCategory::where('SubCategoryName','like',"%$sub%")->with('Category')->withCount('products')->offset($page)->limit($request->input('limit'))->get();
-            }
-            $count=$subcategories->count();
-
+            $subcategories=SubCategory::where('SubCategoryName','like',"%$sub%")->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
+            $count=SubCategory::where('SubCategoryName','like',"%$sub%")->count();
         }
         if(empty($sub) && !empty($cat)){
             $subcategories=SubCategory::whereHas('Category',function ($query) use ($cat){
                 $query->where('id','like',$cat);
-            })->with('Category')->withCount('products')->get();
+            })->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
 
-
-            if(!empty($request->input('limit'))) {
-                $subcategories=SubCategory::whereHas('Category',function ($query) use ($cat){
-                    $query->where('id','like',$cat);
-                })->with('Category')->withCount('products')->offset($page)->limit($request->input('limit'))->get();
-            }
-            $count=$subcategories->count();
-
+            $count=SubCategory::whereHas('Category',function ($query) use ($cat){
+                $query->where('id','like',$cat);
+            })->with('Category')->withCount('products')->count();
         }
         if(!empty($sub) && !empty($cat)){
             $subcategories=SubCategory::where('SubCategoryName','like',"%$sub%")->whereHas('Category',function ($query) use ($cat){
                 $query->where('id','like',$cat);
-            })->with('Category')->withCount('products')->get();
+            })->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
 
-            if(!empty($request->input('limit'))) {
-                $subcategories=SubCategory::where('SubCategoryName','like',"%$sub%")->whereHas('Category',function ($query) use ($cat){
-                    $query->where('id','like',$cat);
-                })->with('Category')->withCount('products')->offset($page)->limit($request->input('limit'))->get();
-            }
-            $count=$subcategories->count();
+            $count=SubCategory::where('SubCategoryName','like',"%$sub%")->whereHas('Category',function ($query) use ($cat){
+                $query->where('id','like',$cat);
+            })->with('Category')->withCount('products')->count();
         }
 
         return Response::json(['sub_categories'=>$subcategories,'total_number'=>$count,'filtered'=>$subcategories->count()],200);
     }
     public function getSubCategoriesByCoaster(Request $request){
         $page=0;
+        $sub=$request->input('subcategory_name');
+        $cat=$request->input('category_id');
+        $count=SubCategory::whereNotNull('SubCategoryCode')->count();
+        $limit=$count;
+        if(!empty($request->input('limit'))){
+            $limit=$request->input('limit');
+        }
         if(!empty($request->input('page'))){
             $page=($request->input('page')-1)*$request->input('limit');
         }
-        $sub=$request->input('subcategory_name');
-        $cat=$request->input('category_id');
-        $subcategories=SubCategory::whereNotNull('SubCategoryCode')->with('Category')->withCount('products')->get();
-        $count=SubCategory::whereNotNull('SubCategoryCode')->count();
 
-        if(!empty($request->input('limit')) && empty($sub) && empty($cat)) {
-            $subcategories=SubCategory::whereNotNull('SubCategoryCode')->with('Category')->withCount('products')->offset($page)->limit($request->input('limit'))->get();
+
+        if(empty($sub) && empty($cat)) {
+            $subcategories=SubCategory::whereNotNull('SubCategoryCode')->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
         }
         if(!empty($sub) && empty($cat)){
-            $subcategories=SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName','like',"%$sub%")->with('Category')->withCount('products')->get();
-
-            if(!empty($request->input('limit'))) {
-                $subcategories=SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName','like',"%$sub%")->with('Category')->withCount('products')->offset($page)->limit($request->input('limit'))->get();
-            }
-            $count=$subcategories->count();
-
+            $subcategories=SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName','like',"%$sub%")->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
+            $count=SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName','like',"%$sub%")->count();
         }
         if(empty($sub) && !empty($cat)){
             $subcategories=SubCategory::whereNotNull('SubCategoryCode')->whereHas('Category',function ($query) use ($cat){
                 $query->where('id','like',$cat);
-            })->with('Category')->withCount('products')->get();
+            })->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
 
-
-            if(!empty($request->input('limit'))) {
-                $subcategories=SubCategory::whereNotNull('SubCategoryCode')->whereHas('Category',function ($query) use ($cat){
-                    $query->where('id','like',$cat);
-                })->with('Category')->withCount('products')->offset($page)->limit($request->input('limit'))->get();
-            }
-            $count=$subcategories->count();
-
+            $count=SubCategory::whereNotNull('SubCategoryCode')->whereHas('Category',function ($query) use ($cat){
+                $query->where('id','like',$cat);
+            })->with('Category')->withCount('products')->count();
         }
         if(!empty($sub) && !empty($cat)){
             $subcategories=SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName','like',"%$sub%")->whereHas('Category',function ($query) use ($cat){
                 $query->where('id','like',$cat);
-            })->with('Category')->withCount('products')->get();
+            })->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
 
-            if(!empty($request->input('limit'))) {
-                $subcategories=SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName','like',"%$sub%")->whereHas('Category',function ($query) use ($cat){
-                    $query->where('id','like',$cat);
-                })->with('Category')->withCount('products')->offset($page)->limit($request->input('limit'))->get();
-            }
-            $count=$subcategories->count();
+            $count=SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName','like',"%$sub%")->whereHas('Category',function ($query) use ($cat){
+                $query->where('id','like',$cat);
+            })->with('Category')->withCount('products')->count();
         }
 
         return Response::json(['sub_categories'=>$subcategories,'total_number'=>$count,'filtered'=>$subcategories->count()],200);
