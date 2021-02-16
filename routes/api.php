@@ -98,11 +98,9 @@ use Illuminate\Support\Facades\Route;
         Route::post('collection/coaster',[AdminController::class,'getCollectionByCoaster']);
 //      Group
         Route::post('group/coaster',[AdminController::class,'getGroupByCoaster']);
-
 //      Warehouse inventories
         Route::post('inventories/coaster',[AdminController::class,'getInventoryByCoaster']);
         Route::post('product-info/coaster',[AdminController::class,'getProductInfo']);
-
 //      Change password admin
         Route::post('change-password',[AdminController::class,'changePassword']);
 

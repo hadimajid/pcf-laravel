@@ -3903,7 +3903,6 @@ class AdminController extends Controller
     }
     public function getWarehouseByCoaster(Request $request){
 
-//        dd('here');
         $count=Warehouse::whereNotNull('WarehouseCode')->count();
         $limit=Warehouse::whereNotNull('WarehouseCode')->count();
         $offset=0;
@@ -3913,7 +3912,14 @@ class AdminController extends Controller
         if(!empty($request->input('page'))){
             $offset=($request->input('page')-1)*$limit;
         }
-        $warehouses=Warehouse::whereNotNull('WarehouseCode')->offset($offset)->limit($limit)->orderBy('id','asc')->get();
+        $name=$request->input('name');
+        if($name){
+            $warehouses=Warehouse::whereNotNull('WarehouseCode')->where('name','like',"'%$name%'")->offset($offset)->limit($limit)->orderBy('id','asc')->get();
+        $count=$warehouses->count();
+        }else{
+            $warehouses=Warehouse::whereNotNull('WarehouseCode')->offset($offset)->limit($limit)->orderBy('id','asc')->get();
+
+        }
 //        dd($warehouses);
         return Response::json(['warehouses'=>$warehouses,'total_number'=>$count,'filtered'=>$warehouses->count()]);
     }
