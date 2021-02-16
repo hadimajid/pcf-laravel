@@ -352,24 +352,22 @@ class AdminController extends Controller
     }
     public function getCategories(Request $request){
         $page=0;
-        if(!empty($request->input('page'))){
-            $page=($request->input('page')-1)*$request->input('limit');
-        }
-        $categories=Category::withCount('subCategories','products')->get();
-
-        if($request->input('limit')){
-            $categories=Category::withCount('subCategories','products')->offset($page)->limit($request->input('limit'))->get();
-        }
+        $limit=Category::all()->count();
         $count=Category::all()->count();
-        if($request->input('category_name')){
-
-            $categories=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->withCount('subCategories','products')->get();
-            if($request->get('limit')) {
-                $categories=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->withCount('subCategories','products')->offset($page)->limit($request->input('limit'))->get();
-
-            }
-            $count=$categories->count();
+        if(!empty($request->input('limit'))){
+            $limit=$request->input('limit');
         }
+        if(!empty($request->input('page'))){
+            $page=($request->input('page')-1)*$limit;
+        }
+        if(empty($request->input('name'))) {
+            $categories = Category::withCount('subCategories', 'products')->get();
+        }
+        else{
+            $categories=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->withCount('subCategories','products')->offset($page)->limit($limit)->get();
+                $count=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->count();
+        }
+
 
 
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
@@ -3740,8 +3738,10 @@ class AdminController extends Controller
         }
         $name=$request->input('name');
         if($name){
-            $warehouses=Warehouse::whereNotNull('WarehouseCode')->where('Name','like',"'%$name%'")->offset($offset)->limit($limit)->orderBy('id','asc')->get();
-        $count=$warehouses->count();
+
+            $warehouses=Warehouse::whereNotNull('WarehouseCode')->where('Name','like','%'.$request->input('name').'%')->offset($offset)->limit($limit)->get();
+
+             $count=Warehouse::whereNotNull('WarehouseCode')->where('Name','like','%'.$request->input('name').'%')->count();
         }else{
             $warehouses=Warehouse::whereNotNull('WarehouseCode')->offset($offset)->limit($limit)->orderBy('id','asc')->get();
 
