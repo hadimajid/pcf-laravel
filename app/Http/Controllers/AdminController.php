@@ -326,11 +326,13 @@ class AdminController extends Controller
     public function deleteCategory(Request $request,$id){
         $category=Category::find($id);
         if($category!=null){
-            if(file_exists(public_path($category->Image))){
-                unlink(public_path($category->Image));
-            }
+
             try {
-                $category->delete();
+                if($category->delete()){
+                    if(file_exists(public_path($category->Image))){
+                        unlink(public_path($category->Image));
+                    }
+                }
                 return Response::json(['message'=>'Category Deleted.'],200);
             }
             catch (\Exception $exception){
@@ -502,12 +504,15 @@ class AdminController extends Controller
         $subcategory=SubCategory::find($id);
         if($subcategory!=null){
 
-            if(file_exists(public_path($subcategory->Image))){
-                unlink(public_path($subcategory->Image));
-            }
 
             try {
-                $subcategory->delete();
+
+                if($subcategory->delete()){
+
+                    if(file_exists(public_path($subcategory->Image))){
+                        unlink(public_path($subcategory->Image));
+                    }
+                }
                 return Response::json(['message'=>'Sub Category Deleted.'],200);
 
             } catch (\Exception $exception){
