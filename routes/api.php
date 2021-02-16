@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Route;
             Route::prefix('user')->group(function (){
                 Route::post('login',[UserController::class,'login']);
                 Route::post('registration',[UserController::class,'register']);
-            });
+        });
+//      Admin
         Route::prefix('admin')->group(function (){
                 Route::post('login',[AdminController::class,'login'])->name('admin.login');
                 Route::post('password-reset',[AdminController::class,'resetPassword']);
@@ -55,11 +56,11 @@ use Illuminate\Support\Facades\Route;
                 Route::post('/coaster',[AdminController::class,'getWarehouseByCoaster']);
                 Route::post('/name',[AdminController::class,'getWarehouseName']);
                 Route::post('{id}',[AdminController::class,'getWarehouseById']);
-            });
+        });
 //    Category routes
         Route::prefix('category')->group(function (){
                 Route::post('',[AdminController::class,'storeCategory'])->middleware('scope:add-new-categories');
-                Route::post('update/{id}',[AdminController::class,'updateCategory'])->middleware('scope:edit-categories');;
+                Route::post('update/{id}',[AdminController::class,'updateCategory'])->middleware('scope:edit-categories');
                 Route::post('get',[AdminController::class,'getCategories']);
                 Route::delete('delete/{id}',[AdminController::class,'deleteCategory']);
                 Route::post('coaster',[AdminController::class,'getCategoriesByCoaster']);
@@ -89,26 +90,26 @@ use Illuminate\Support\Facades\Route;
                 Route::post('hide',[AdminController::class,'hideProduct']);
                 Route::post('/{id}',[AdminController::class,'getProductById']);
                 Route::delete('/image/{id}',[AdminController::class,'deleteImageById']);
-            });
+        });
 //      Style
-            Route::post('style',[AdminController::class,'getStyle']);
-            Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
+        Route::post('style',[AdminController::class,'getStyle']);
+        Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
 //      Collection
-            Route::post('collection/coaster',[AdminController::class,'getCollectionByCoaster']);
+        Route::post('collection/coaster',[AdminController::class,'getCollectionByCoaster']);
 //      Group
-            Route::post('group/coaster',[AdminController::class,'getGroupByCoaster']);
+        Route::post('group/coaster',[AdminController::class,'getGroupByCoaster']);
 
 //      Warehouse inventories
-            Route::post('inventories/coaster',[AdminController::class,'getInventoryByCoaster']);
-            Route::post('product-info/coaster',[AdminController::class,'getProductInfo']);
+        Route::post('inventories/coaster',[AdminController::class,'getInventoryByCoaster']);
+        Route::post('product-info/coaster',[AdminController::class,'getProductInfo']);
 
 //      Change password admin
         Route::post('change-password',[AdminController::class,'changePassword']);
 
 //      Materials
-            Route::post('material',[AdminController::class,'getMaterial']);
+        Route::post('material',[AdminController::class,'getMaterial']);
 //       Color
-            Route::post('color',[AdminController::class,'getColor']);
+        Route::post('color',[AdminController::class,'getColor']);
 //      Get Permission
         Route::get('/permissions',[AdminController::class,'getPermission']);
 //      Website Settings
