@@ -18,6 +18,7 @@ class CreateSubCategoriesTable extends Migration
             $table->string('SubCategoryCode')->nullable()->unique();
             $table->string('SubCategoryName')->unique();
             $table->string('Image')->unique();
+            $table->string('slug')->unique()->nullable();
             $table->unsignedBigInteger('CategoryId');
             $table->foreign('CategoryId')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
