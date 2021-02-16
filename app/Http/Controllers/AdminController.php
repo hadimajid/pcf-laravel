@@ -363,6 +363,7 @@ class AdminController extends Controller
 
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
     }
+
     public function getCategoriesByCoasterName(Request $request){
 
         if($request->input('type')==0){

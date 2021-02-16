@@ -166,8 +166,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('title',[AdminController::class,'getTitle']);
         Route::post('products',[AdminController::class,'getProducts']);
         Route::get('contact-information',[AdminController::class,'getContactInformation']) ;
-        Route::post('sub-category',[AdminController::class,'getSubCategories']);
-        Route::post('category',[AdminController::class,'getCategories']);
+//        Route::get('sub-category',[AdminController::class,'getSubCategories']);
+        Route::get('category',[UserController::class,'getCategories']);
 
         Route::fallback(function(){
                 return response()->json([

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserLogin;
 use App\Http\Requests\UserRegister;
 use App\Models\BillingAddress;
+use App\Models\Category;
 use App\Models\ShippingAddress;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -211,5 +212,25 @@ class UserController extends Controller
                 ]
             );
         }
+    }
+    public function getCategories(Request $request){
+        $page=0;
+        $limit=Category::all()->count();
+        $count=Category::all()->count();
+        if(!empty($request->input('limit'))){
+            $limit=$request->input('limit');
+        }
+        if(!empty($request->input('page'))){
+            $page=($request->input('page')-1)*$limit;
+        }
+        if(empty($request->input('category_name'))) {
+            $categories = Category::with('subCategories')->withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
+        }
+        else{
+            $categories=Category::with('subCategories')->where('CategoryName','like','%'.$request->input('category_name').'%')->withCount('subCategories','products')->offset($page)->limit($limit)->get();
+            $count=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->count();
+        }
+
+        return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
     }
 }
