@@ -2070,11 +2070,10 @@ class AdminController extends Controller
         }
 
         else{
-
-//                $style = $product->style;
-//                $collection = $product->collection;
-//                $productLine = $product->productLine;
-//                $group = $product->group;
+//              $style = $product->style;
+//              $collection = $product->collection;
+//              $productLine = $product->productLine;
+//              $group = $product->group;
                 $images = $product->nextGenImages;
 //                $piece = $product->piece;
                 foreach ($images as $image) {
