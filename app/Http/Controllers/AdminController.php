@@ -2383,7 +2383,7 @@ class AdminController extends Controller
 
                 $products=Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
+                        $query->where('WarehouseId','=',$warehouse);
                     })
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
@@ -2411,7 +2411,7 @@ class AdminController extends Controller
                     ->get();
                 $count=Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
+                        $query->where('WarehouseId','=',$warehouse);
                     })
                     ->whereRaw($where)->count();
             }
@@ -2804,7 +2804,7 @@ class AdminController extends Controller
 
                 $products=Product::whereNull('ProductNumber')
                     ->whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
+                        $query->where('WarehouseId','=',$warehouse);
                     })
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
