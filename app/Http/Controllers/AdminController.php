@@ -334,15 +334,12 @@ class AdminController extends Controller
 
     }
     public function deleteCategory(Request $request,$id){
-
         $category=Category::find($id);
         if($category!=null){
-
             if(file_exists(public_path($category->Image))){
                 unlink(public_path($category->Image));
             }
             try {
-
                 $category->delete();
                 return Response::json(['message'=>'Category Deleted.'],200);
             }
@@ -353,8 +350,6 @@ class AdminController extends Controller
         else{
             return Response::json(['message'=>'Category Not Found.'],404);
         }
-
-
     }
     public function getCategories(Request $request){
         $page=0;
