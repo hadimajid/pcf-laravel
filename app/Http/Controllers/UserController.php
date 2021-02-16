@@ -223,6 +223,7 @@ class UserController extends Controller
         if(!empty($request->input('page'))){
             $page=($request->input('page')-1)*$limit;
         }
+
         if(empty($request->input('category_name'))) {
             $categories = Category::with(['subCategories'=>function($query){
                 $query->limit(5);
