@@ -274,7 +274,7 @@ class AdminController extends Controller
             $category=Category::create([
                 'CategoryName'=>$request->input('name'),
                 'Image'=>'uploads/category/'.$imageName,
-                'Slug'=>$slug
+                'slug'=>$slug
             ]);
             return Response::json(['message'=>'Category Added.'],200);
         }
@@ -310,7 +310,7 @@ class AdminController extends Controller
                     $slug=strtolower($request->input('name'));
                     $slug=str_replace(' ','-',$slug);
                     $category->CategoryName=$request->name;
-                    $category->Slug=$slug;
+                    $category->slug=$slug;
                 }
                 $category->save();
 
@@ -1138,7 +1138,7 @@ class AdminController extends Controller
                 $cat=Category::create([
                     'CategoryCode'=>$category->CategoryCode,
                     'CategoryName'=>$category->CategoryName,
-                    'Slug'=>$slug
+                    'slug'=>$slug
                     ]);
 
             }catch (\Exception $ex){
