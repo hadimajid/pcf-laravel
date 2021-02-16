@@ -361,7 +361,7 @@ class AdminController extends Controller
             $page=($request->input('page')-1)*$limit;
         }
         if(empty($request->input('name'))) {
-            $categories = Category::withCount('subCategories', 'products')->get();
+            $categories = Category::withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
         }
         else{
             $categories=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->withCount('subCategories','products')->offset($page)->limit($limit)->get();
