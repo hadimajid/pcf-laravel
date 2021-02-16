@@ -2190,6 +2190,7 @@ class AdminController extends Controller
     }
     public function productsProvidedByCoaster(Request $request){
 
+
         $category_name=$request->input('category_id');
         $subcategory_name=$request->input('subcategory_id');
         $product_name=$request->input('product_name');
@@ -2203,7 +2204,7 @@ class AdminController extends Controller
         $count=Product::whereNotNull('ProductNumber')->get()->count();
         $sort=['id','asc'];
         if($request->input('sort')){
-           $s= $request->input('sort');
+            $s= $request->input('sort');
             if($s==1){
                 $sort=['id','asc'];
             }
@@ -2227,31 +2228,6 @@ class AdminController extends Controller
                 $page=($request->input('page')-1)*$limit;
             }
         }
-        $products=Product::whereNotNull('ProductNumber')
-            ->offset($page)->limit($limit)
-            ->orderBy($sort[0],$sort[1])
-            ->with(
-                'measurements'
-                ,'materials'
-                ,'additionalFields'
-                ,'relatedProducts'
-                ,'relatedProducts.relatedProduct'
-                ,'components'
-                ,'nextGenImages'
-                ,'category'
-                ,'subCategory'
-                ,'piece'
-                ,'collection'
-                ,'style'
-                ,'productLine'
-                ,'group'
-                ,'inventory'
-                ,'productInfo'
-                ,'productInfo.highlights'
-                ,'productInfo.bullets'
-                ,'productInfo.features'
-            )
-            ->get();
 
 
         $where='';
@@ -2277,36 +2253,36 @@ class AdminController extends Controller
         }
 //        if hide
         $a=0;
-       if($type=="1"){
+        if($type=="1"){
 
-               if($where=='') {
-                   $where .= " Hide = 1 ";
-               }else{
-                   $where .= " and Hide = 1  ";
-               }
-        $a=1;
-       }
-       if($type=="2"){
+            if($where=='') {
+                $where .= " Hide = 1 ";
+            }else{
+                $where .= " and Hide = 1  ";
+            }
+            $a=1;
+        }
+        if($type=="2"){
 
-               if($where=='') {
-                   $where .= " Hide = 0 ";
-               }else{
-                   $where .= " and Hide = 0 ";
-               }
-           $a=1;
-       }
-       if($type=="3"){
+            if($where=='') {
+                $where .= " Hide = 0 ";
+            }else{
+                $where .= " and Hide = 0 ";
+            }
+            $a=1;
+        }
+        if($type=="3"){
 
-               if($where=='') {
-                   $where .= " New = 1 ";
-               }else{
-                   $where .= " and New =  1 ";
-               }
-           $a=1;
-       }
+            if($where=='') {
+                $where .= " New = 1 ";
+            }else{
+                $where .= " and New =  1 ";
+            }
+            $a=1;
+        }
 //          if  product
         if(!empty($product_name)){
-
+//            $product_name=str_replace('"','\"',$product_name);
             if($where=='') {
                 $where.=" Name like '%$product_name%' ";
             }else{
@@ -2361,8 +2337,11 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
+                $count=Product::whereNotNull('ProductNumber')
+                    ->whereHas('materials',function ($query) use ($material){
+                        $query->where('Value','like',"%$material%");
+                    })->count();
             }
-
             else{
                 $products = Product::whereNotNull('ProductNumber')
                     ->whereRaw($where)
@@ -2390,9 +2369,13 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
+                $count=Product::whereNotNull('ProductNumber')
+                    ->whereRaw($where)
+                    ->whereHas('materials', function ($query) use ($material) {
+                        $query->where('Value', 'like', "%$material%");
+                    })->count();
             }
 
-            $count=$products->count();
 
         }
         if(empty($material) && !empty($warehouse)){
@@ -2426,7 +2409,11 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                $count=Product::whereNotNull('ProductNumber')
+                    ->whereHas('inventory',function ($query) use ($warehouse){
+                        $query->where('WarehouseId','like',$warehouse);
+                    })
+                    ->whereRaw($where)->count();
             }
             else{
                 $products=Product::whereNotNull('ProductNumber')
@@ -2456,8 +2443,11 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
+                $count=Product::whereNotNull('ProductNumber')
+                    ->whereHas('inventory',function ($query) use ($warehouse){
+                        $query->where('WarehouseId','like',$warehouse);
+                    })->count();
             }
-            $count=$products->count();
 
         }if(!empty($material) && !empty($warehouse)){
             if($where!=''){
@@ -2493,7 +2483,14 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                $count=Product::whereNotNull('ProductNumber')
+                    ->whereHas('inventory',function ($query) use ($warehouse){
+                        $query->where('WarehouseId','like',$warehouse);
+                    })
+                    ->whereHas('materials', function ($query) use ($material) {
+                        $query->where('Value', 'like', "%$material%");
+                    })
+                    ->whereRaw($where)->count();
             }
             else{
                 $products=Product::whereNotNull('ProductNumber')
@@ -2527,8 +2524,14 @@ class AdminController extends Controller
                     )
                     ->get();
 
+                $count=Product::whereNotNull('ProductNumber')
+                    ->whereHas('inventory',function ($query) use ($warehouse){
+                        $query->where('WarehouseId','like',$warehouse);
+                    })
+                    ->whereHas('materials', function ($query) use ($material) {
+                        $query->where('Value', 'like', "%$material%");
+                    })->count();
             }
-            $count=$products->count();
 
         }if(empty($material) && empty($warehouse)){
             if($where!=''){
@@ -2558,7 +2561,8 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                $count=Product::whereNotNull('ProductNumber')
+                    ->whereRaw($where)->count();
             }
             else{
                 $products=Product::whereNotNull('ProductNumber')
@@ -2585,7 +2589,7 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                $count=Product::whereNotNull('ProductNumber')->count();
             }
             if($a==1 && $b==0){
                 $count=Product::whereNotNull('ProductNumber')
@@ -2644,31 +2648,6 @@ class AdminController extends Controller
                 $page=($request->input('page')-1)*$limit;
             }
         }
-        $products=Product::whereNull('ProductNumber')
-            ->offset($page)->limit($limit)
-            ->orderBy($sort[0],$sort[1])
-            ->with(
-                'measurements'
-                ,'materials'
-                ,'additionalFields'
-                ,'relatedProducts'
-                ,'relatedProducts.relatedProduct'
-                ,'components'
-                ,'nextGenImages'
-                ,'category'
-                ,'subCategory'
-                ,'piece'
-                ,'collection'
-                ,'style'
-                ,'productLine'
-                ,'group'
-                ,'inventory'
-                ,'productInfo'
-                ,'productInfo.highlights'
-                ,'productInfo.bullets'
-                ,'productInfo.features'
-            )
-            ->get();
 
 
         $where='';
@@ -2778,6 +2757,10 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
+                $count=Product::whereNull('ProductNumber')
+                    ->whereHas('materials',function ($query) use ($material){
+                        $query->where('Value','like',"%$material%");
+                    })->count();
             }
             else{
                 $products = Product::whereNull('ProductNumber')
@@ -2806,9 +2789,13 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
+    $count=Product::whereNull('ProductNumber')
+        ->whereRaw($where)
+        ->whereHas('materials', function ($query) use ($material) {
+            $query->where('Value', 'like', "%$material%");
+        })->count();
             }
 
-            $count=$products->count();
 
         }
         if(empty($material) && !empty($warehouse)){
@@ -2842,7 +2829,11 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                $count=Product::whereNull('ProductNumber')
+                    ->whereHas('inventory',function ($query) use ($warehouse){
+                        $query->where('WarehouseId','like',$warehouse);
+                    })
+                    ->whereRaw($where)->count();
             }
             else{
                 $products=Product::whereNull('ProductNumber')
@@ -2872,8 +2863,11 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
+                $count=Product::whereNull('ProductNumber')
+                    ->whereHas('inventory',function ($query) use ($warehouse){
+                        $query->where('WarehouseId','like',$warehouse);
+                    })->count();
             }
-            $count=$products->count();
 
         }if(!empty($material) && !empty($warehouse)){
             if($where!=''){
@@ -2909,7 +2903,14 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                    $count=Product::whereNull('ProductNumber')
+                        ->whereHas('inventory',function ($query) use ($warehouse){
+                            $query->where('WarehouseId','like',$warehouse);
+                        })
+                        ->whereHas('materials', function ($query) use ($material) {
+                            $query->where('Value', 'like', "%$material%");
+                        })
+                        ->whereRaw($where)->count();
             }
             else{
                 $products=Product::whereNull('ProductNumber')
@@ -2943,8 +2944,14 @@ class AdminController extends Controller
                     )
                     ->get();
 
+                $count=Product::whereNull('ProductNumber')
+                    ->whereHas('inventory',function ($query) use ($warehouse){
+                        $query->where('WarehouseId','like',$warehouse);
+                    })
+                    ->whereHas('materials', function ($query) use ($material) {
+                        $query->where('Value', 'like', "%$material%");
+                    })->count();
             }
-            $count=$products->count();
 
         }if(empty($material) && empty($warehouse)){
             if($where!=''){
@@ -2974,7 +2981,8 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                    $count=Product::whereNull('ProductNumber')
+                        ->whereRaw($where)->count();
             }
             else{
                 $products=Product::whereNull('ProductNumber')
@@ -3001,7 +3009,7 @@ class AdminController extends Controller
                         ,'productInfo.features'
                     )
                     ->get();
-
+                    $count=Product::whereNull('ProductNumber')->count();
             }
             if($a==1 && $b==0){
                 $count=Product::whereNull('ProductNumber')
@@ -3549,26 +3557,26 @@ class AdminController extends Controller
         $page=0;
         $limit=Product::all()->count();
         $count=Product::all()->count();
-
-        $products=Product::
-            with(
-                'measurements'
-                ,'materials'
-                ,'additionalFields'
-                ,'relatedProducts'
-            ,'relatedProducts.relatedProduct'
-                ,'components'
-                ,'nextGenImages'
-                ,'category'
-                ,'subCategory'
-                ,'piece'
-                ,'collection'
-                ,'style'
-                ,'productLine'
-                ,'group'
-                ,'inventory'
-            )
-            ->get();
+//
+//        $products=Product::
+//            with(
+//                'measurements'
+//                ,'materials'
+//                ,'additionalFields'
+//                ,'relatedProducts'
+//            ,'relatedProducts.relatedProduct'
+//                ,'components'
+//                ,'nextGenImages'
+//                ,'category'
+//                ,'subCategory'
+//                ,'piece'
+//                ,'collection'
+//                ,'style'
+//                ,'productLine'
+//                ,'group'
+//                ,'inventory'
+//            )
+//            ->get();
 
         if(!empty($request->input('limit'))){
             $limit=$request->input('limit');
@@ -3649,6 +3657,10 @@ class AdminController extends Controller
                         ,'group'
                         ,'inventory')
                     ->get();
+                $count=Product::whereHas('materials',function ($query) use ($material){
+                    $query->where('Value','like',"%$material%");
+                })->count();
+
             }
             else{
                 $products = Product::
@@ -3671,8 +3683,12 @@ class AdminController extends Controller
                         , 'group'
                         , 'inventory')
                     ->get();
+                $count=Product::
+                whereRaw($where)
+                    ->whereHas('materials', function ($query) use ($material) {
+                        $query->where('Value', 'like', "%$material%");
+                    })->count();
             }
-            $count=$products->count();
 
         }
         if(empty($material)){
@@ -3696,7 +3712,7 @@ class AdminController extends Controller
                         ,'group'
                         ,'inventory')
                     ->get();
-                $count=$products->count();
+                $count=Product::whereRaw($where)->count();
 
             }else{
                 $products=Product::offset($page)->limit($limit)
@@ -3716,6 +3732,7 @@ class AdminController extends Controller
                         ,'group'
                         ,'inventory')
                     ->get();
+                $count=Product::all()->count();
             }
         }
 
