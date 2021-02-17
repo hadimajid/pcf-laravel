@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserLogin;
 use App\Http\Requests\UserRegister;
 use App\Models\BillingAddress;
+use App\Models\Cart;
+use App\Models\CartItems;
 use App\Models\Category;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ShippingAddress;
 use App\Models\User;
+use App\Rules\ArraySize;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -668,5 +672,72 @@ class UserController extends Controller
             'products'=>$products,
             'total_number'=>$count,
             'filtered'=>$products->count()]);
+    }
+    public function cart(Request $request){
+        $request->validate([
+            'product_id'=>'required|array|min:1',
+            'product_id.*'=>'exists:products,id',
+            'quantity'=>['required','array','min:1',new ArraySize($request->input('product_id'))],
+            'quantity.*'=>'required|numeric|min:1'
+        ]);
+           $user= User::find(Auth::guard('user')->user()->id);
+           $cart=$user->cart;
+            $product_id=$request->input('product_id');
+
+        if($cart){
+               foreach ($product_id as $key=>$id){
+                    $item=$cart->items->where('product_id','=',$id)->first();
+
+                    if($item){
+                    $item->quantity=$request->input('quantity')[$key];
+                    $item->save();
+                    }else{
+                        CartItems::create([
+                            'cart_id'=>$cart->id,
+                            'product_id'=>$id,
+                            'quantity'=>$request->input('quantity')[$key]
+                        ]);
+                    }
+               }
+
+           }else {
+               $cart=Cart::create([
+                   'user_id' => $user->id,
+               ]);
+               foreach ($product_id as $key => $id) {
+
+                   CartItems::create([
+                       'cart_id' => $cart->id,
+                       'product_id' => $id,
+                       'quantity' => $request->input('quantity')[$key]
+                   ]);
+               }
+           }
+        return Response::json(['message'=>'User cart is updated.']);
+    }
+    public function cartDelete(Request $request){
+        $request->validate([
+            'product_id'=>'required|exists:products,id',
+        ]);
+           $user= User::find(Auth::guard('user')->user()->id);
+           $cart=$user->cart;
+            $product_id=$request->input('product_id');
+        if($cart){
+            if($cart->items){
+                $item=$cart->items->where('product_id','=',$product_id)->first();
+
+                if($item){
+                    $item->delete();
+                    return Response::json(['message'=>'Product Delete From Cart.']);
+
+                }
+            }
+           }
+        return Response::json(['message'=>'Product Not In Cart.']);
+    }
+    public function getCart(){
+        $user= User::find(Auth::guard('user')->user()->id);
+        $cart=$user->cart->with('items','items.product','items.product.nextGenImages')->get();
+        return Response::json(['cart'=>$cart]);
     }
 }

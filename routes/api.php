@@ -31,6 +31,9 @@ use Illuminate\Support\Facades\Route;
                 Route::put('update-shipping-address',[UserController::class,'updateShippingAddress']);
                 Route::put('update-user-details',[UserController::class,'updateYourProfile']);
                 Route::put('update-user-password',[UserController::class,'updateYourPassword']);
+                Route::post('cart',[UserController::class,'cart']);
+                Route::get('cart',[UserController::class,'getCart']);
+                Route::post('cart/delete',[UserController::class,'cartDelete']);
         });
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
