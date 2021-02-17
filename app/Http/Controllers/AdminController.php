@@ -2619,7 +2619,8 @@ class AdminController extends Controller
             'total_number'=>$count,
             'filtered'=>$products->count()]);
     }
-    public function productsAddedByAdmin(Request $request){
+    public function productsAddedByAdmin(Request $request)
+    {
 
 
         $category_name=$request->input('category_id');
@@ -3555,203 +3556,7 @@ class AdminController extends Controller
         return Response::json(['message'=>'Image not found.'],422);
 
     }
-    //    Get All Products Search Filter Paginate
-    public function getProducts(Request $request){
 
-        $category_name=$request->input('category_id');
-        $subcategory_name=$request->input('subcategory_id');
-        $product_name=$request->input('product_name');
-        $style=$request->input('style_id');
-        $material=$request->input('material');
-        $color=$request->input('color');
-        $id=$request->input('id');
-        $page=0;
-        $limit=Product::all()->count();
-        $count=Product::all()->count();
-//
-//        $products=Product::
-//            with(
-//                'measurements'
-//                ,'materials'
-//                ,'additionalFields'
-//                ,'relatedProducts'
-//            ,'relatedProducts.relatedProduct'
-//                ,'components'
-//                ,'nextGenImages'
-//                ,'category'
-//                ,'subCategory'
-//                ,'piece'
-//                ,'collection'
-//                ,'style'
-//                ,'productLine'
-//                ,'group'
-//                ,'inventory'
-//            )
-//            ->get();
-
-        if(!empty($request->input('limit'))){
-            $limit=$request->input('limit');
-            if($request->input('page')){
-                $page=($request->input('page')-1)*$limit;
-            }
-        }
-        $where='';
-// If id
-        if(!empty($id)){
-            if($where==''){
-                $where.=" id != $id ";
-            }else{
-                $where.=" and id != $id ";
-            }
-        }
-// If category id
-        if(!empty($category_name)){
-            if($where==''){
-                $where.=" CategoryId = $category_name ";
-            }else{
-                $where.=" and CategoryId = $category_name ";
-            }
-        }
-//        if category name and sub category name
-        if(!empty($subcategory_name)){
-            if($where=='') {
-                $where .= " SubCategoryId = $subcategory_name ";
-            }else{
-                $where .= " and SubCategoryId = $subcategory_name ";
-            }
-
-        }
-//        if category subcategory and product
-        if(!empty($product_name)){
-            if($where=='') {
-                $where.=" Name like '%$product_name%' ";
-            }else{
-                $where.=" and Name like '%$product_name%' ";
-            }
-        }
-// if category subcategory product and style
-
-        if(!empty($style)){
-            if($where=='') {
-                $where.=" StyleId = $style ";
-            }
-            else{
-                $where.=" and StyleId = $style ";
-            }
-        }
-        if(!empty($color)){
-            if($where=='') {
-                $where.=" (FabricColor like '%$color%' or FinishColor like '%$color%')";
-            }else{
-                $where.=" and (FabricColor like '%$color%' or FinishColor like '%$color%')";
-            }
-        }
-
-        if(!empty($material)){
-            if($where==''){
-                $products=Product::whereHas('materials',function ($query) use ($material){
-                        $query->where('Value','like',"%$material%");
-                    })->offset($page)->limit($limit)
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory')
-                    ->get();
-                $count=Product::whereHas('materials',function ($query) use ($material){
-                    $query->where('Value','like',"%$material%");
-                })->count();
-
-            }
-            else{
-                $products = Product::
-                    whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->offset($page)->limit($limit)
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory')
-                    ->get();
-                $count=Product::
-                whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->count();
-            }
-
-        }
-        if(empty($material)){
-            if($where!=''){
-
-                $products=Product::whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory')
-                    ->get();
-                $count=Product::whereRaw($where)->count();
-
-            }else{
-                $products=Product::offset($page)->limit($limit)
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory')
-                    ->get();
-                $count=Product::all()->count();
-            }
-        }
-
-        return Response::json([
-            'products'=>$products,
-            'total_number'=>$count,
-            'filtered'=>$products->count()]);
-    }
     public function dashboardCount(){
         return Response::json([
             'categories'=>Category::all()->count(),
@@ -4041,5 +3846,15 @@ class AdminController extends Controller
             }
         }
         return Response::json(['message'=>'Product Hidden Status Updated.']);
+    }
+    public function newProduct(Request $request){
+        $request->validate([
+           'product_id'=>['required'],
+        ]);
+        $productId=$request->input('product_id');
+        $product=Product::find($productId);
+        $product->New=!($product->New);
+        $product->save();
+        return Response::json(['message'=>'Product New Status Updated.']);
     }
 }
