@@ -875,9 +875,20 @@ class AdminController extends Controller
                             }
                         }
                     }
+
                     $productCheck->New=0;
                     $productCheck->save();
-//                    return Response::json(['message'=>'Product Details Updated'],200);
+                    try {
+                        $productCheck->slug=Str::slug($productCheck->Name,'-');
+                        $productCheck->save();
+                    }catch (\Exception $exception){
+                        $check=false;
+                        $i=0;
+                        while ($check==false)
+                            $productCheck->slug=Str::slug($productCheck->Name,'-').'-'.$i++;
+                            $check=$productCheck->save();
+                    }
+                    //                    return Response::json(['message'=>'Product Details Updated'],200);
 
                 } else {
 
@@ -916,8 +927,6 @@ class AdminController extends Controller
                         'BoxWidth' => $product->BoxSize->Width,
                         'BoxHeight' => $product->BoxSize->Height
                     ]);
-
-
                     foreach ($product->MeasurementList as $measurementList) {
                         $Length = null;
                         $Width = null;
@@ -1036,6 +1045,17 @@ class AdminController extends Controller
                     }
                     $p->New=1;
                     $p->save();
+
+                    try {
+                        $p->slug=Str::slug($p->Name,'-');
+                        $p->save();
+                    }catch (\Exception $exception){
+                        $check=false;
+                        $i=0;
+                        while ($check==false)
+                            $p->slug=Str::slug($p->Name,'-').'-'.$i++;
+                        $check=$p->save();
+                    }
                 }
             } catch (\Exception $ex) {
                 return Response::json(['error' => [

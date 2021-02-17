@@ -17,6 +17,7 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->string('ProductNumber')->unique()->nullable();
             $table->string('Name');
+            $table->string('slug')->unique()->nullable();
             $table->text('Description')->nullable();
             $table->unsignedBigInteger('ProductInfoId');
             $table->foreign('ProductInfoId')->references('id')->on('product_infos')->onDelete('restrict');
