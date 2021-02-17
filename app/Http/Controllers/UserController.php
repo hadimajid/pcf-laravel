@@ -335,6 +335,15 @@ class UserController extends Controller
             }
             $a=1;
         }
+        if($type=="4"){
+
+            if($where=='') {
+                $where .= " Featured = 1 ";
+            }else{
+                $where .= " and Featured =  1 ";
+            }
+            $a=1;
+        }
 //          if  product
         if(!empty($product_name)){
 //            $product_name=str_replace('"','\"',$product_name);
