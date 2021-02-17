@@ -617,6 +617,7 @@ class AdminController extends Controller
 //        $this->storeProductLineApiData();
 //        $this->storeGroupApiData();
 //        $this->storeProductInfoApiData();
+//        return 'test';
         $products = Http::withHeaders([
             'keycode' => env('API_COASTERAMER_KEY'),
             'Accept' => 'application/json'
@@ -879,7 +880,6 @@ class AdminController extends Controller
                     $productCheck->New=0;
                     $productCheck->save();
                     $check = false;
-                    $i = 0;
 
                     while ($check==false) {
                         try {
@@ -887,8 +887,9 @@ class AdminController extends Controller
                             $check =$productCheck->save();
                         } catch (\Exception $exception) {
 
-                            $productCheck->slug = Str::slug($productCheck->Name, '-') . '-' . $i++;
+                            $productCheck->slug = Str::slug($productCheck->Name, '-') . '-' . time().uniqid();
                             $check = $productCheck->save();
+
                         }
                     }
                     //                    return Response::json(['message'=>'Product Details Updated'],200);
@@ -1050,7 +1051,7 @@ class AdminController extends Controller
                     $p->save();
 
                     $check = false;
-                    $i = 0;
+
 
                     while ($check==false) {
                         try {
@@ -1058,7 +1059,7 @@ class AdminController extends Controller
                             $check =$p->save();
                         } catch (\Exception $exception) {
 
-                            $p->slug = Str::slug($p->Name, '-') . '-' . $i++;
+                            $p->slug = Str::slug($p->Name, '-') . '-' . time().uniqid();
                             $check = $p->save();
                         }
                     }
@@ -3324,7 +3325,7 @@ class AdminController extends Controller
                     $check =$product->save();
                 } catch (\Exception $exception) {
 
-                    $product->slug = Str::slug($product->Name, '-') . '-' . $i++;
+                    $product->slug = Str::slug($product->Name, '-') . '-' . time().uniqid();
                     $check = $product->save();
                 }
             }
@@ -3579,7 +3580,7 @@ class AdminController extends Controller
             }
             $product->inventory->QtyAvail=$request->input('qty');
             $product->inventory->save();
-            $i = 0;
+
             while ($check==false) {
 
                 try {
@@ -3588,7 +3589,7 @@ class AdminController extends Controller
                 } catch (\Exception $exception) {
 
 
-                    $product->slug = Str::slug($product->Name, '-') . '-' . $i++;
+                    $product->slug = Str::slug($product->Name, '-') . '-' . time().uniqid();
                     $check = $product->save();
                 }
             }
