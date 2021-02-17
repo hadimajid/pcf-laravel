@@ -617,6 +617,7 @@ class AdminController extends Controller
 //        $this->storeProductLineApiData();
 //        $this->storeGroupApiData();
 //        $this->storeProductInfoApiData();
+//        return 'test';
         $products = Http::withHeaders([
             'keycode' => env('API_COASTERAMER_KEY'),
             'Accept' => 'application/json'
@@ -875,9 +876,23 @@ class AdminController extends Controller
                             }
                         }
                     }
+
                     $productCheck->New=0;
                     $productCheck->save();
-//                    return Response::json(['message'=>'Product Details Updated'],200);
+                    $check = false;
+
+                    while ($check==false) {
+                        try {
+                            $productCheck->slug = Str::slug($productCheck->Name, '-');
+                            $check =$productCheck->save();
+                        } catch (\Exception $exception) {
+
+                            $productCheck->slug = Str::slug($productCheck->Name, '-') . '-' . time().uniqid();
+                            $check = $productCheck->save();
+
+                        }
+                    }
+                    //                    return Response::json(['message'=>'Product Details Updated'],200);
 
                 } else {
 
@@ -916,8 +931,6 @@ class AdminController extends Controller
                         'BoxWidth' => $product->BoxSize->Width,
                         'BoxHeight' => $product->BoxSize->Height
                     ]);
-
-
                     foreach ($product->MeasurementList as $measurementList) {
                         $Length = null;
                         $Width = null;
@@ -1036,6 +1049,20 @@ class AdminController extends Controller
                     }
                     $p->New=1;
                     $p->save();
+
+                    $check = false;
+
+
+                    while ($check==false) {
+                        try {
+                            $p->slug = Str::slug($p->Name, '-');
+                            $check =$p->save();
+                        } catch (\Exception $exception) {
+
+                            $p->slug = Str::slug($p->Name, '-') . '-' . time().uniqid();
+                            $check = $p->save();
+                        }
+                    }
                 }
             } catch (\Exception $ex) {
                 return Response::json(['error' => [
@@ -3289,6 +3316,19 @@ class AdminController extends Controller
                 'QtyAvail'=>$request->input('qty'),
                 'ProductId'=>$product->id,
             ]);
+            $check = false;
+            $i = 0;
+
+            while ($check==false) {
+                try {
+                    $product->slug = Str::slug($product->Name, '-');
+                    $check =$product->save();
+                } catch (\Exception $exception) {
+
+                    $product->slug = Str::slug($product->Name, '-') . '-' . time().uniqid();
+                    $check = $product->save();
+                }
+            }
             return Response::json(['message'=>'Product Added Successfully','data'=>$product],200);
         }
         catch (\Exception $ex){
@@ -3540,6 +3580,19 @@ class AdminController extends Controller
             }
             $product->inventory->QtyAvail=$request->input('qty');
             $product->inventory->save();
+
+            while ($check==false) {
+
+                try {
+                    $product->slug = Str::slug($product->Name, '-');
+                    $check =$product->save();
+                } catch (\Exception $exception) {
+
+
+                    $product->slug = Str::slug($product->Name, '-') . '-' . time().uniqid();
+                    $check = $product->save();
+                }
+            }
             return Response::json(['message'=>'Product Details Updated'],200);
         }
     }
