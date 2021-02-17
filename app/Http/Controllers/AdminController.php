@@ -878,15 +878,18 @@ class AdminController extends Controller
 
                     $productCheck->New=0;
                     $productCheck->save();
-                    try {
-                        $productCheck->slug=Str::slug($productCheck->Name,'-');
-                        $productCheck->save();
-                    }catch (\Exception $exception){
-                        $check=false;
-                        $i=0;
-                        while ($check==false)
-                            $productCheck->slug=Str::slug($productCheck->Name,'-').'-'.$i++;
-                            $check=$productCheck->save();
+                    $check = false;
+                    $i = 0;
+
+                    while ($check==false) {
+                        try {
+                            $productCheck->slug = Str::slug($productCheck->Name, '-');
+                            $check =$productCheck->save();
+                        } catch (\Exception $exception) {
+
+                            $productCheck->slug = Str::slug($productCheck->Name, '-') . '-' . $i++;
+                            $check = $productCheck->save();
+                        }
                     }
                     //                    return Response::json(['message'=>'Product Details Updated'],200);
 
@@ -1046,15 +1049,18 @@ class AdminController extends Controller
                     $p->New=1;
                     $p->save();
 
-                    try {
-                        $p->slug=Str::slug($p->Name,'-');
-                        $p->save();
-                    }catch (\Exception $exception){
-                        $check=false;
-                        $i=0;
-                        while ($check==false)
-                            $p->slug=Str::slug($p->Name,'-').'-'.$i++;
-                        $check=$p->save();
+                    $check = false;
+                    $i = 0;
+
+                    while ($check==false) {
+                        try {
+                            $p->slug = Str::slug($p->Name, '-');
+                            $check =$p->save();
+                        } catch (\Exception $exception) {
+
+                            $p->slug = Str::slug($p->Name, '-') . '-' . $i++;
+                            $check = $p->save();
+                        }
                     }
                 }
             } catch (\Exception $ex) {
@@ -3309,15 +3315,18 @@ class AdminController extends Controller
                 'QtyAvail'=>$request->input('qty'),
                 'ProductId'=>$product->id,
             ]);
-            try {
-                $product->slug=Str::slug($product->Name,'-');
-                $product->save();
-            }catch (\Exception $exception){
-                $check=false;
-                $i=0;
-                while ($check==false)
-                    $product->slug=Str::slug($product->Name,'-').'-'.$i++;
-                $check=$product->save();
+            $check = false;
+            $i = 0;
+
+            while ($check==false) {
+                try {
+                    $product->slug = Str::slug($product->Name, '-');
+                    $check =$product->save();
+                } catch (\Exception $exception) {
+
+                    $product->slug = Str::slug($product->Name, '-') . '-' . $i++;
+                    $check = $product->save();
+                }
             }
             return Response::json(['message'=>'Product Added Successfully','data'=>$product],200);
         }
@@ -3570,15 +3579,18 @@ class AdminController extends Controller
             }
             $product->inventory->QtyAvail=$request->input('qty');
             $product->inventory->save();
-            try {
-                $product->slug=Str::slug($product->Name,'-');
-                $product->save();
-            }catch (\Exception $exception){
-                $check=false;
-                $i=0;
-                while ($check==false)
-                    $product->slug=Str::slug($product->Name,'-').'-'.$i++;
-                $check=$product->save();
+            $i = 0;
+            while ($check==false) {
+
+                try {
+                    $product->slug = Str::slug($product->Name, '-');
+                    $check =$product->save();
+                } catch (\Exception $exception) {
+
+
+                    $product->slug = Str::slug($product->Name, '-') . '-' . $i++;
+                    $check = $product->save();
+                }
             }
             return Response::json(['message'=>'Product Details Updated'],200);
         }
