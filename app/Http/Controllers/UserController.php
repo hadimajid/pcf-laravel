@@ -224,13 +224,24 @@ class UserController extends Controller
             $page=($request->input('page')-1)*$limit;
         }
         if(empty($request->input('category_name'))) {
-            $categories = Category::with('subCategories')->withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
-
+            $categories = Category::
+                withCount('subCategories', 'products')
+                ->with('subCategories')
+                ->offset($page)
+                ->limit($limit)
+                ->get();
         }
         else{
-            $categories=Category::with('subCategories')->where('CategoryName','like','%'.$request->input('category_name').'%')->withCount('subCategories','products')->offset($page)->limit($limit)->get();
+            $categories=Category::
+                where('CategoryName','like','%'.$request->input('category_name').'%')
+                ->withCount('subCategories','products')
+                ->with('subCategories')
+                ->offset($page)
+                ->limit($limit)
+                ->get();
             $count=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->count();
         }
+
 
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
     }
