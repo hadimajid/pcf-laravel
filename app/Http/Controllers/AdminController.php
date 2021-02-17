@@ -3309,6 +3309,16 @@ class AdminController extends Controller
                 'QtyAvail'=>$request->input('qty'),
                 'ProductId'=>$product->id,
             ]);
+            try {
+                $product->slug=Str::slug($product->Name,'-');
+                $product->save();
+            }catch (\Exception $exception){
+                $check=false;
+                $i=0;
+                while ($check==false)
+                    $product->slug=Str::slug($product->Name,'-').'-'.$i++;
+                $check=$product->save();
+            }
             return Response::json(['message'=>'Product Added Successfully','data'=>$product],200);
         }
         catch (\Exception $ex){
@@ -3560,6 +3570,16 @@ class AdminController extends Controller
             }
             $product->inventory->QtyAvail=$request->input('qty');
             $product->inventory->save();
+            try {
+                $product->slug=Str::slug($product->Name,'-');
+                $product->save();
+            }catch (\Exception $exception){
+                $check=false;
+                $i=0;
+                while ($check==false)
+                    $product->slug=Str::slug($product->Name,'-').'-'.$i++;
+                $check=$product->save();
+            }
             return Response::json(['message'=>'Product Details Updated'],200);
         }
     }
