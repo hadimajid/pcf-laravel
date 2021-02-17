@@ -737,7 +737,24 @@ class UserController extends Controller
     }
     public function getCart(){
         $user= User::find(Auth::guard('user')->user()->id);
-        $cart=$user->cart->with('items','items.product','items.product.nextGenImages')->get();
+        $cart=null;
+        if($user->cart){
+            $cart=$user->cart->with('items','items.product','items.product.nextGenImages')->get();
+        }
+
         return Response::json(['cart'=>$cart]);
     }
+    public function cartEmpty(Request $request){
+        $user= User::find(Auth::guard('user')->user()->id);
+        $cart=$user->cart;
+        if($cart){
+            if($cart->items){
+            foreach ($cart->items as $item){
+                $item->delete();
+            }
+            }
+        }
+        return Response::json(['message'=>'Products deleted from cart.']);
+    }
+
 }

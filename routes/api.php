@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('cart',[UserController::class,'cart']);
                 Route::get('cart',[UserController::class,'getCart']);
                 Route::post('cart/delete',[UserController::class,'cartDelete']);
+                Route::post('cart/empty',[UserController::class,'cartEmpty']);
         });
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
