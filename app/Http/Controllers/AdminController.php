@@ -4061,7 +4061,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'product_id' => ['required', 'array', 'min:1'],
-            'product_id.*' => ['required']
+            'product_id.*' => ['required','exists:products,id']
         ]);
         $productIds = $request->input('product_id');
 
@@ -4078,7 +4078,7 @@ class AdminController extends Controller
     public function newProduct(Request $request)
     {
         $request->validate([
-            'product_id' => ['required'],
+            'product_id' => ['required','exists:products,id'],
         ]);
         $productId = $request->input('product_id');
         $product = Product::find($productId);
@@ -4091,7 +4091,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'product_id' => ['required', 'array', 'min:1'],
-            'product_id.*' => ['required']
+            'product_id.*' => ['required','exists:products,id']
         ]);
         $productIds = $request->input('product_id');
 
