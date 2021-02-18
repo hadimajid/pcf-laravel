@@ -39,7 +39,7 @@ class CreateProductsTable extends Migration
             $table->string('CatalogYear')->nullable();
             $table->string('SubBrand')->nullable();
             $table->string('Kit Type')->nullable();
-            $table->string('UnitStock')->nullable();
+//            $table->string('UnitStock')->nullable();
             $table->string('Upc')->nullable();
             $table->unsignedBigInteger('CategoryId')->nullable();
             $table->foreign('CategoryId')->references('id')->on('categories')->onDelete('restrict');

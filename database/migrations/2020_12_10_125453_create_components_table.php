@@ -16,10 +16,10 @@ class CreateComponentsTable extends Migration
         Schema::create('components', function (Blueprint $table) {
             $table->id();
             $table->string('ProductNumber');
-            $table->string('Name');
-            $table->integer('BoxWeight');
-            $table->float('Cubes');
-            $table->float('Qty');
+            $table->string('Name')->nullable();
+            $table->float('BoxWeight')->nullable();
+            $table->float('Cubes')->nullable();
+            $table->float('Qty')->nullable();
             $table->unsignedBigInteger('ProductId');
             $table->foreign('ProductId')->references('id')->on('products')->onDelete('cascade');
 //            $table->unsignedBigInteger('ComponentBoxSizeId');
