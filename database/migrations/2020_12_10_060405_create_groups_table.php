@@ -17,7 +17,7 @@ class CreateGroupsTable extends Migration
             $table->id();
             $table->string('GroupNumber')->nullable()->unique();
             $table->string('MainProductNumber')->nullable();
-            $table->boolen('Coaster')->default(0)->nullable();
+            $table->boolean('Coaster')->default(0)->nullable();
             $table->timestamps();
         });
     }

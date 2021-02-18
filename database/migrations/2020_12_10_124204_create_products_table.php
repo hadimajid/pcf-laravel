@@ -58,7 +58,7 @@ class CreateProductsTable extends Migration
             $table->string('FabricCleaningCode')->nullable();
             $table->integer('NumHDImages')->nullable();
             $table->integer('NumNextGenImages')->nullable();
-            $table->unsignedBigInteger('InventoryId')->nullable();
+//            $table->unsignedBigInteger('InventoryId')->nullable();
             $table->boolean('Featured')->nullable();
             $table->float('BoxLength')->nullable();
             $table->float('BoxWidth')->nullable();
@@ -72,7 +72,7 @@ class CreateProductsTable extends Migration
             $table->boolean('Hide')->nullable()->default(0);
             $table->boolean('New')->nullable()->default(0);
             $table->boolean('Hot')->nullable()->default(0);
-            $table->foreign('InventoryId')->references('id')->on('warehouse_inventories')->onDelete('restrict');
+//            $table->foreign('InventoryId')->references('id')->on('warehouse_inventories')->onDelete('restrict');
             $table->timestamps();
         });
     }
