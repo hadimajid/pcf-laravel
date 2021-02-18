@@ -2596,26 +2596,7 @@ class AdminController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereHas('materials', function ($query) use ($material) {
@@ -2628,25 +2609,7 @@ class AdminController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereRaw($where)
@@ -2667,26 +2630,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2700,26 +2644,7 @@ class AdminController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2741,26 +2666,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2780,26 +2686,7 @@ class AdminController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
 
                 $count = Product::whereNotNull('ProductNumber')
@@ -2819,26 +2706,7 @@ class AdminController extends Controller
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
                     ->with(
-                        'measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                        self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereRaw($where)->count();
@@ -2847,26 +2715,7 @@ class AdminController extends Controller
                 $products = Product::whereNotNull('ProductNumber')
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')->count();
             }
@@ -3034,26 +2883,7 @@ class AdminController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereHas('materials', function ($query) use ($material) {
@@ -3066,25 +2896,7 @@ class AdminController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereRaw($where)
@@ -3105,26 +2917,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -3138,26 +2931,7 @@ class AdminController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -3179,26 +2953,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -3218,26 +2973,7 @@ class AdminController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
 
                 $count = Product::whereNull('ProductNumber')
@@ -3256,27 +2992,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with(
-                        'measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereRaw($where)->count();
@@ -3284,26 +3000,7 @@ class AdminController extends Controller
                 $products = Product::whereNull('ProductNumber')
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'relatedProducts.relatedProduct'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        , 'productInfo'
-                        , 'productInfo.highlights'
-                        , 'productInfo.bullets'
-                        , 'productInfo.features'
-                    )
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')->count();
             }
@@ -3324,7 +3021,29 @@ class AdminController extends Controller
             'total_number' => $count,
             'filtered' => $products->count()]);
     }
-
+    public static function getRelationProduct(){
+        return ['measurements'
+            , 'materials'
+            , 'additionalFields'
+            , 'relatedProducts'
+            , 'relatedProducts.relatedProduct'
+            , 'components'
+            , 'nextGenImages'
+            , 'category'
+            , 'subCategory'
+            , 'piece'
+            , 'collection'
+            , 'style'
+            , 'productLine'
+            , 'group'
+            , 'inventory'
+            , 'productInfo'
+            , 'productInfo.highlights'
+            , 'productInfo.bullets'
+            , 'productInfo.features'
+            ,'price'
+        ];
+    }
     public function productRules()
     {
         return [
@@ -3407,7 +3126,8 @@ class AdminController extends Controller
             'featured_image' => 'nullable|mimes:jpeg,jpg,png',
             'group_name' => 'required',
             'piece' => 'required',
-            'collection_name' => 'required'
+            'collection_name' => 'required',
+            'promotion'=>'nullable|min:0|max:100'
         ];
     }
 
@@ -4130,27 +3850,9 @@ class AdminController extends Controller
     public function getProductById($id)
     {
 
-        $product = Product::where('id', 'like', $id)->with(
-            'measurements'
-            , 'materials'
-            , 'additionalFields'
-            , 'relatedProducts'
-            , 'relatedProducts.relatedProduct'
-            , 'components'
-            , 'nextGenImages'
-            , 'category'
-            , 'subCategory'
-            , 'piece'
-            , 'collection'
-            , 'style'
-            , 'productLine'
-            , 'group'
-            , 'inventory'
-            , 'productInfo'
-            , 'productInfo.highlights'
-            , 'productInfo.bullets'
-            , 'productInfo.features'
-
+        $product = Product::where('id', 'like', $id)
+            ->with(
+                self::getRelationProduct()
         )->first();
 
         return Response::json([
