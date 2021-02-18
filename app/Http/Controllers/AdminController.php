@@ -44,6 +44,7 @@ use App\Rules\PasswordValidate;
 use App\Rules\Phone;
 use App\Rules\Zip;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -3946,5 +3947,11 @@ class AdminController extends Controller
             }
         }
         return Response::json(['message' => 'Product Hot Status Updated.']);
+    }
+
+    public function deleteLoop(Model $array){
+        foreach ($array as $a){
+            $a->delete();
+        }
     }
 }
