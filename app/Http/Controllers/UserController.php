@@ -297,7 +297,7 @@ class UserController extends Controller
 // If category id
         $b=0;
         if(!empty($category_slug)){
-            $category_name=  Category::where('Slug','like',$slug)->id;
+            $category_name=  Category::where('Slug','like',$category_slug)->first()->id;
         }
         if(!empty($category_name)){
             if($where==''){
@@ -309,7 +309,7 @@ class UserController extends Controller
         }
 //        if sub category
         if(!empty($subcategory_slug)){
-            $subcategory_name=  SubCategory::where('Slug','like',$slug)->id;
+            $subcategory_name=  SubCategory::where('Slug','like',$subcategory_slug)->first()->id;
         }
         if(!empty($subcategory_name)){
             if($where=='') {
