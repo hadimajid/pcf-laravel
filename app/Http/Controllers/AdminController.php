@@ -634,13 +634,12 @@ class AdminController extends Controller
 //    API CALLS from http://api.coasteramer.com/
     public function storeProductApiData()
     {
-//        $this->storeCategoryApiData();
-//        $this->storeStyleApiData();
-//        $this->storeCollectionApiData();
-//        $this->storeProductLineApiData();
-//        $this->storeGroupApiData();
-//        $this->storeProductInfoApiData();
-//        return 'test';
+        $this->storeCategoryApiData();
+        $this->storeStyleApiData();
+        $this->storeCollectionApiData();
+        $this->storeProductLineApiData();
+        $this->storeGroupApiData();
+        $this->storeProductInfoApiData();
         $products = Http::withHeaders([
             'keycode' => env('API_COASTERAMER_KEY'),
             'Accept' => 'application/json'
@@ -1105,6 +1104,18 @@ class AdminController extends Controller
             }
         }
 //    }
+        $relatedProducts=RelatedProductList::whereNull('RelatedProductId')->get();
+        if($relatedProducts){
+            foreach ($relatedProducts as $relatedProduct){
+
+                $product=Product::where('ProductNumber','like',$relatedProduct->ProductNumber)->first();
+                if($product){
+                    $relatedProduct->RelatedProductId=$product->id;
+                    $relatedProduct->save();
+                }
+
+            }
+        }
         $this->storeWareHouse();
         $this->storeWareHouseInventory();
         $this->storeProductPrice();
@@ -3025,6 +3036,7 @@ class AdminController extends Controller
             , 'additionalFields'
             , 'relatedProducts'
             , 'relatedProducts.relatedProduct'
+            , 'relatedProducts.relatedProduct.price'
             , 'components'
             , 'nextGenImages'
             , 'category'
