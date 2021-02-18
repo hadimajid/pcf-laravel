@@ -399,25 +399,7 @@ class UserController extends Controller
                         $query->where('Value','like',"%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
+                    ->with(AdminController::getRelationProduct()
                     )
                     ->get();
                 $count=Product::
@@ -432,25 +414,7 @@ class UserController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        , 'materials'
-                        , 'additionalFields'
-                        , 'relatedProducts'
-                        , 'components'
-                        , 'nextGenImages'
-                        , 'category'
-                        , 'subCategory'
-                        , 'piece'
-                        , 'collection'
-                        , 'style'
-                        , 'productLine'
-                        , 'group'
-                        , 'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
+                    ->with(AdminController::getRelationProduct())
                     ->get();
                 $count=Product::
                     whereRaw($where)
@@ -471,26 +435,7 @@ class UserController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
+                    ->with(AdminController::getRelationProduct()   )
                     ->get();
                 $count=Product::
                     whereHas('inventory',function ($query) use ($warehouse){
@@ -505,26 +450,7 @@ class UserController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
-                    ->with('measurements'
-                        ,'materials'
-                        ,'additionalFields'
-                        ,'relatedProducts'
-                        ,'relatedProducts.relatedProduct'
-                        ,'components'
-                        ,'nextGenImages'
-                        ,'category'
-                        ,'subCategory'
-                        ,'piece'
-                        ,'collection'
-                        ,'style'
-                        ,'productLine'
-                        ,'group'
-                        ,'inventory'
-                        ,'productInfo'
-                        ,'productInfo.highlights'
-                        ,'productInfo.bullets'
-                        ,'productInfo.features'
-                    )
+                    ->with(AdminController::getRelationProduct())
                     ->get();
                 $count=Product::
                     whereHas('inventory',function ($query) use ($warehouse){
@@ -545,26 +471,7 @@ class UserController extends Controller
                 ->whereRaw($where)
                 ->offset($page)->limit($limit)
                 ->orderBy($sort[0],$sort[1])
-                ->with('measurements'
-                    ,'materials'
-                    ,'additionalFields'
-                    ,'relatedProducts'
-                    ,'relatedProducts.relatedProduct'
-                    ,'components'
-                    ,'nextGenImages'
-                    ,'category'
-                    ,'subCategory'
-                    ,'piece'
-                    ,'collection'
-                    ,'style'
-                    ,'productLine'
-                    ,'group'
-                    ,'inventory'
-                    ,'productInfo'
-                    ,'productInfo.highlights'
-                    ,'productInfo.bullets'
-                    ,'productInfo.features'
-                )
+                ->with(AdminController::getRelationProduct())
                 ->get();
             $count=Product::
                 whereHas('inventory',function ($query) use ($warehouse){
@@ -585,26 +492,7 @@ class UserController extends Controller
                 })
                 ->offset($page)->limit($limit)
                 ->orderBy($sort[0],$sort[1])
-                ->with('measurements'
-                    ,'materials'
-                    ,'additionalFields'
-                    ,'relatedProducts'
-                    ,'relatedProducts.relatedProduct'
-                    ,'components'
-                    ,'nextGenImages'
-                    ,'category'
-                    ,'subCategory'
-                    ,'piece'
-                    ,'collection'
-                    ,'style'
-                    ,'productLine'
-                    ,'group'
-                    ,'inventory'
-                    ,'productInfo'
-                    ,'productInfo.highlights'
-                    ,'productInfo.bullets'
-                    ,'productInfo.features'
-                )
+                ->with(AdminController::getRelationProduct())
                 ->get();
 
             $count=Product::
@@ -651,26 +539,7 @@ class UserController extends Controller
             $products=Product::
                 offset($page)->limit($limit)
                 ->orderBy($sort[0],$sort[1])
-                ->with('measurements'
-                    ,'materials'
-                    ,'additionalFields'
-                    ,'relatedProducts'
-                    ,'relatedProducts.relatedProduct'
-                    ,'components'
-                    ,'nextGenImages'
-                    ,'category'
-                    ,'subCategory'
-                    ,'piece'
-                    ,'collection'
-                    ,'style'
-                    ,'productLine'
-                    ,'group'
-                    ,'inventory'
-                    ,'productInfo'
-                    ,'productInfo.highlights'
-                    ,'productInfo.bullets'
-                    ,'productInfo.features'
-                )
+                ->with(AdminController::getRelationProduct())
                 ->get();
             $count=Product::all()->count();
         }
