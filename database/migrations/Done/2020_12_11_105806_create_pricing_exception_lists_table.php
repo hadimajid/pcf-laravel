@@ -15,7 +15,7 @@ class CreatePricingExceptionListsTable extends Migration
     {
         Schema::create('pricing_exception_lists', function (Blueprint $table) {
             $table->id();
-            $table->string('ProductNumber');
+            $table->string('ProductNumber')->nullable()->unique();
             $table->unsignedBigInteger('ProductId');
             $table->float('Price');
             $table->float('MAP');
