@@ -3740,8 +3740,11 @@ class AdminController extends Controller
             if (file_exists(public_path($img->name))) {
                 unlink(public_path($img->name));
                 $img->delete();
+            }else{
+                $img->delete();
             }
             return Response::json(['message' => 'Image Deleted.'], 200);
+
         }
         return Response::json(['message' => 'Image not found.'], 422);
 
