@@ -66,21 +66,16 @@ class UserController extends Controller
         ]);
         return Response::json(['message'=>'Sign up successful'],200);
     }
-
-
-
     public function logout (Request $request) {
         $token = $request->user()->token();
         $token->revoke();
         $response = ['message' => 'You have been successfully logged out!'];
         return Response::json($response, 200);
     }
-
     public function getBillingAddress(Request $request){
         $billingAddress=Auth::guard('user')->user()->billingAddress;
         return Response::json(['billing_address'=>$billingAddress]);
     }
-
     public function storeBillingAddress(Request $request){
         $rules=[
             'name'=>'required',
@@ -102,7 +97,6 @@ class UserController extends Controller
             'message'=>'Billing address added.',
             'data'=>$validator->valid()]);
     }
-
     public function updateBillingAddress(Request $request){
         $rules=[
             'name'=>'required',
@@ -123,12 +117,10 @@ class UserController extends Controller
             'message'=>'Billing address updated.',
             'data'=>$validator->valid()]);
     }
-
     public function getShippingAddress(Request $request){
         $shippingAddress=Auth::guard('user')->user()->shippingAddress;
         return Response::json(['shipping_address'=>$shippingAddress]);
     }
-
     public function storeShippingAddress(Request $request){
         $rules=[
             'name'=>'required',
@@ -150,7 +142,6 @@ class UserController extends Controller
             'message'=>'Shipping address added.',
             'data'=>$validator->valid()]);
     }
-
     public function updateShippingAddress(Request $request){
         $rules=[
             'name'=>'required',
@@ -248,7 +239,6 @@ class UserController extends Controller
         }
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
     }
-
     //    Get All Products Search Filter Paginate
     public function getProducts(Request $request)
     {
