@@ -2596,7 +2596,7 @@ class AdminController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereHas('materials', function ($query) use ($material) {
@@ -2609,7 +2609,7 @@ class AdminController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereRaw($where)
@@ -2630,7 +2630,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2644,7 +2644,7 @@ class AdminController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2666,7 +2666,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2686,7 +2686,7 @@ class AdminController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
 
                 $count = Product::whereNotNull('ProductNumber')
@@ -2706,7 +2706,7 @@ class AdminController extends Controller
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
                     ->with(
-                        $this->getRelationProduct())
+                        self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')
                     ->whereRaw($where)->count();
@@ -2715,7 +2715,7 @@ class AdminController extends Controller
                 $products = Product::whereNotNull('ProductNumber')
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNotNull('ProductNumber')->count();
             }
@@ -2883,7 +2883,7 @@ class AdminController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereHas('materials', function ($query) use ($material) {
@@ -2896,7 +2896,7 @@ class AdminController extends Controller
                         $query->where('Value', 'like', "%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereRaw($where)
@@ -2917,7 +2917,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2931,7 +2931,7 @@ class AdminController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2953,7 +2953,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereHas('inventory', function ($query) use ($warehouse) {
@@ -2973,7 +2973,7 @@ class AdminController extends Controller
                     })
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
 
                 $count = Product::whereNull('ProductNumber')
@@ -2992,7 +2992,7 @@ class AdminController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')
                     ->whereRaw($where)->count();
@@ -3000,7 +3000,7 @@ class AdminController extends Controller
                 $products = Product::whereNull('ProductNumber')
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0], $sort[1])
-                    ->with($this->getRelationProduct())
+                    ->with(self::getRelationProduct())
                     ->get();
                 $count = Product::whereNull('ProductNumber')->count();
             }
@@ -3021,7 +3021,7 @@ class AdminController extends Controller
             'total_number' => $count,
             'filtered' => $products->count()]);
     }
-    public function getRelationProduct(){
+    public static function getRelationProduct(){
         return ['measurements'
             , 'materials'
             , 'additionalFields'
@@ -3041,6 +3041,7 @@ class AdminController extends Controller
             , 'productInfo.highlights'
             , 'productInfo.bullets'
             , 'productInfo.features'
+            ,'price'
         ];
     }
     public function productRules()
@@ -3851,7 +3852,7 @@ class AdminController extends Controller
 
         $product = Product::where('id', 'like', $id)
             ->with(
-                $this->getRelationProduct()
+                self::getRelationProduct()
         )->first();
 
         return Response::json([
