@@ -19,7 +19,6 @@ class CreateWishlistItemsTable extends Migration
             $table->foreign('wishlist_id')->references('id')->on('wishlists')->onDelete('cascade');
             $table->unsignedBigInteger('product_id');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('restrict');
-            $table->integer('quantity');
             $table->unique(['wishlist_id','product_id']);
 
             $table->timestamps();

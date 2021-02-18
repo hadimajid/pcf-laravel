@@ -12,6 +12,8 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ShippingAddress;
 use App\Models\User;
+use App\Models\Wishlist;
+use App\Models\WishlistItem;
 use App\Rules\ArraySize;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -752,80 +754,74 @@ class UserController extends Controller
             'product_id.*'=>'exists:products,id',
         ]);
            $user= User::find(Auth::guard('user')->user()->id);
-           $cart=$user->cart;
+           $wishlist=$user->wishlist;
             $product_id=$request->input('product_id');
 
-        if($cart){
+        if($wishlist){
                foreach ($product_id as $key=>$id){
-                    $item=$cart->items->where('product_id','=',$id)->first();
-
+                    $item=$wishlist->items->where('product_id','=',$id)->first();
                     if($item){
-                    $item->quantity=$request->input('quantity')[$key];
-                    $item->save();
+
                     }else{
-                        CartItems::create([
-                            'cart_id'=>$cart->id,
+                        WishlistItem::create([
+                            'cart_id'=>$wishlist->id,
                             'product_id'=>$id,
-                            'quantity'=>$request->input('quantity')[$key]
                         ]);
                     }
                }
 
            }else {
-               $cart=Cart::create([
+               $wishlist=Wishlist::create([
                    'user_id' => $user->id,
                ]);
                foreach ($product_id as $key => $id) {
 
-                   CartItems::create([
-                       'cart_id' => $cart->id,
+                   WishlistItem::create([
+                       'wishlist_id' => $wishlist->id,
                        'product_id' => $id,
-                       'quantity' => $request->input('quantity')[$key]
                    ]);
                }
            }
-        return Response::json(['message'=>'User cart is updated.']);
+        return Response::json(['message'=>'User wishlist is updated.']);
     }
     public function wishlistDelete(Request $request){
         $request->validate([
             'product_id'=>'required|exists:products,id',
         ]);
            $user= User::find(Auth::guard('user')->user()->id);
-           $cart=$user->cart;
+           $wishlist=$user->wishlist;
             $product_id=$request->input('product_id');
-        if($cart){
-            if($cart->items){
-                $item=$cart->items->where('product_id','=',$product_id)->first();
-
+        if($wishlist){
+            if($wishlist->items){
+                $item=$wishlist->items->where('product_id','=',$product_id)->first();
                 if($item){
                     $item->delete();
-                    return Response::json(['message'=>'Product Delete From Cart.']);
-
+                    return Response::json(['message'=>'Product Delete From Wishlist.']);
                 }
             }
            }
-        return Response::json(['message'=>'Product Not In Cart.']);
+        return Response::json(['message'=>'Product Not In Wishlist.']);
     }
     public function getWishlist(){
         $user= User::find(Auth::guard('user')->user()->id);
-        $cart=null;
-        if($user->cart){
-            $cart=$user->cart->with('items','items.product','items.product.nextGenImages')->get();
+        $wishlist=null;
+        if($user->wishlist){
+            $wishlist=$user->wishlist->with('items','items.product','items.product.nextGenImages')->get();
         }
 
-        return Response::json(['cart'=>$cart]);
+        return Response::json(['wishlist'=>$wishlist]);
     }
     public function wishlistEmpty(Request $request){
         $user= User::find(Auth::guard('user')->user()->id);
-        $cart=$user->cart;
-        if($cart){
-            if($cart->items){
-            foreach ($cart->items as $item){
+        $wishlist=$user->wishlist;
+        if($wishlist){
+            if($wishlist->items){
+            foreach ($wishlist->items as $item){
                 $item->delete();
             }
             }
         }
-        return Response::json(['message'=>'Products deleted from cart.']);
+        return Response::json(['message'=>'Products deleted from wishlist.']);
     }
 
 }
