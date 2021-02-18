@@ -764,7 +764,7 @@ class UserController extends Controller
 
                     }else{
                         WishlistItem::create([
-                            'cart_id'=>$wishlist->id,
+                            'wishlist_id'=>$wishlist->id,
                             'product_id'=>$id,
                         ]);
                     }
