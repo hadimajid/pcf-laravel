@@ -2567,7 +2567,7 @@ class AdminController extends Controller
             if ($where == '') {
                 $where .= " Name like '%$product_name%' ";
             } else {
-                $where .= " and Name like' %$product_name%' ";
+                $where .= " and Name like '%$product_name%' ";
             }
             $b = 1;
         }
@@ -2739,8 +2739,6 @@ class AdminController extends Controller
 
     public function productsAddedByAdmin(Request $request)
     {
-
-
         $category_name = $request->input('category_id');
         $subcategory_name = $request->input('subcategory_id');
         $product_name = $request->input('product_name');
@@ -2854,7 +2852,7 @@ class AdminController extends Controller
             if ($where == '') {
                 $where .= " Name like '%$product_name%' ";
             } else {
-                $where .= " and Name like' %$product_name%' ";
+                $where .= " and Name like '%$product_name%' ";
             }
             $b = 1;
         }
