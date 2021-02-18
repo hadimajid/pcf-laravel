@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ShippingAddress;
+use App\Models\SubCategory;
 use App\Models\User;
 use App\Models\Wishlist;
 use App\Models\WishlistItem;
@@ -255,6 +256,7 @@ class UserController extends Controller
         $category_name=$request->input('category_id');
         $slug=$request->input('slug');
         $category_slug=$request->input('category_slug');
+        $subcategory_slug=$request->input('subcategory_slug');
         $subcategory_name=$request->input('subcategory_id');
         $product_name=$request->input('product_name');
         $style=$request->input('style_id');
@@ -306,6 +308,9 @@ class UserController extends Controller
             $b=1;
         }
 //        if sub category
+        if(!empty($subcategory_slug)){
+            $subcategory_name=  SubCategory::where('Slug','like',$slug)->id;
+        }
         if(!empty($subcategory_name)){
             if($where=='') {
                 $where .= " SubCategoryId = $subcategory_name ";
