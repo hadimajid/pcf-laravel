@@ -3949,9 +3949,5 @@ class AdminController extends Controller
         return Response::json(['message' => 'Product Hot Status Updated.']);
     }
 
-    public function deleteLoop(Model $array){
-        foreach ($array as $a){
-            $a->delete();
-        }
-    }
+
 }
