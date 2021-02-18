@@ -746,5 +746,86 @@ class UserController extends Controller
         }
         return Response::json(['message'=>'Products deleted from cart.']);
     }
+    public function wishlist(Request $request){
+        $request->validate([
+            'product_id'=>'required|array|min:1',
+            'product_id.*'=>'exists:products,id',
+        ]);
+           $user= User::find(Auth::guard('user')->user()->id);
+           $cart=$user->cart;
+            $product_id=$request->input('product_id');
+
+        if($cart){
+               foreach ($product_id as $key=>$id){
+                    $item=$cart->items->where('product_id','=',$id)->first();
+
+                    if($item){
+                    $item->quantity=$request->input('quantity')[$key];
+                    $item->save();
+                    }else{
+                        CartItems::create([
+                            'cart_id'=>$cart->id,
+                            'product_id'=>$id,
+                            'quantity'=>$request->input('quantity')[$key]
+                        ]);
+                    }
+               }
+
+           }else {
+               $cart=Cart::create([
+                   'user_id' => $user->id,
+               ]);
+               foreach ($product_id as $key => $id) {
+
+                   CartItems::create([
+                       'cart_id' => $cart->id,
+                       'product_id' => $id,
+                       'quantity' => $request->input('quantity')[$key]
+                   ]);
+               }
+           }
+        return Response::json(['message'=>'User cart is updated.']);
+    }
+    public function wishlistDelete(Request $request){
+        $request->validate([
+            'product_id'=>'required|exists:products,id',
+        ]);
+           $user= User::find(Auth::guard('user')->user()->id);
+           $cart=$user->cart;
+            $product_id=$request->input('product_id');
+        if($cart){
+            if($cart->items){
+                $item=$cart->items->where('product_id','=',$product_id)->first();
+
+                if($item){
+                    $item->delete();
+                    return Response::json(['message'=>'Product Delete From Cart.']);
+
+                }
+            }
+           }
+        return Response::json(['message'=>'Product Not In Cart.']);
+    }
+    public function getWishlist(){
+        $user= User::find(Auth::guard('user')->user()->id);
+        $cart=null;
+        if($user->cart){
+            $cart=$user->cart->with('items','items.product','items.product.nextGenImages')->get();
+        }
+
+        return Response::json(['cart'=>$cart]);
+    }
+    public function wishlistEmpty(Request $request){
+        $user= User::find(Auth::guard('user')->user()->id);
+        $cart=$user->cart;
+        if($cart){
+            if($cart->items){
+            foreach ($cart->items as $item){
+                $item->delete();
+            }
+            }
+        }
+        return Response::json(['message'=>'Products deleted from cart.']);
+    }
 
 }
