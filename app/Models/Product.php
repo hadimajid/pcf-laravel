@@ -61,5 +61,8 @@ class Product extends Model
     public function productInfo(){
         return $this->belongsTo(ProductInfo::class,'ProductInfoId');
     }
+    public function price(){
+        return $this->hasOne(ProductPrice::class,'ProductId');
+    }
 
 }

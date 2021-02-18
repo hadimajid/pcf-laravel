@@ -1212,24 +1212,35 @@ class AdminController extends Controller
                     foreach ($price->PriceList as $priceList) {
                         if(empty(ProductPrice::where('ProductNumber','=',$priceList->ProductNumber)->first())) {
 //                            return $priceList->ProductNumber;
-                            if (Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()) {
-                                ProductPrice::create([
+                            $pd=Product::where('ProductNumber', '=', $priceList->ProductNumber)->first();
+                            if ($pd) {
+
+                                $temp=new ProductPrice([
                                     'ProductNumber' => $priceList->ProductNumber,
                                     'ProductId' => Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id,
                                     'Price' => $priceList->Price,
                                     'MAP' => $priceList->MAP,
                                     'PriceId' => $p->id
                                 ]);
+                                if($temp->save()){
+                                    $pd->SalePrice=$priceList->Price;
+                                    $pd->save();
+                                }
                             }
                         }
                         else{
-                            if (Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()) {
+                            $pd=Product::where('ProductNumber', '=', $priceList->ProductNumber)->first();
+
+                            if ($pd) {
 
                                 $pl = ProductPrice::where('ProductNumber', '=', $priceList->ProductNumber)->first();
 //                                $pl->ProductId = Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id;
                                 $pl->Price = $priceList->Price;
                                 $pl->MAP = $priceList->MAP;
-                                $pl->save();
+                                if($pl->save()){
+                                    $pd->SalePrice=$priceList->Price;
+                                    $pd->save();
+                                }
                             }
                         }
                     }

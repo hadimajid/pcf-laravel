@@ -68,7 +68,7 @@ class CreateProductsTable extends Migration
             $table->string('ChemicalList')->nullable();
             $table->string('FeaturedImage')->nullable();
             $table->string('Promotion')->nullable();
-            $table->string('SalePrice')->nullable();
+            $table->float('SalePrice')->nullable();
             $table->boolean('Hide')->nullable()->default(0);
             $table->boolean('New')->nullable()->default(0);
             $table->boolean('Hot')->nullable()->default(0);
