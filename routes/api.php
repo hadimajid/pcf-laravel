@@ -93,6 +93,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('name',[AdminController::class,'getProductName']);
                 Route::post('hide',[AdminController::class,'hideProduct']);
                 Route::post('new',[AdminController::class,'newProduct']);
+                Route::post('hot',[AdminController::class,'hot']);
                 Route::post('/{id}',[AdminController::class,'getProductById']);
                 Route::delete('/image/{id}',[AdminController::class,'deleteImageById']);
         });

@@ -71,6 +71,7 @@ class CreateProductsTable extends Migration
             $table->string('SalePrice')->nullable();
             $table->boolean('Hide')->nullable()->default(0);
             $table->boolean('New')->nullable()->default(0);
+            $table->boolean('Hot')->nullable()->default(0);
             $table->foreign('InventoryId')->references('id')->on('warehouse_inventories')->onDelete('restrict');
             $table->timestamps();
         });

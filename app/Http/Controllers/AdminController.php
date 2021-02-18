@@ -1571,7 +1571,7 @@ class AdminController extends Controller
     }
     public function addFooterColumnTwo(Request $request){
         $rules=[
-            'title'=>'required',
+            'title'=>'nullable',
             'text'=>'required',
             'link'=>'required',
         ];
@@ -1591,7 +1591,7 @@ class AdminController extends Controller
     }
     public function addFooterColumnThree(Request $request){
         $rules=[
-            'title'=>'required',
+            'title'=>'nullable',
             'text'=>'required',
             'link'=>'required',
         ];
@@ -3909,5 +3909,15 @@ class AdminController extends Controller
         $product->New=!($product->New);
         $product->save();
         return Response::json(['message'=>'Product New Status Updated.']);
+    }
+    public function hot(Request $request){
+        $request->validate([
+           'product_id'=>['required'],
+        ]);
+        $productId=$request->input('product_id');
+        $product=Product::find($productId);
+        $product->Hot=!($product->Hot);
+        $product->save();
+        return Response::json(['message'=>'Product Hot Status Updated.']);
     }
 }
