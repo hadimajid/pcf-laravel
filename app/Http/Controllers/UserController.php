@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserLogin;
 use App\Http\Requests\UserRegister;
 use App\Models\BillingAddress;
+use App\Models\Cart;
+use App\Models\CartItems;
 use App\Models\Category;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ShippingAddress;
 use App\Models\User;
+use App\Rules\ArraySize;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,21 +66,16 @@ class UserController extends Controller
         ]);
         return Response::json(['message'=>'Sign up successful'],200);
     }
-
-
-
     public function logout (Request $request) {
         $token = $request->user()->token();
         $token->revoke();
         $response = ['message' => 'You have been successfully logged out!'];
         return Response::json($response, 200);
     }
-
     public function getBillingAddress(Request $request){
         $billingAddress=Auth::guard('user')->user()->billingAddress;
         return Response::json(['billing_address'=>$billingAddress]);
     }
-
     public function storeBillingAddress(Request $request){
         $rules=[
             'name'=>'required',
@@ -98,7 +97,6 @@ class UserController extends Controller
             'message'=>'Billing address added.',
             'data'=>$validator->valid()]);
     }
-
     public function updateBillingAddress(Request $request){
         $rules=[
             'name'=>'required',
@@ -119,12 +117,10 @@ class UserController extends Controller
             'message'=>'Billing address updated.',
             'data'=>$validator->valid()]);
     }
-
     public function getShippingAddress(Request $request){
         $shippingAddress=Auth::guard('user')->user()->shippingAddress;
         return Response::json(['shipping_address'=>$shippingAddress]);
     }
-
     public function storeShippingAddress(Request $request){
         $rules=[
             'name'=>'required',
@@ -146,7 +142,6 @@ class UserController extends Controller
             'message'=>'Shipping address added.',
             'data'=>$validator->valid()]);
     }
-
     public function updateShippingAddress(Request $request){
         $rules=[
             'name'=>'required',
@@ -244,7 +239,6 @@ class UserController extends Controller
         }
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
     }
-
     //    Get All Products Search Filter Paginate
     public function getProducts(Request $request)
     {
@@ -669,4 +663,88 @@ class UserController extends Controller
             'total_number'=>$count,
             'filtered'=>$products->count()]);
     }
+    public function cart(Request $request){
+        $request->validate([
+            'product_id'=>'required|array|min:1',
+            'product_id.*'=>'exists:products,id',
+            'quantity'=>['required','array','min:1',new ArraySize($request->input('product_id'))],
+            'quantity.*'=>'required|numeric|min:1'
+        ]);
+           $user= User::find(Auth::guard('user')->user()->id);
+           $cart=$user->cart;
+            $product_id=$request->input('product_id');
+
+        if($cart){
+               foreach ($product_id as $key=>$id){
+                    $item=$cart->items->where('product_id','=',$id)->first();
+
+                    if($item){
+                    $item->quantity=$request->input('quantity')[$key];
+                    $item->save();
+                    }else{
+                        CartItems::create([
+                            'cart_id'=>$cart->id,
+                            'product_id'=>$id,
+                            'quantity'=>$request->input('quantity')[$key]
+                        ]);
+                    }
+               }
+
+           }else {
+               $cart=Cart::create([
+                   'user_id' => $user->id,
+               ]);
+               foreach ($product_id as $key => $id) {
+
+                   CartItems::create([
+                       'cart_id' => $cart->id,
+                       'product_id' => $id,
+                       'quantity' => $request->input('quantity')[$key]
+                   ]);
+               }
+           }
+        return Response::json(['message'=>'User cart is updated.']);
+    }
+    public function cartDelete(Request $request){
+        $request->validate([
+            'product_id'=>'required|exists:products,id',
+        ]);
+           $user= User::find(Auth::guard('user')->user()->id);
+           $cart=$user->cart;
+            $product_id=$request->input('product_id');
+        if($cart){
+            if($cart->items){
+                $item=$cart->items->where('product_id','=',$product_id)->first();
+
+                if($item){
+                    $item->delete();
+                    return Response::json(['message'=>'Product Delete From Cart.']);
+
+                }
+            }
+           }
+        return Response::json(['message'=>'Product Not In Cart.']);
+    }
+    public function getCart(){
+        $user= User::find(Auth::guard('user')->user()->id);
+        $cart=null;
+        if($user->cart){
+            $cart=$user->cart->with('items','items.product','items.product.nextGenImages')->get();
+        }
+
+        return Response::json(['cart'=>$cart]);
+    }
+    public function cartEmpty(Request $request){
+        $user= User::find(Auth::guard('user')->user()->id);
+        $cart=$user->cart;
+        if($cart){
+            if($cart->items){
+            foreach ($cart->items as $item){
+                $item->delete();
+            }
+            }
+        }
+        return Response::json(['message'=>'Products deleted from cart.']);
+    }
+
 }
