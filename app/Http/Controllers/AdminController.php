@@ -2326,6 +2326,15 @@ class AdminController extends Controller
             }
             $a=1;
         }
+        if($type=="5"){
+
+            if($where=='') {
+                $where .= " Hot = 0 ";
+            }else{
+                $where .= " and Hot =  0 ";
+            }
+            $a=1;
+        }
 //          if  product
         if(!empty($product_name)){
 //            $product_name=str_replace('"','\"',$product_name);
@@ -2754,6 +2763,15 @@ class AdminController extends Controller
                 $where .= " Hot = 1 ";
             }else{
                 $where .= " and Hot =  1 ";
+            }
+            $a=1;
+        }
+        if($type=="5"){
+
+            if($where=='') {
+                $where .= " Hot = 0 ";
+            }else{
+                $where .= " and Hot =  0 ";
             }
             $a=1;
         }
