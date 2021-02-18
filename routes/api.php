@@ -166,7 +166,7 @@ use Illuminate\Support\Facades\Route;
 //        Block User
         Route::post('block-user/{id}',[AdminController::class,'blockUser'])->middleware('scope:user-block');
 });
-        //Site Getter
+//         Site Getter
         Route::get('/logo',[AdminController::class,'getHeader']);
         Route::get('weekend-special',[AdminController::class,'getWeekendSpecial']);
         Route::get('get-social',[AdminController::class,'getAllSocial']);
