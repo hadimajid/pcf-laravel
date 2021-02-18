@@ -253,6 +253,8 @@ class UserController extends Controller
     public function getProducts(Request $request)
     {
         $category_name=$request->input('category_id');
+        $slug=$request->input('slug');
+        $category_slug=$request->input('category_slug');
         $subcategory_name=$request->input('subcategory_id');
         $product_name=$request->input('product_name');
         $style=$request->input('style_id');
@@ -292,6 +294,9 @@ class UserController extends Controller
         $where='';
 // If category id
         $b=0;
+        if(!empty($category_slug)){
+            $category_name=  Category::where('Slug','like',$slug)->id;
+        }
         if(!empty($category_name)){
             if($where==''){
                 $where.=" CategoryId = $category_name ";
@@ -354,7 +359,17 @@ class UserController extends Controller
             if($where=='') {
                 $where.=" Name like '%$product_name%' ";
             }else{
-                $where.=" and Name like' %$product_name%' ";
+                $where.=" and Name like '%$product_name%' ";
+            }
+            $b=1;
+        }
+//          if  product
+        if(!empty($slug)){
+//            $product_name=str_replace('"','\"',$product_name);
+            if($where=='') {
+                $where.=" Slug like '$slug' ";
+            }else{
+                $where.=" and Slug like '$slug' ";
             }
             $b=1;
         }

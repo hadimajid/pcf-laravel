@@ -19,8 +19,8 @@ class CreateProductPricesTable extends Migration
             $table->unsignedBigInteger('ProductId');
             $table->unsignedBigInteger('PriceId');
 
-            $table->integer('Price');
-            $table->integer('MAP');
+            $table->float('Price');
+            $table->float('MAP');
             $table->foreign('ProductId')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('PriceId')->references('id')->on('pricing')->onDelete('cascade');
 

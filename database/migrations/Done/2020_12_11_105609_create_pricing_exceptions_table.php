@@ -15,7 +15,7 @@ class CreatePricingExceptionsTable extends Migration
     {
         Schema::create('pricing_exceptions', function (Blueprint $table) {
             $table->id();
-            $table->string('PriceExceptionCode');
+            $table->string('PriceExceptionCode')->unique();
             $table->timestamps();
         });
     }

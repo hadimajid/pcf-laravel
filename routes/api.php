@@ -60,6 +60,8 @@ use Illuminate\Support\Facades\Route;
             Route::get('/store-warehouse-data',[AdminController::class,'storeWareHouse']);
             Route::get('/store-warehouse-inventory-data',[AdminController::class,'storeWareHouseInventory']);
             Route::get('/store-product-info-data',[AdminController::class,'storeProductInfoApiData']);
+            Route::get('/store-product-price',[AdminController::class,'storeProductPrice']);
+            Route::get('/store-product-price-exception',[AdminController::class,'storeProductPriceException']);
 //      Warehouse
             Route::prefix('warehouse')->group(function (){
                 Route::post('',[AdminController::class,'submitWarehouse']);
