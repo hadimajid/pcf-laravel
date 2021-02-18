@@ -2255,7 +2255,6 @@ class AdminController extends Controller
             return Response::json(['message' => false], 200);
         }
     }
-
     public function changePriceOfSelectedProducts(Request $request)
     {
         $rules = [
@@ -3716,7 +3715,7 @@ class AdminController extends Controller
             }
             $product->inventory->QtyAvail = $request->input('qty');
             $product->inventory->save();
-
+            $check=false;
             while ($check == false) {
 
                 try {
