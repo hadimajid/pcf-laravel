@@ -23,9 +23,13 @@ use App\Models\NextGenImage;
 use App\Models\PasswordReset;
 use App\Models\Permission;
 use App\Models\Piece;
+use App\Models\Pricing;
+use App\Models\PricingException;
+use App\Models\PricingExceptionList;
 use App\Models\Product;
 use App\Models\ProductInfo;
 use App\Models\ProductLine;
+use App\Models\ProductPrice;
 use App\Models\RelatedProductList;
 use App\Models\Social;
 use App\Models\Style;
@@ -1103,6 +1107,7 @@ class AdminController extends Controller
 //    }
         $this->storeWareHouse();
         $this->storeWareHouseInventory();
+        $this->storeProductPrice();
         return Response::json(['message' => "Product saved"], 200);
     }
 
@@ -1182,6 +1187,110 @@ class AdminController extends Controller
                 }
             }
         }
+    }
+    public function storeProductPrice()
+    {
+        $productPrice = Http::withHeaders([
+            'keycode' => env('API_COASTERAMER_KEY'),
+            'Accept' => 'application/json'
+        ])->get('http://api.coasteramer.com/api/product/GetPriceList?customerNumber='.env("CUSTOMER_ID"));
+        $productPriceDecode = json_decode($productPrice);
+        foreach ($productPriceDecode as $price) {
+
+            try {
+
+                $priceCheck=Pricing::where('PriceCode','like',$price->PriceCode)->first();
+                if(empty($priceCheck)) {
+                    $p = Pricing::create([
+                        'PriceCode' => $price->PriceCode,
+                    ]);
+                }else{
+                    $p=$priceCheck;
+                }
+
+
+                    foreach ($price->PriceList as $priceList) {
+                        if(empty(ProductPrice::where('ProductNumber','=',$priceList->ProductNumber)->first())) {
+//                            return $priceList->ProductNumber;
+                            if (Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()) {
+                                ProductPrice::create([
+                                    'ProductNumber' => $priceList->ProductNumber,
+                                    'ProductId' => Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id,
+                                    'Price' => $priceList->Price,
+                                    'MAP' => $priceList->MAP,
+                                    'PriceId' => $p->id
+                                ]);
+                            }
+                        }
+                        else{
+                            if (Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()) {
+
+                                $pl = ProductPrice::where('ProductNumber', '=', $priceList->ProductNumber)->first();
+//                                $pl->ProductId = Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id;
+                                $pl->Price = $priceList->Price;
+                                $pl->MAP = $priceList->MAP;
+                                $pl->save();
+                            }
+                        }
+                    }
+            } catch (\Exception $ex) {
+                return Response::json(['message'=>$ex->getMessage(),'line'=>$ex->getLine(),'exception'=>$ex],422);
+
+            }
+
+        }
+        return Response::json(['message'=>'Price added.']);
+
+    }
+    public function storeProductPriceException()
+    {
+        $productPrice = Http::withHeaders([
+            'keycode' => env('API_COASTERAMER_KEY'),
+            'Accept' => 'application/json'
+        ])->get('http://api.coasteramer.com/api/product/GetPriceExceptionList?customerNumber='.env("CUSTOMER_ID"));
+        $productPriceDecode = json_decode($productPrice);
+        foreach ($productPriceDecode as $price) {
+
+            try {
+
+                $priceCheck=PricingException::where('PriceExceptionCode ','like',$price->PriceExceptionCode )->first();
+                if(empty($priceCheck)) {
+                    $p = PricingException::create([
+                        'PriceExceptionCode' => $price->PriceExceptionCode,
+                    ]);
+                }else{
+                    $p=$priceCheck;
+                }
+
+
+                foreach ($price->PriceList as $priceList) {
+                    if(empty($p->priceList->where('ProductNumber','=',$priceList->ProductNumber))) {
+                        if (Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()) {
+                            ProductPrice::create([
+                                'ProductNumber' => $priceList->ProductNumber,
+                                'ProductId' => Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id,
+                                'Price' => $priceList->Price,
+                                'MAP' => $priceList->MAP,
+                                'PriceExceptionId' => $p->id
+                            ]);
+                        }
+                    }else{
+                        $pl=$priceCheck->priceList->where('ProductNumber','=',$priceList->ProductNumber)->first();
+                        $pl->ProductId=Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id;
+                        $pl->Price=$priceList->Price;
+                        $pl->MAP=$priceList->MAP;
+                        $pl->save();
+                    }
+
+                }
+            } catch (\Exception $ex) {
+                return Response::json(['message'=>$ex->getMessage(),'line'=>$ex->getLine()],422);
+
+            }
+
+        }
+        return Response::json(['message'=>'Price Exception added.']);
+
     }
 
     public function storeCategoryApiData()
