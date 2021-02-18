@@ -17,7 +17,7 @@ class CreateProductPricesTable extends Migration
             $table->id();
             $table->string('ProductNumber')->nullable()->unique();
             $table->unsignedBigInteger('ProductId');
-            $table->unsignedBigInteger('PriceId');
+            $table->unsignedBigInteger('PriceId')->nullable();
 
             $table->float('Price');
             $table->float('MAP');
