@@ -1253,9 +1253,9 @@ class AdminController extends Controller
 
             try {
 
-                $priceCheck=PricingException::where('PriceExceptionCode ','like',$price->PriceExceptionCode )->first();
+                $priceCheck=PricingException::where('PriceExceptionCode','like',$price->PriceExceptionCode)->first();
                 if(empty($priceCheck)) {
-                    $p = PricingException::create([
+                    $p = Pricing::create([
                         'PriceExceptionCode' => $price->PriceExceptionCode,
                     ]);
                 }else{
@@ -1264,9 +1264,10 @@ class AdminController extends Controller
 
 
                 foreach ($price->PriceList as $priceList) {
-                    if(empty($p->priceList->where('ProductNumber','=',$priceList->ProductNumber))) {
+                    if(empty(PricingExceptionList::where('ProductNumber','=',$priceList->ProductNumber)->first())) {
+//                            return $priceList->ProductNumber;
                         if (Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()) {
-                            ProductPrice::create([
+                            PricingExceptionList::create([
                                 'ProductNumber' => $priceList->ProductNumber,
                                 'ProductId' => Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id,
                                 'Price' => $priceList->Price,
@@ -1274,22 +1275,25 @@ class AdminController extends Controller
                                 'PriceExceptionId' => $p->id
                             ]);
                         }
-                    }else{
-                        $pl=$priceCheck->priceList->where('ProductNumber','=',$priceList->ProductNumber)->first();
-                        $pl->ProductId=Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id;
-                        $pl->Price=$priceList->Price;
-                        $pl->MAP=$priceList->MAP;
-                        $pl->save();
                     }
+                    else{
+                        if (Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()) {
 
+                            $pl = PricingExceptionList::where('ProductNumber', '=', $priceList->ProductNumber)->first();
+//                                $pl->ProductId = Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id;
+                            $pl->Price = $priceList->Price;
+                            $pl->MAP = $priceList->MAP;
+                            $pl->save();
+                        }
+                    }
                 }
             } catch (\Exception $ex) {
-                return Response::json(['message'=>$ex->getMessage(),'line'=>$ex->getLine()],422);
+                return Response::json(['message'=>$ex->getMessage(),'line'=>$ex->getLine(),'exception'=>$ex],422);
 
             }
 
         }
-        return Response::json(['message'=>'Price Exception added.']);
+        return Response::json(['message'=>'Price exception added.']);
 
     }
 
