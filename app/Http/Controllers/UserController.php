@@ -68,6 +68,14 @@ class UserController extends Controller
         ]);
         return Response::json(['message'=>'Sign up successful'],200);
     }
+    public function checkLoggedIn()
+    {
+        if (Auth::guard('user')->check()) {
+            return Response::json(['message' => true], 200);
+        } else {
+            return Response::json(['message' => false], 200);
+        }
+    }
     public function logout (Request $request) {
         $token = $request->user()->token();
         $token->revoke();

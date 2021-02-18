@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
         });
 //      User routes
         Route::middleware('auth:user')->prefix('user')->group(function (){
+                Route::post('is-logged-in',[UserController::class,'checkLoggedIn']);
                 Route::post('logout',[UserController::class,'logout']);
                 Route::get('get-billing-address',[UserController::class,'getBillingAddress']);
                 Route::post('store-billing-address',[UserController::class,'storeBillingAddress']);
@@ -31,7 +32,6 @@ use Illuminate\Support\Facades\Route;
                 Route::put('update-shipping-address',[UserController::class,'updateShippingAddress']);
                 Route::put('update-user-details',[UserController::class,'updateYourProfile']);
                 Route::put('update-user-password',[UserController::class,'updateYourPassword']);
-
                 Route::prefix('cart')->group(function (){
                     Route::post('',[UserController::class,'cart']);
                     Route::get('',[UserController::class,'getCart']);
@@ -181,10 +181,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('title',[AdminController::class,'getTitle']);
         Route::post('products',[UserController::class,'getProducts']);
         Route::get('contact-information',[AdminController::class,'getContactInformation']) ;
-//        Route::get('sub-category',[AdminController::class,'getSubCategories']);
+//      Route::get('sub-category',[AdminController::class,'getSubCategories']);
         Route::post('category',[UserController::class,'getCategories']);
-
-
         Route::fallback(function(){
                 return response()->json([
                     'message' => 'Invalid Route.'], 404);
