@@ -516,25 +516,7 @@ class UserController extends Controller
                 ->offset($page)->limit($limit)
                 ->orderBy($sort[0],$sort[1])
                 ->with(
-                    'measurements'
-                    ,'materials'
-                    ,'additionalFields'
-                    ,'relatedProducts'
-                    ,'relatedProducts.relatedProduct'
-                    ,'components'
-                    ,'nextGenImages'
-                    ,'category'
-                    ,'subCategory'
-                    ,'piece'
-                    ,'collection'
-                    ,'style'
-                    ,'productLine'
-                    ,'group'
-                    ,'inventory'
-                    ,'productInfo'
-                    ,'productInfo.highlights'
-                    ,'productInfo.bullets'
-                    ,'productInfo.features'
+                    AdminController::getRelationProduct()
                 )
                 ->get();
             $count=Product::
