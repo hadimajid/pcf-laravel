@@ -4078,13 +4078,19 @@ class AdminController extends Controller
     public function newProduct(Request $request)
     {
         $request->validate([
-            'product_id' => ['required','exists:products,id'],
+            'product_id' => ['required', 'array', 'min:1'],
+            'product_id.*' => ['required','exists:products,id']
         ]);
-        $productId = $request->input('product_id');
-        $product = Product::find($productId);
-        $product->New = !($product->New);
-        $product->save();
-        return Response::json(['message' => 'Product New Status Updated.']);
+        $productIds = $request->input('product_id');
+
+        foreach ($productIds as $id) {
+            $product = Product::find($id);
+            if ($product) {
+                $product->New = !($product->New);
+                $product->save();
+            }
+        }
+        return Response::json(['message' => 'Product New Arrival Status Updated.']);
     }
 
     public function hot(Request $request)
@@ -4105,4 +4111,3 @@ class AdminController extends Controller
         return Response::json(['message' => 'Product Hot Status Updated.']);
     }
 }
-
