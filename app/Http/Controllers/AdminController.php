@@ -3407,7 +3407,8 @@ class AdminController extends Controller
             'featured_image' => 'nullable|mimes:jpeg,jpg,png',
             'group_name' => 'required',
             'piece' => 'required',
-            'collection_name' => 'required'
+            'collection_name' => 'required',
+            'promotion'=>'nullable|min:0|max:100'
         ];
     }
 
