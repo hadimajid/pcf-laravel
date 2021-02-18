@@ -2250,7 +2250,6 @@ class AdminController extends Controller
     public function checkLoggedIn()
     {
         if (Auth::guard('admin')->check()) {
-
             return Response::json(['message' => true], 200);
         } else {
             return Response::json(['message' => false], 200);

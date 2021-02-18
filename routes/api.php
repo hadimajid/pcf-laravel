@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
         });
 //      User routes
         Route::middleware('auth:user')->prefix('user')->group(function (){
+                Route::post('is-logged-in',[UserController::class,'checkLoggedIn']);
                 Route::post('logout',[UserController::class,'logout']);
                 Route::get('get-billing-address',[UserController::class,'getBillingAddress']);
                 Route::post('store-billing-address',[UserController::class,'storeBillingAddress']);
@@ -31,10 +32,18 @@ use Illuminate\Support\Facades\Route;
                 Route::put('update-shipping-address',[UserController::class,'updateShippingAddress']);
                 Route::put('update-user-details',[UserController::class,'updateYourProfile']);
                 Route::put('update-user-password',[UserController::class,'updateYourPassword']);
-                Route::post('cart',[UserController::class,'cart']);
-                Route::get('cart',[UserController::class,'getCart']);
-                Route::post('cart/delete',[UserController::class,'cartDelete']);
-                Route::post('cart/empty',[UserController::class,'cartEmpty']);
+                Route::prefix('cart')->group(function (){
+                    Route::post('',[UserController::class,'cart']);
+                    Route::get('',[UserController::class,'getCart']);
+                    Route::post('/delete',[UserController::class,'cartDelete']);
+                    Route::post('/empty',[UserController::class,'cartEmpty']);
+                });
+                Route::prefix('wishlist')->group(function (){
+                    Route::post('',[UserController::class,'wishlist']);
+                    Route::get('',[UserController::class,'getWishlist']);
+                    Route::post('/delete',[UserController::class,'wishlistDelete']);
+                    Route::post('/empty',[UserController::class,'wishlistEmpty']);
+                });
         });
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
@@ -172,10 +181,8 @@ use Illuminate\Support\Facades\Route;
         Route::get('title',[AdminController::class,'getTitle']);
         Route::post('products',[UserController::class,'getProducts']);
         Route::get('contact-information',[AdminController::class,'getContactInformation']) ;
-//        Route::get('sub-category',[AdminController::class,'getSubCategories']);
+//      Route::get('sub-category',[AdminController::class,'getSubCategories']);
         Route::post('category',[UserController::class,'getCategories']);
-
-
         Route::fallback(function(){
                 return response()->json([
                     'message' => 'Invalid Route.'], 404);
