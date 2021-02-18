@@ -4105,3 +4105,4 @@ class AdminController extends Controller
         return Response::json(['message' => 'Product Hot Status Updated.']);
     }
 }
+
