@@ -3059,7 +3059,7 @@ class AdminController extends Controller
                 ->groupBy(['product_id']);
             }
             ,'ratingUser'
-            ,'ratings.user'
+            ,'ratingUser.user'
         ];
     }
     public function productRules()
