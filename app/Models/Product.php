@@ -55,7 +55,10 @@ class Product extends Model
     public function inventory(){
         return $this->hasOne(WarehouseInventory::class,'ProductId');
     }
-    public function rating(){
+    public function ratings(){
+        return $this->hasMany(Rating::class);
+    }
+    public function ratingUser(){
         return $this->hasMany(Rating::class);
     }
     public function productInfo(){

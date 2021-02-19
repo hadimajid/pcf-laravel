@@ -18,10 +18,11 @@ class CreateRatingsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('product_id');
             $table->integer('rating');
-            $table->text('comment');
+            $table->text('comment')->nullable();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('restrict');
+            $table->unique(['user_id','product_id']);
         });
     }
 
