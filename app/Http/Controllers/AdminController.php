@@ -3057,7 +3057,8 @@ class AdminController extends Controller
             ,'ratings'=>function($query){
             $query->selectRaw('product_id, AVG(rating) as rating')
                 ->groupBy(['product_id']);
-            },'ratingUser'
+            }
+            ,'ratingUser'
         ];
     }
     public function productRules()

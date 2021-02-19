@@ -406,8 +406,8 @@ class UserController extends Controller
                         $query->where('Value','like',"%$material%");
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
-                    ->with(AdminController::getRelationProduct()
-                    )
+                    ->with(AdminController::getRelationProduct())
+                    ->withCount('ratings')
                     ->get();
                 $count=Product::
                     whereHas('materials',function ($query) use ($material){
@@ -422,6 +422,7 @@ class UserController extends Controller
                     })->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
                     ->with(AdminController::getRelationProduct())
+                    ->withCount('ratings')
                     ->get();
                 $count=Product::
                     whereRaw($where)
@@ -442,7 +443,8 @@ class UserController extends Controller
                     ->whereRaw($where)
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
-                    ->with(AdminController::getRelationProduct()   )
+                    ->with(AdminController::getRelationProduct())
+                    ->withCount('ratings')
                     ->get();
                 $count=Product::
                     whereHas('inventory',function ($query) use ($warehouse){
@@ -458,6 +460,7 @@ class UserController extends Controller
                     ->offset($page)->limit($limit)
                     ->orderBy($sort[0],$sort[1])
                     ->with(AdminController::getRelationProduct())
+                    ->withCount('ratings')
                     ->get();
                 $count=Product::
                     whereHas('inventory',function ($query) use ($warehouse){
@@ -479,6 +482,7 @@ class UserController extends Controller
                 ->offset($page)->limit($limit)
                 ->orderBy($sort[0],$sort[1])
                 ->with(AdminController::getRelationProduct())
+                ->withCount('ratings')
                 ->get();
             $count=Product::
                 whereHas('inventory',function ($query) use ($warehouse){
@@ -500,6 +504,7 @@ class UserController extends Controller
                 ->offset($page)->limit($limit)
                 ->orderBy($sort[0],$sort[1])
                 ->with(AdminController::getRelationProduct())
+                ->withCount('ratings')
                 ->get();
 
             $count=Product::
@@ -517,9 +522,8 @@ class UserController extends Controller
                     whereRaw($where)
                 ->offset($page)->limit($limit)
                 ->orderBy($sort[0],$sort[1])
-                ->with(
-                    AdminController::getRelationProduct()
-                )
+                ->with(AdminController::getRelationProduct())
+                ->withCount('ratings')
                 ->get();
             $count=Product::
                 whereRaw($where)->count();
@@ -529,6 +533,7 @@ class UserController extends Controller
                 offset($page)->limit($limit)
                 ->orderBy($sort[0],$sort[1])
                 ->with(AdminController::getRelationProduct())
+                ->withCount('ratings')
                 ->get();
             $count=Product::all()->count();
         }
