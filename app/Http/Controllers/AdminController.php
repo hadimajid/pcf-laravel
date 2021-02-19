@@ -3472,7 +3472,7 @@ class AdminController extends Controller
             $product->RoomName = $request->input('room_name');
             $product->WoodFinish = $request->input('wood_finish');
             $product->ChemicalList = $request->input('chemical_list');
-            $product->Promotion = $request->input('promotion');
+//            $product->Promotion = $request->input('promotion');
             $product->PromotionCheck = $request->input('promotion');
             $product->SalePrice = $request->input('price');
             $product->save();
