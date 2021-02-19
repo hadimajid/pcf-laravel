@@ -3237,6 +3237,7 @@ class AdminController extends Controller
                 'WoodFinish' => $request->input('wood_finish'),
                 'ChemicalList' => $request->input('chemical_list'),
                 'Promotion' => $request->input('promotion'),
+                'PromotionCheck' => $request->input('promotion'),
                 'SalePrice' => $request->input('price'),
                 'CollectionId' => $collection->id
             ]);
@@ -3465,6 +3466,7 @@ class AdminController extends Controller
             $product->WoodFinish = $request->input('wood_finish');
             $product->ChemicalList = $request->input('chemical_list');
             $product->Promotion = $request->input('promotion');
+            $product->PromotionCheck = $request->input('promotion');
             $product->SalePrice = $request->input('price');
             $product->save();
             if (!empty($request->input('measurements'))) {
