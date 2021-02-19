@@ -51,6 +51,7 @@ use Illuminate\Support\Facades\Route;
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
             Route::get('/count',[AdminController::class,'dashboardCount']);
+
             Route::post('logout',[AdminController::class,'logout']);
             Route::post('is-logged-in',[AdminController::class,'checkLoggedIn']);
 //      API CALLS

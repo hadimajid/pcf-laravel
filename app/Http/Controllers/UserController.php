@@ -26,6 +26,11 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        ini_set('max_execution_time', 600000);
+
+    }
     public function login(Request $request){
             $rules=[
                 'email'=>'required|email',
@@ -546,6 +551,7 @@ class UserController extends Controller
 //                $count=$products->count();
 //            }
     }
+        $products=ConfigController::price($products);
         return Response::json([
             'products'=>$products,
             'total_number'=>$count,

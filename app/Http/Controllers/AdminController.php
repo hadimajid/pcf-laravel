@@ -2093,6 +2093,7 @@ class AdminController extends Controller
     {
         $rules = [
             'fees' => 'nullable|numeric|min:0',
+            'promotion' => ['required'],
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -2100,13 +2101,16 @@ class AdminController extends Controller
         if ($ws == null) {
             WebsiteSettings::create([
                 'delivery_fees' => $request->input('fees'),
+                'promotion' =>  $request->input('promotion'),
             ]);
             return Response::json(['message' => 'Delivery fees updated.'], 200);
         }
         $ws->delivery_fees = $request->input('fees');
+        $ws->promotion = $request->input('promotion');
         $ws->save();
         return Response::json(['message' => 'Delivery fees updated.'], 200);
     }
+
 
     public function getDeliveryFees()
     {
@@ -2397,7 +2401,7 @@ class AdminController extends Controller
         $rules = [
             'products' => 'required|array|min:1',
             'products.*' => 'required',
-            'price' => 'required|numeric|min:0|max:100',
+//            'price' => 'required|numeric|min:0|max:100',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -2408,7 +2412,8 @@ class AdminController extends Controller
                 return Response::json(['message' => 'Products not found.'], 404);
             }
             foreach ($products as $product) {
-                $product->Promotion = $request->input('price');
+                $product->PromotionCheck = !($product->PromotionCheck);
+//              $product->Promotion = $request->input('price');
                 $product->save();
             }
             return Response::json(['message' => 'Price updated for selected products.'], 200);
@@ -2421,7 +2426,7 @@ class AdminController extends Controller
     {
         $rules = [
             'category' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0|max:100',
+//            'price' => 'required|numeric|min:0|max:100',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -2433,7 +2438,9 @@ class AdminController extends Controller
                 return Response::json(['message' => 'Products not found.'], 422);
             }
             foreach ($products as $product) {
-                $product->Promotion = $request->input('price');
+                $product->PromotionCheck = !($product->PromotionCheck);
+
+//                $product->Promotion = $request->input('price');
                 $product->save();
             }
             return Response::json(['message' => 'Price updated for selected products.'], 200);
@@ -2444,7 +2451,7 @@ class AdminController extends Controller
     {
         $rules = [
             'subcategory' => 'required|exists:sub_categories,id',
-            'price' => 'required|numeric|min:0|max:100',
+//            'price' => 'required|numeric|min:0|max:100',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -2456,7 +2463,9 @@ class AdminController extends Controller
                 return Response::json(['message' => 'Products not found.'], 404);
             }
             foreach ($products as $product) {
-                $product->Promotion = $request->input('price');
+                $product->PromotionCheck = !($product->PromotionCheck);
+
+//                $product->Promotion = $request->input('price');
                 $product->save();
             }
             return Response::json(['message' => 'Price updated for selected products.'], 200);
@@ -3059,7 +3068,7 @@ class AdminController extends Controller
                 ->groupBy(['product_id']);
             }
             ,'ratingUser'
-            ,'ratings.user'
+            ,'ratingUser.user'
         ];
     }
     public function productRules()
