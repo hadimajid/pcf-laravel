@@ -39,7 +39,7 @@ class ConfigController extends Controller
                 $p->PromotionPrice = 0;
                 $p->DiscountPercentage = 0;
             }
-            if($p->PromotionCheck){
+            if(!empty($p->PromotionCheck)){
                 $p->PromotionPrice = self::discountPrice($p->SalePrice);
                 $p->DiscountPercentage = self::percentageCalculator();
             }
