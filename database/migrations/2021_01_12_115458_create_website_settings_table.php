@@ -21,7 +21,8 @@ class CreateWebsiteSettingsTable extends Migration
             $table->string('email')->nullable();
             $table->string('map_address')->nullable();
             $table->text('weekend_special')->nullable();
-            $table->text('delivery_fees')->nullable();
+            $table->float('delivery_fees')->nullable();
+            $table->float('promotion')->nullable();
             $table->timestamps();
         });
     }
