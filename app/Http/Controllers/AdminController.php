@@ -2114,7 +2114,7 @@ class AdminController extends Controller
 
     public function getDeliveryFees()
     {
-        return Response::json(['delivery_fee' => WebsiteSettings::first()->delivery_fees]);
+        return Response::json(['delivery_fee' => WebsiteSettings::first()->delivery_fees,'promotion' => WebsiteSettings::first()->promotion]);
 
     }
 
