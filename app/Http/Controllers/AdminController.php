@@ -3103,11 +3103,11 @@ class AdminController extends Controller
             'fabric_cleaning_code' => 'nullable',
             'num_hd_images' => 'nullable',
             'num_next_gen_images' => 'nullable',
-            'style_name' => 'required',
+            'style_name' => 'required|unique:styles,StyleName',
 //          'collection_id'=>'required|exists:collection_models,id',
 //          'product_line_id'=>'required|exists:product_lines,id',
             'product_line_id' => 'nullable',
-            'group_number' => 'required',
+            'group_number' => 'required|unique:groups,GroupNumber',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'required|exists:sub_categories,id',
 //          'piece_id'=>'required|exists:pieces,id',
@@ -3383,7 +3383,10 @@ class AdminController extends Controller
             $group = $product->group;
             $piece = $product->piece;
             if (!empty($style)) {
-                $style->StyleName = $request->input('style_name');
+                if(!Style::where('StyleName',$request->input('style_name'))){
+                    $style->StyleName = $request->input('style_name');
+
+                }
                 $style->save();
 
             } else {
@@ -3393,7 +3396,7 @@ class AdminController extends Controller
             }
             if (!empty($collection)) {
                 $collection->CollectionName = $request->input('collection_name');
-
+                $collection->save();
             } else {
                 $collection = CollectionModel::create([
                     'CollectionName' => $request->input('collection_name')
@@ -3403,7 +3406,9 @@ class AdminController extends Controller
 //                $productLine->delete();
 //            }
             if (!empty($group)) {
-                $group->GroupNumber = $request->input('group_number');
+                if(!Group::where('GroupNumber',$request->input('group_number'))) {
+                    $group->GroupNumber = $request->input('group_number');
+                }
                 $group->GroupName = $request->input('group_name');
                 $group->save();
             } else {
