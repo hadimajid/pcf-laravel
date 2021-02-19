@@ -3156,7 +3156,8 @@ class AdminController extends Controller
             'group_name' => 'required',
             'piece' => 'required',
             'collection_name' => 'required',
-            'promotion'=>'nullable|min:0|max:100'
+//            'promotion'=>'nullable|min:0|max:100'
+            'promotion'=>'nullable'
         ];
     }
 
