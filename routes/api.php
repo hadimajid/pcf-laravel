@@ -184,7 +184,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('hours',[AdminController::class,'getHours']);
         Route::get('delivery-fees',[AdminController::class,'getDeliveryFees']);
         Route::get('title',[AdminController::class,'getTitle']);
-        Route::get('products',[UserController::class,'getProducts']);
+        Route::post('products',[UserController::class,'getProducts']);
         Route::get('contact-information',[AdminController::class,'getContactInformation']) ;
 //      Route::get('sub-category',[AdminController::class,'getSubCategories']);
         Route::post('category',[UserController::class,'getCategories']);
