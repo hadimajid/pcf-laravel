@@ -20,18 +20,18 @@ class RelatedProducts
     {
         ini_set('max_execution_time', 600000);
 
-        $relatedProducts=RelatedProductList::whereNull('RelatedProductId')->get();
-        if($relatedProducts){
-            foreach ($relatedProducts as $relatedProduct){
-
-                $product=Product::where('ProductNumber','like',$relatedProduct->ProductNumber)->first();
-                if($product){
-                    $relatedProduct->RelatedProductId=$product->id;
-                    $relatedProduct->save();
-                }
-
-            }
-        }
+//        $relatedProducts=RelatedProductList::whereNull('RelatedProductId')->get();
+//        if($relatedProducts){
+//            foreach ($relatedProducts as $relatedProduct){
+//
+//                $product=Product::where('ProductNumber','like',$relatedProduct->ProductNumber)->first();
+//                if($product){
+//                    $relatedProduct->RelatedProductId=$product->id;
+//                    $relatedProduct->save();
+//                }
+//
+//            }
+//        }
         $relatedProducts=RelatedProductList::whereNull('RelatedProductId')->delete();
 
         return $next($request);

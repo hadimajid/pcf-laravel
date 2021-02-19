@@ -30,7 +30,7 @@ class CreateMeasurementsTable extends Migration
             $table->float('HeightOpen')->nullable();
             $table->float('ArmHeight')->nullable();
             $table->float('ShelfDistance')->nullable();
-            $table->unsignedBigInteger('ProductId');
+            $table->unsignedBigInteger('ProductId')->nullable();
             $table->foreign('ProductId')->references('id')->on('products')->onDelete('cascade');
             $table->timestamps();
         });

@@ -15,9 +15,10 @@ class CreateGroupsTable extends Migration
     {
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
+            $table->string('GroupName')->nullable();
             $table->string('GroupNumber')->nullable()->unique();
             $table->string('MainProductNumber')->nullable();
-            $table->boolen('Coaster')->default(0)->nullable();
+            $table->boolean('Coaster')->default(0)->nullable();
             $table->timestamps();
         });
     }

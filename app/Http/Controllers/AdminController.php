@@ -44,6 +44,7 @@ use App\Rules\PasswordValidate;
 use App\Rules\Phone;
 use App\Rules\Zip;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -634,13 +635,12 @@ class AdminController extends Controller
 //    API CALLS from http://api.coasteramer.com/
     public function storeProductApiData()
     {
-//        $this->storeCategoryApiData();
-//        $this->storeStyleApiData();
-//        $this->storeCollectionApiData();
-//        $this->storeProductLineApiData();
-//        $this->storeGroupApiData();
-//        $this->storeProductInfoApiData();
-//        return 'test';
+        $this->storeCategoryApiData();
+        $this->storeStyleApiData();
+        $this->storeCollectionApiData();
+        $this->storeProductLineApiData();
+        $this->storeGroupApiData();
+        $this->storeProductInfoApiData();
         $products = Http::withHeaders([
             'keycode' => env('API_COASTERAMER_KEY'),
             'Accept' => 'application/json'
@@ -1105,6 +1105,18 @@ class AdminController extends Controller
             }
         }
 //    }
+        $relatedProducts=RelatedProductList::whereNull('RelatedProductId')->get();
+        if($relatedProducts){
+            foreach ($relatedProducts as $relatedProduct){
+
+                $product=Product::where('ProductNumber','like',$relatedProduct->ProductNumber)->first();
+                if($product){
+                    $relatedProduct->RelatedProductId=$product->id;
+                    $relatedProduct->save();
+                }
+
+            }
+        }
         $this->storeWareHouse();
         $this->storeWareHouseInventory();
         $this->storeProductPrice();
@@ -2567,7 +2579,7 @@ class AdminController extends Controller
             if ($where == '') {
                 $where .= " Name like '%$product_name%' ";
             } else {
-                $where .= " and Name like' %$product_name%' ";
+                $where .= " and Name like '%$product_name%' ";
             }
             $b = 1;
         }
@@ -2739,8 +2751,6 @@ class AdminController extends Controller
 
     public function productsAddedByAdmin(Request $request)
     {
-
-
         $category_name = $request->input('category_id');
         $subcategory_name = $request->input('subcategory_id');
         $product_name = $request->input('product_name');
@@ -2854,7 +2864,7 @@ class AdminController extends Controller
             if ($where == '') {
                 $where .= " Name like '%$product_name%' ";
             } else {
-                $where .= " and Name like' %$product_name%' ";
+                $where .= " and Name like '%$product_name%' ";
             }
             $b = 1;
         }
@@ -3027,6 +3037,7 @@ class AdminController extends Controller
             , 'additionalFields'
             , 'relatedProducts'
             , 'relatedProducts.relatedProduct'
+            , 'relatedProducts.relatedProduct.price'
             , 'components'
             , 'nextGenImages'
             , 'category'
@@ -3937,4 +3948,6 @@ class AdminController extends Controller
         }
         return Response::json(['message' => 'Product Hot Status Updated.']);
     }
+
+
 }
