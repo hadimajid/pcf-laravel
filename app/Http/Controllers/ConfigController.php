@@ -30,8 +30,7 @@ class ConfigController extends Controller
     }
     public static function discountPrice($price){
        $discount=$price*self::percentageCalculatorDecimal();
-       $newPrice=$price-$discount;
-       return $newPrice;
+        return $price-$discount;
     }
     public static function price(Collection $products){
         $products=$products->map(function ($p){
