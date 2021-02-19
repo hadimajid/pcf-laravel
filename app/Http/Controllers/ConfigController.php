@@ -38,6 +38,9 @@ class ConfigController extends Controller
                 $p->SalePrice = self::priceCalculator($p->SalePrice);
                 $p->PromotionPrice = round($p->SalePrice,2);
                 $p->DiscountPercentage = 0;
+            }else{
+                $p->PromotionPrice = round($p->SalePrice,2);
+                $p->DiscountPercentage = 0;
             }
             if(!empty($p->PromotionCheck)){
                 $p->PromotionPrice = round(self::discountPrice($p->SalePrice),2);
