@@ -3207,6 +3207,12 @@ class AdminController extends Controller
             } else {
                 $featured = 0;
             }
+            $promotion = $request->input('promotion');
+            if ($promotion == 'true') {
+                $promotion= 1;
+            } else {
+                $promotion = 0;
+            }
             $product = Product::create([
                 'Name' => $request->input('name'),
                 'Description' => $request->input('description'),
@@ -3244,7 +3250,7 @@ class AdminController extends Controller
                 'WoodFinish' => $request->input('wood_finish'),
                 'ChemicalList' => $request->input('chemical_list'),
 //                'Promotion' => $request->input('promotion'),
-                'PromotionCheck' => $request->input('promotion'),
+                'PromotionCheck' => $promotion,
                 'SalePrice' => $request->input('price'),
                 'CollectionId' => $collection->id
             ]);
@@ -3436,6 +3442,12 @@ class AdminController extends Controller
             } else {
                 $featured = 0;
             }
+            $promotion = $request->input('promotion');
+            if ($promotion == 'true') {
+                $promotion= 1;
+            } else {
+                $promotion = 0;
+            }
             $product->Name = $request->input('name');
             $product->Description = $request->input('description');
             $product->FabricColor = $request->input('fabric_color');
@@ -3472,8 +3484,8 @@ class AdminController extends Controller
             $product->RoomName = $request->input('room_name');
             $product->WoodFinish = $request->input('wood_finish');
             $product->ChemicalList = $request->input('chemical_list');
-            $product->Promotion = $request->input('promotion');
-            $product->PromotionCheck = $request->input('promotion');
+//            $product->Promotion = $request->input('promotion');
+            $product->PromotionCheck = $promotion;
             $product->SalePrice = $request->input('price');
             $product->save();
             if (!empty($request->input('measurements'))) {
