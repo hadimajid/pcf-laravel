@@ -551,6 +551,7 @@ class UserController extends Controller
 //                $count=$products->count();
 //            }
     }
+        $products=ConfigController::price($products);
         return Response::json([
             'products'=>$products,
             'total_number'=>$count,
