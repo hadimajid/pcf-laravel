@@ -2338,12 +2338,16 @@ class AdminController extends Controller
         if ($product == null) {
             return Response::json(['message' => 'Product not found.'], 404);
         } else {
-//              $style = $product->style;
-//              $collection = $product->collection;
-//              $productLine = $product->productLine;
-//              $group = $product->group;
+            if(empty($product->ProductNumber)){
+                              $style = $product->style;
+              $collection = $product->collection;
+              $productLine = $product->productLine;
+              $group = $product->group;
+                $piece = $product->piece;
+            }
+
             $images = $product->nextGenImages;
-//                $piece = $product->piece;
+
             foreach ($images as $image) {
                 if (file_exists(public_path($image->name))) {
                     unlink(public_path($image->name));
@@ -2359,21 +2363,23 @@ class AdminController extends Controller
             }
             $delete = $product->delete();
             if ($delete) {
-//                    if (!empty($piece)) {
-//                        $piece->delete();
-//                    }
-//                    if (!empty($style)) {
-//                        $style->delete();
-//                    }
-//                    if (!empty($collection)) {
-//                        $collection->delete();
-//                    }
-//                    if (!empty($productLine)) {
-//                        $productLine->delete();
-//                    }
-//                    if (!empty($group)) {
-//                        $group->delete();
-//                    }
+                if(empty($product->ProductNumber)) {
+                    if (!empty($piece)) {
+                        $piece->delete();
+                    }
+                    if (!empty($style)) {
+                        $style->delete();
+                    }
+                    if (!empty($collection)) {
+                        $collection->delete();
+                    }
+                    if (!empty($productLine)) {
+                        $productLine->delete();
+                    }
+                    if (!empty($group)) {
+                        $group->delete();
+                    }
+                }
 
             }
             return Response::json(['message' => 'Product deleted.'], 200);
