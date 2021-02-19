@@ -36,11 +36,11 @@ class ConfigController extends Controller
         $products=$products->map(function ($p){
             if(!empty($p->ProductNumber)) {
                 $p->SalePrice = self::priceCalculator($p->SalePrice);
-                $p->PromotionPrice = self::priceCalculator($p->SalePrice);
+                $p->PromotionPrice = round($p->SalePrice,2);
                 $p->DiscountPercentage = 0;
             }
             if(!empty($p->PromotionCheck)){
-                $p->PromotionPrice = self::discountPrice($p->SalePrice);
+                $p->PromotionPrice = round(self::discountPrice($p->SalePrice),2);
                 $p->DiscountPercentage = self::percentageCalculator();
             }
             return $p;
