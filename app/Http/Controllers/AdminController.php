@@ -3237,7 +3237,7 @@ class AdminController extends Controller
                 'RoomName' => $request->input('room_name'),
                 'WoodFinish' => $request->input('wood_finish'),
                 'ChemicalList' => $request->input('chemical_list'),
-                'Promotion' => $request->input('promotion'),
+//                'Promotion' => $request->input('promotion'),
                 'PromotionCheck' => $request->input('promotion'),
                 'SalePrice' => $request->input('price'),
                 'CollectionId' => $collection->id
