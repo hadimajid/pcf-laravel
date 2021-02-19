@@ -44,6 +44,9 @@ use Illuminate\Support\Facades\Route;
                     Route::post('/delete',[UserController::class,'wishlistDelete']);
                     Route::post('/empty',[UserController::class,'wishlistEmpty']);
                 });
+            Route::post('order',[UserController::class,'createOrder']);
+            Route::post('rate',[UserController::class,'rateProduct']);
+
         });
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){

@@ -8,8 +8,10 @@ use App\Models\BillingAddress;
 use App\Models\Cart;
 use App\Models\CartItems;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Rating;
 use App\Models\ShippingAddress;
 use App\Models\SubCategory;
 use App\Models\User;
@@ -372,9 +374,9 @@ class UserController extends Controller
         if(!empty($slug)){
 //            $product_name=str_replace('"','\"',$product_name);
             if($where=='') {
-                $where.=" Slug like '$slug' ";
+                $where.=" slug like '$slug' ";
             }else{
-                $where.=" and Slug like '$slug' ";
+                $where.=" and slug like '$slug' ";
             }
             $b=1;
         }
@@ -701,6 +703,55 @@ class UserController extends Controller
             }
         }
         return Response::json(['message'=>'Products deleted from wishlist.']);
+    }
+    public function createOrder(Request $request){
+
+        $request->validate([
+            'product_id'=>'required|array|min:1',
+            'product_id.*'=>'exists:products,id',
+            'quantity'=>['required','array','min:1',new ArraySize($request->input('product_id'))],
+            'quantity.*'=>'required|numeric|min:1'
+        ]);
+
+        $user= User::find(Auth::guard('user')->user()->id);
+
+        $order=Order::create([
+            'user_id'=>$user->id,
+            'status'=>'pending',
+        ]);
+        $productIds=$request->input('product_id');
+        foreach ($productIds as $productId){
+            $orderItem=OrderItem::create([
+                'order_id'=>$order->id,
+                'product_id'=>$productId,
+                'quantity'=>$productId,
+            ]);
+        }
+        return Response::json(['message'=>'Order sent.']);
+    }
+    public function rateProduct(Request $request){
+        $request->validate([
+            'product_id'=>'required',
+            'rating'=>'required|numeric|min:1|max:5',
+            'comment'=>'nullable'
+        ]);
+        $user= User::find(Auth::guard('user')->user()->id);
+
+        try {
+
+            $rate = Rating::create([
+                'user_id' => $user->id,
+                'product_id' => $request->input('product_id'),
+                'rating' => $request->input('rating'),
+                'comment' => $request->input('comment'),
+            ]);
+        }catch (\Exception $exception){
+            return Response::json(['message'=>'You already rated this product.'],422);
+//            return Response::json(['message'=>$exception->getMessage()],422);
+
+        }
+        return Response::json(['message'=>'Product rated successfully.']);
+
     }
 
 }
