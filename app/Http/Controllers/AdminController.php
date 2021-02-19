@@ -2752,6 +2752,7 @@ class AdminController extends Controller
 
 
         }
+        $products=ConfigController::price($products);
 
         return Response::json([
             'products' => $products,
@@ -3035,6 +3036,7 @@ class AdminController extends Controller
 
 
         }
+        $products=ConfigController::price($products);
 
         return Response::json([
             'products' => $products,
