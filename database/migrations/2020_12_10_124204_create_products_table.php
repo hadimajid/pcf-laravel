@@ -75,6 +75,7 @@ class CreateProductsTable extends Migration
             $table->boolean('Hot')->nullable()->default(0);
 //            $table->foreign('InventoryId')->references('id')->on('warehouse_inventories')->onDelete('restrict');
             $table->timestamps();
+
         });
     }
     /**
