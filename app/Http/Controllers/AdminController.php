@@ -3993,8 +3993,10 @@ class AdminController extends Controller
         return Response::json(['message' => 'Product Hot Status Updated.']);
     }
     public function getPriceList(Request $request){
-        $code=$request->input('price_code');
-
+        $code=Pricing::first()->id;
+            if($request->input('price_code')){
+                $code=$request->input('price_code');
+            }
         $count=ProductPrice::whereNotNull('ProductNumber')->whereHas('priceCode',function ($q) use ($code)
         {
             $q->where('id',$code);
