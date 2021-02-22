@@ -1220,8 +1220,6 @@ class AdminController extends Controller
                 }else{
                     $p=$priceCheck;
                 }
-
-
                     foreach ($price->PriceList as $priceList) {
                         if(empty(ProductPrice::where('ProductNumber','=',$priceList->ProductNumber)->first())) {
 //                            return $priceList->ProductNumber;
@@ -1444,8 +1442,6 @@ class AdminController extends Controller
             'Accept' => 'application/json'
         ])->get('http://api.coasteramer.com/api/product/GetProductLineList');
         $productLinesDecode = json_decode($productLines);
-
-
         foreach ($productLinesDecode as $productLine) {
             try {
                 ProductLine::create([
