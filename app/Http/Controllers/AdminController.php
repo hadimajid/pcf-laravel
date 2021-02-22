@@ -2401,7 +2401,7 @@ class AdminController extends Controller
         $rules = [
             'products' => 'required|array|min:1',
             'products.*' => 'required',
-//            'price' => 'required|numeric|min:0|max:100',
+//          'price' => 'required|numeric|min:0|max:100',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
