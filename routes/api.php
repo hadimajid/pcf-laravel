@@ -114,6 +114,7 @@ use Illuminate\Support\Facades\Route;
         });
 //        Price List
             Route::post('price-list',[AdminController::class,'getPriceList']);
+            Route::post('price-code',[AdminController::class,'getPriceCodeList']);
 //      Style
         Route::post('style',[AdminController::class,'getStyle']);
         Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);

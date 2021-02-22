@@ -3993,6 +3993,24 @@ class AdminController extends Controller
         return Response::json(['message' => 'Product Hot Status Updated.']);
     }
     public function getPriceList(Request $request){
+        $code=$request->input('price_code');
+
+        $count=ProductPrice::whereNotNull('ProductNumber')->whereHas('priceCode',function ($q) use ($code)
+        {
+            $q->where('id',$code);
+        })->count();
+        $page=0;
+        if($request->input('page') && $request->input('limit')){
+            $count=$request->input('limit');
+            $page=($request->input('page')-1)*$count;
+        }
+
+        $prices=Pricing::where('id',$code)->with(['priceList'=>function($q) use ($count,$page){
+            $q->offset($page)->limit($count);
+        }])->get();
+        return Response::json(['prices'=>$prices,'total_number'=>$count]);
+    }
+    public function getPriceCodeList(Request $request){
         $count=ProductPrice::whereNotNull('ProductNumber')->count();
         $page=0;
         if($request->input('page') && $request->input('limit')){
@@ -4000,9 +4018,7 @@ class AdminController extends Controller
             $page=($request->input('page')-1)*$count;
         }
 
-        $prices=Pricing::with(['priceList'=>function($q) use ($count,$page){
-            $q->offset($page)->limit($count);
-        }])->get();
+        $prices=ProductPrice::offset($page)->limit($count)->get();
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
     }
 
