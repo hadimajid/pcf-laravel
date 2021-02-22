@@ -2583,6 +2583,24 @@ class AdminController extends Controller
             }
             $a = 1;
         }
+        if ($type == "6") {
+
+            if ($where == '') {
+                $where .= " PromotionCheck = 0 ";
+            } else {
+                $where .= " and PromotionCheck =  0 ";
+            }
+            $a = 1;
+        }
+        if ($type == "7") {
+
+            if ($where == '') {
+                $where .= " PromotionCheck = 1 ";
+            } else {
+                $where .= " and PromotionCheck =  1 ";
+            }
+            $a = 1;
+        }
 //          if  product
         if (!empty($product_name)) {
 //            $product_name=str_replace('"','\"',$product_name);
