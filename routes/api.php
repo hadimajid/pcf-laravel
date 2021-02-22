@@ -76,7 +76,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('/name',[AdminController::class,'getWarehouseName']);
                 Route::post('{id}',[AdminController::class,'getWarehouseById']);
         });
-//    Category routes
+//      Category routes
         Route::prefix('category')->group(function (){
                 Route::post('',[AdminController::class,'storeCategory'])->middleware('scope:add-new-categories');
                 Route::post('update/{id}',[AdminController::class,'updateCategory'])->middleware('scope:edit-categories');
@@ -85,7 +85,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('coaster',[AdminController::class,'getCategoriesByCoaster']);
                 Route::post('name',[AdminController::class,'getCategoriesByCoasterName']);
         });
-//    Sub Category routes
+//      Sub Category routes
         Route::prefix('sub-category')->group(function (){
                 Route::post('',[AdminController::class,'storeSubCategory'])->middleware('scope:add-new-subcategories');
                 Route::post('update/{id}',[AdminController::class,'updateSubCategory'])->middleware('scope:edit-subcategories');
@@ -95,7 +95,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('/category',[AdminController::class,'subCategoryByCategory']);
                 Route::post('name',[AdminController::class,'getSubCategoriesByCoasterName']);
         });
-//     Product
+//      Product
         Route::prefix('product')->group(function (){
                 Route::post('/store',[AdminController::class,'storeProduct'])->middleware('scope:add-new-products');
                 Route::delete('/delete/{id}',[AdminController::class,'removeProduct'])->middleware('scope:remove-products');
@@ -112,7 +112,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('/{id}',[AdminController::class,'getProductById']);
                 Route::delete('/image/{id}',[AdminController::class,'deleteImageById']);
         });
-//        Price List
+//      Price List
             Route::post('price-list',[AdminController::class,'getPriceList']);
             Route::post('price-code',[AdminController::class,'getPriceCodeList']);
 //      Style
@@ -130,7 +130,7 @@ use Illuminate\Support\Facades\Route;
 
 //      Materials
         Route::post('material',[AdminController::class,'getMaterial']);
-//       Color
+//      Color
         Route::post('color',[AdminController::class,'getColor']);
 //      Get Permission
         Route::get('/permissions',[AdminController::class,'getPermission']);
@@ -138,31 +138,31 @@ use Illuminate\Support\Facades\Route;
         Route::middleware('scope:edit-site')->group(function (){
 //      Update logo
         Route::post('/logo',[AdminController::class,'addHeader']);
-//        Contact Information
+//      Contact Information
         Route::post('add-contact-information',[AdminController::class,'addContactInformation']);
-//          Banners
+//      Banners
         Route::post('add-banner',[AdminController::class,'addBanner']);
         Route::post('delete-banner/{id}',[AdminController::class,'deleteBanner']);
-//          Testimonial
+//      Testimonial
         Route::post('add-testimonial',[AdminController::class,'addTestimonial']);
         Route::post('delete-testimonial/{id}',[AdminController::class,'deleteTestimonial']);
-//          Footer
+//      Footer
         Route::post('add-footer-first',[AdminController::class,'addFooterColumnOne']);
         Route::post('add-footer-second',[AdminController::class,'addFooterColumnTwo']);
         Route::post('add-footer-third',[AdminController::class,'addFooterColumnThree']);
         Route::post('delete-footer/{id}',[AdminController::class,'deleteFooter']);
-//          Weekend Special
+//      Weekend Special
         Route::post('add-weekend-special',[AdminController::class,'addWeekendSpecial']);
-//           Delivery Fees
+//      Delivery Fees
         Route::post('delivery-fees',[AdminController::class,'addDeliveryFees']) ;
-//           Title
+//      Title
         Route::post('title',[AdminController::class,'addTitle']);
-//              Hours
+//      Hours
         Route::post('add-hours',[AdminController::class,'addHours']);
-//    Social Network
+//      Social Network
         Route::post('add-social',[AdminController::class,'addSocialNetworks']);
         Route::post('delete-social/{id}',[AdminController::class,'deleteSocialNetwork']);
-//    Store api key and paypal email
+//      Store api key and paypal email
         Route::post('api',[AdminController::class,'addApiKey']);
     });
 //      Sub Admin
@@ -172,10 +172,10 @@ use Illuminate\Support\Facades\Route;
         Route::post('sub-admin/get',[AdminController::class,'getSubAdmin']);
         Route::post('sub-admin/{id}',[AdminController::class,'getSubAdminById']);
         Route::delete('sub-admin/delete/{id}',[AdminController::class,'deleteSubAdminById'])->middleware('scope:remove-sub-admin');
-//        Block User
+//      Block User
         Route::post('block-user/{id}',[AdminController::class,'blockUser'])->middleware('scope:user-block');
 });
-//         Site Getter
+//      Site Getter
         Route::get('/logo',[AdminController::class,'getHeader']);
         Route::get('weekend-special',[AdminController::class,'getWeekendSpecial']);
         Route::get('get-social',[AdminController::class,'getAllSocial']);
