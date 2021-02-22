@@ -9,5 +9,8 @@ class ProductPrice extends Model
 {
     use HasFactory;
     protected $guarded=[];
+    public function priceCode(){
+        return $this->belongsTo(Pricing::class,'PriceId');
+    }
 
 }

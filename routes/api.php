@@ -114,6 +114,7 @@ use Illuminate\Support\Facades\Route;
         });
 //        Price List
             Route::post('price-list',[AdminController::class,'getPriceList']);
+            Route::post('price-code',[AdminController::class,'getPriceCodeList']);
 //      Style
         Route::post('style',[AdminController::class,'getStyle']);
         Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
@@ -193,8 +194,8 @@ use Illuminate\Support\Facades\Route;
         Route::post('category',[UserController::class,'getCategories']);
 
         Route::fallback(function(){
-                return response()->json([
-                    'message' => 'Invalid Route.'], 404);
+                return response()->json(
+                    ['message' => 'Invalid Route.'], 404);
         });
 
 
