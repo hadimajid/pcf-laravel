@@ -4021,6 +4021,7 @@ class AdminController extends Controller
         }
 
         $prices=Pricing::offset($page)->limit($count)->get();
+        $count=Pricing::all()->count();
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
     }
 
