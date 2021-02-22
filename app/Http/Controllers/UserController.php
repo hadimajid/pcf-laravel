@@ -731,11 +731,11 @@ class UserController extends Controller
             'status'=>'pending',
         ]);
         $productIds=$request->input('product_id');
-        foreach ($productIds as $productId){
+        foreach ($productIds as $key=>$productId){
             $orderItem=OrderItem::create([
                 'order_id'=>$order->id,
                 'product_id'=>$productId,
-                'quantity'=>$productId,
+                'quantity'=>$request->input('quantity')[$key],
             ]);
         }
         return Response::json(['message'=>'Order sent.']);
