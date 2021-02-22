@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Console\Command;
 
 class Category extends Command
@@ -11,14 +12,14 @@ class Category extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'category:store';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Store Coaster Categories SubCategories And Pieces';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,9 @@ class Category extends Command
      */
     public function handle()
     {
+        $admin=new AdminController();
+        $admin->storeCategoryApiData();
+        $this->info("Category Stored");
         return 0;
     }
 }

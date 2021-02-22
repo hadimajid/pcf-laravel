@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Console\Command;
 
 class Product extends Command
@@ -11,14 +12,14 @@ class Product extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'product:store';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Store Coaster Products';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,10 @@ class Product extends Command
      */
     public function handle()
     {
+        $admin=new AdminController();
+        $admin->storeProductApiData();
+        $this->info("Product Stored");
+
         return 0;
     }
 }

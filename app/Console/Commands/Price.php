@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Console\Command;
 
 class Price extends Command
@@ -11,14 +12,14 @@ class Price extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'price:store';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Store Coaster Price';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,9 @@ class Price extends Command
      */
     public function handle()
     {
+        $admin=new AdminController();
+        $admin->storeProductPrice();
+        $this->info("Price Stored");
         return 0;
     }
 }
