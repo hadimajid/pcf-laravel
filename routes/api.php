@@ -193,8 +193,8 @@ use Illuminate\Support\Facades\Route;
         Route::post('category',[UserController::class,'getCategories']);
 
         Route::fallback(function(){
-                return response()->json([
-                    'message' => 'Invalid Route.'], 404);
+                return response()->json(
+                    ['message' => 'Invalid Route.'], 404);
         });
 
 
