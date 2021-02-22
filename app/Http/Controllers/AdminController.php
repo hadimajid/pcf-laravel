@@ -3992,6 +3992,18 @@ class AdminController extends Controller
         }
         return Response::json(['message' => 'Product Hot Status Updated.']);
     }
+    public function getPriceList(Request $request){
+        $count=ProductPrice::whereNotNull('ProductNumber')->count();
+        $page=0;
+        if($request->input('page') && $request->input('limit')){
+            $count=$request->input('limit');
+            $page=($request->input('page')-1)*$count;
+        }
 
+        $prices=Pricing::with(['priceList'=>function($q) use ($count,$page){
+            $q->offset($page)->limit($count);
+        }])->get();
+        return Response::json(['prices'=>$prices,'total_number'=>$count]);
+    }
 
 }

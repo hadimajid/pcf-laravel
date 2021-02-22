@@ -112,6 +112,8 @@ use Illuminate\Support\Facades\Route;
                 Route::post('/{id}',[AdminController::class,'getProductById']);
                 Route::delete('/image/{id}',[AdminController::class,'deleteImageById']);
         });
+//        Price List
+            Route::post('price-list',[AdminController::class,'getPriceList']);
 //      Style
         Route::post('style',[AdminController::class,'getStyle']);
         Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
