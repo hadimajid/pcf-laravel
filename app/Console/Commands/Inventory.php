@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\AdminController;
 use Illuminate\Console\Command;
 
 class Inventory extends Command
@@ -11,14 +12,14 @@ class Inventory extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'inventory:store';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Store Coaster Inventory';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,9 @@ class Inventory extends Command
      */
     public function handle()
     {
+        $admin=new AdminController();
+        $admin->storeWareHouseInventory();
+        $this->info("Inventory Stored");
         return 0;
     }
 }
