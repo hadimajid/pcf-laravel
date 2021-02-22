@@ -3874,7 +3874,7 @@ class AdminController extends Controller
     {
 
         $count = WarehouseInventory::whereNotNull('ProductNumber')->where('WarehouseId', $request->input('id'))->count();
-        $limit = WarehouseInventory::whereNotNull('ProductNumber')->where('WarehouseId', $request->input('id'))->count();
+        $limit = $count;
         $offset = 0;
         if (!empty($request->input('limit'))) {
             $limit = $request->input('limit');
