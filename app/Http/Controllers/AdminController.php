@@ -4013,7 +4013,7 @@ class AdminController extends Controller
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
     }
     public function getPriceCodeList(Request $request){
-        $count=Pricing::count();
+        $count=Pricing::all()->count();
         $page=0;
         if($request->input('page') && $request->input('limit')){
             $count=$request->input('limit');
