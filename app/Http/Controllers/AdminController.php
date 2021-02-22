@@ -4023,7 +4023,7 @@ class AdminController extends Controller
             $limit=$request->input('limit');
             $page=($request->input('page')-1)*$limit;
         }
-        $prices=Pricing::offset($page)->limit($limit)->get();
+        $prices=Pricing::withCount('priceList')->offset($page)->limit($limit)->get();
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
     }
 
