@@ -57,8 +57,6 @@ class AdminController extends Controller
     public function __construct()
     {
         ini_set('max_execution_time', 600000);
-
-//        ^\(?\d{3}\)?[-\.]? *\d{3}[-\.]? *[-\.]?\d{4}$
     }
 
     public function login(Request $request)
