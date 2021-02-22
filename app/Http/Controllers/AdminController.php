@@ -4013,14 +4013,14 @@ class AdminController extends Controller
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
     }
     public function getPriceCodeList(Request $request){
-        $count=ProductPrice::whereNotNull('ProductNumber')->count();
+        $count=Pricing::count();
         $page=0;
         if($request->input('page') && $request->input('limit')){
             $count=$request->input('limit');
             $page=($request->input('page')-1)*$count;
         }
 
-        $prices=ProductPrice::offset($page)->limit($count)->get();
+        $prices=Pricing::offset($page)->limit($count)->get();
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
     }
 
