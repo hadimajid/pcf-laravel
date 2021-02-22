@@ -44,10 +44,8 @@ use App\Rules\PasswordValidate;
 use App\Rules\Phone;
 use App\Rules\Zip;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
@@ -1220,8 +1218,6 @@ class AdminController extends Controller
                 }else{
                     $p=$priceCheck;
                 }
-
-
                     foreach ($price->PriceList as $priceList) {
                         if(empty(ProductPrice::where('ProductNumber','=',$priceList->ProductNumber)->first())) {
 //                            return $priceList->ProductNumber;
@@ -1444,8 +1440,6 @@ class AdminController extends Controller
             'Accept' => 'application/json'
         ])->get('http://api.coasteramer.com/api/product/GetProductLineList');
         $productLinesDecode = json_decode($productLines);
-
-
         foreach ($productLinesDecode as $productLine) {
             try {
                 ProductLine::create([
@@ -2407,7 +2401,7 @@ class AdminController extends Controller
         $rules = [
             'products' => 'required|array|min:1',
             'products.*' => 'required',
-//            'price' => 'required|numeric|min:0|max:100',
+//          'price' => 'required|numeric|min:0|max:100',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -2586,6 +2580,24 @@ class AdminController extends Controller
                 $where .= " Hot = 0 ";
             } else {
                 $where .= " and Hot =  0 ";
+            }
+            $a = 1;
+        }
+        if ($type == "6") {
+
+            if ($where == '') {
+                $where .= " PromotionCheck = 0 ";
+            } else {
+                $where .= " and PromotionCheck =  0 ";
+            }
+            $a = 1;
+        }
+        if ($type == "7") {
+
+            if ($where == '') {
+                $where .= " PromotionCheck = 1 ";
+            } else {
+                $where .= " and PromotionCheck =  1 ";
             }
             $a = 1;
         }
@@ -3874,7 +3886,7 @@ class AdminController extends Controller
     {
 
         $count = WarehouseInventory::whereNotNull('ProductNumber')->where('WarehouseId', $request->input('id'))->count();
-        $limit = WarehouseInventory::whereNotNull('ProductNumber')->where('WarehouseId', $request->input('id'))->count();
+        $limit = $count;
         $offset = 0;
         if (!empty($request->input('limit'))) {
             $limit = $request->input('limit');
