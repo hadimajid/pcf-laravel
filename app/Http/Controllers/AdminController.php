@@ -4020,8 +4020,8 @@ class AdminController extends Controller
         $limit=$count;
         $page=0;
         if($request->input('page') && $request->input('limit')){
-            $count=$request->input('limit');
-            $page=($request->input('page')-1)*$count;
+            $limit=$request->input('limit');
+            $page=($request->input('page')-1)*$limit;
         }
         $prices=Pricing::offset($page)->limit($limit)->get();
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
