@@ -161,7 +161,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('delete-social/{id}',[AdminController::class,'deleteSocialNetwork']);
 //      Store api key and paypal email
         Route::post('api',[AdminController::class,'addApiKey']);
-    });
+});
 //      Sub Admin
         Route::post('sub-admin',[AdminController::class,'addSubAdmin'])->middleware('scope:add-new-sub-admin');
         Route::post('edit-sub-admin/{id}',[AdminController::class,'editSubAdmin'])->middleware('scope:edit-sub-admin');
