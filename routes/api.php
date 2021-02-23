@@ -82,6 +82,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('coaster',[AdminController::class,'getCategoriesByCoaster']);
                 Route::post('name',[AdminController::class,'getCategoriesByCoasterName']);
         });
+
 //      Sub Category routes
         Route::prefix('sub-category')->group(function (){
                 Route::post('',[AdminController::class,'storeSubCategory'])->middleware('scope:add-new-subcategories');
