@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserLogin;
-use App\Http\Requests\UserRegister;
 use App\Models\BillingAddress;
 use App\Models\Cart;
 use App\Models\CartItems;
