@@ -1,9 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-
 use Illuminate\Support\Facades\Route;
-
 //      Guest routes
         Route::middleware('guest:user')->group(function (){
             Route::prefix('user')->group(function (){
@@ -50,8 +48,7 @@ use Illuminate\Support\Facades\Route;
         });
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
-            Route::get('/count',[AdminController::class,'dashboardCount']);
-
+            Route::get('count',[AdminController::class,'dashboardCount']);
             Route::post('logout',[AdminController::class,'logout']);
             Route::post('is-logged-in',[AdminController::class,'checkLoggedIn']);
 //      API CALLS
@@ -164,7 +161,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('delete-social/{id}',[AdminController::class,'deleteSocialNetwork']);
 //      Store api key and paypal email
         Route::post('api',[AdminController::class,'addApiKey']);
-    });
+});
 //      Sub Admin
         Route::post('sub-admin',[AdminController::class,'addSubAdmin'])->middleware('scope:add-new-sub-admin');
         Route::post('edit-sub-admin/{id}',[AdminController::class,'editSubAdmin'])->middleware('scope:edit-sub-admin');
@@ -192,7 +189,6 @@ use Illuminate\Support\Facades\Route;
         Route::get('contact-information',[AdminController::class,'getContactInformation']) ;
 //      Route::get('sub-category',[AdminController::class,'getSubCategories']);
         Route::post('category',[UserController::class,'getCategories']);
-
         Route::fallback(function(){
                 return response()->json(
                     ['message' => 'Invalid Route.'], 404);

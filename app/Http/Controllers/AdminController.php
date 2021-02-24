@@ -57,8 +57,6 @@ class AdminController extends Controller
     public function __construct()
     {
         ini_set('max_execution_time', 600000);
-
-//        ^\(?\d{3}\)?[-\.]? *\d{3}[-\.]? *[-\.]?\d{4}$
     }
 
     public function login(Request $request)
@@ -2887,6 +2885,24 @@ class AdminController extends Controller
             }
             $a = 1;
         }
+        if ($type == "6") {
+
+            if ($where == '') {
+                $where .= " PromotionCheck = 0 ";
+            } else {
+                $where .= " and PromotionCheck =  0 ";
+            }
+            $a = 1;
+        }
+        if ($type == "7") {
+
+            if ($where == '') {
+                $where .= " PromotionCheck = 1 ";
+            } else {
+                $where .= " and PromotionCheck =  1 ";
+            }
+            $a = 1;
+        }
 //          if  product
         if (!empty($product_name)) {
 //            $product_name=str_replace('"','\"',$product_name);
@@ -3174,7 +3190,7 @@ class AdminController extends Controller
             'group_name' => 'required',
             'piece' => 'required',
             'collection_name' => 'required',
-//            'promotion'=>'nullable|min:0|max:100'
+//          'promotion'=>'nullable|min:0|max:100'
             'promotion'=>'nullable'
         ];
     }
@@ -4038,5 +4054,4 @@ class AdminController extends Controller
         $prices=Pricing::withCount('priceList')->offset($page)->limit($limit)->get();
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
     }
-
 }
