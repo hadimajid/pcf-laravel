@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
             });
         });
 //      User routes
+//hello
         Route::middleware('auth:user')->prefix('user')->group(function (){
                 Route::post('is-logged-in',[UserController::class,'checkLoggedIn']);
                 Route::post('logout',[UserController::class,'logout']);
