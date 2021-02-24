@@ -3391,6 +3391,7 @@ class AdminController extends Controller
     public function editProduct(Request $request, $id)
     {
         $rules = $this->productRules();
+        unset($rules['group_number']);
         $product = Product::find($id);
         if ($product != null) {
             if (!empty($product->nextGenImages)) {
