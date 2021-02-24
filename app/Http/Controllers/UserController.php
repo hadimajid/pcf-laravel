@@ -375,7 +375,7 @@ class UserController extends Controller
         }
 //          if  product
         if(!empty($slug)){
-//            $product_name=str_replace('"','\"',$product_name);
+
             if($where=='') {
                 $where.=" slug like '$slug' ";
             }else{
