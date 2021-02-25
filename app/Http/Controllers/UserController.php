@@ -305,9 +305,11 @@ class UserController extends Controller
             $category_name=  Category::where('Slug','like',$category_slug)->first();
             if($category_name){
                 $category_name=$category_name->id;
+                $cat=$category_name;
             }
             else{
                 $category_name=Category::orderBy('id','desc')->first()->id+1;
+                $cat=null;
             }
         }
 
@@ -324,9 +326,11 @@ class UserController extends Controller
             $subcategory_name=  SubCategory::where('Slug','like',$subcategory_slug)->first();
             if($subcategory_name){
                 $subcategory_name=$subcategory_name->id;
+                $sub=$subcategory_name;
             }
             else{
                 $subcategory_name=SubCategory::orderBy('id','desc')->first()->id+1;
+                $sub=null;
             }
         }
         if(!empty($subcategory_name)){
@@ -563,8 +567,11 @@ class UserController extends Controller
 //            }
     }
 //        $products=ConfigController::price($products);
+
         return Response::json([
             'products'=>$products,
+            'category'=>$cat,
+            'subcategory'=>$sub,
             'total_number'=>$count,
             'filtered'=>$products->count()]);
     }
