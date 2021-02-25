@@ -3099,8 +3099,8 @@ class AdminController extends Controller
             , 'productInfo.highlights'
             , 'productInfo.bullets'
             , 'productInfo.features'
-            ,'price'
-            ,'ratings'=>function($query){
+            , 'price'
+            , 'ratings'=>function($query){
             $query->selectRaw('product_id, AVG(rating) as rating')
                 ->groupBy(['product_id']);
             }
