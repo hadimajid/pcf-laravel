@@ -3084,6 +3084,7 @@ class AdminController extends Controller
             , 'relatedProducts'
             , 'relatedProducts.relatedProduct'
             , 'relatedProducts.relatedProduct.price'
+            , 'relatedProducts.relatedProduct.nextGenImages'
             , 'components'
             , 'nextGenImages'
             , 'category'
