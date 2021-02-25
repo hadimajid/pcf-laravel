@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\ConfigController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,6 +10,35 @@ class Product extends Model
 {
     use HasFactory;
     protected $guarded=[];
+    protected $appends=['PromotionPrice','DiscountPercentage'];
+    public function toArray()
+    {
+        $toArray = parent::toArray();
+        $toArray['SalePrice'] = $this->SalePrice;
+        return $toArray;
+    }
+    public function getSalePriceAttribute($value){
+        if(!empty($this->ProductNumber)){
+            return ConfigController::priceCalculator($value);
+        }
+        else{
+            return $value;
+        }
+    }
+    public function getPromotionPriceAttribute(){
+        if(!empty($this->PromotionCheck)){
+            return round(ConfigController::discountPrice($this->SalePrice),2);
+        }
+            return $this->SalePrice;
+
+    }
+    public function getDiscountPercentageAttribute(){
+        if(!empty($this->PromotionCheck)) {
+            return ConfigController::percentageCalculator();
+        }
+        return 0;
+    }
+
 
 //    public function boxSize(){
 //        return $this->belongsTo(BoxSize::class,'BoxSizeId');
