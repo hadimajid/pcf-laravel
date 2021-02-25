@@ -302,8 +302,15 @@ class UserController extends Controller
 // If category id
         $b=0;
         if(!empty($category_slug)){
-            $category_name=  Category::where('Slug','like',$category_slug)->first()->id;
+            $category_name=  Category::where('Slug','like',$category_slug)->first();
+            if($category_name){
+                $category_name=$category_name->id;
+            }
+            else{
+                $category_name=Category::orderBy('id','desc')->first()->id+1;
+            }
         }
+
         if(!empty($category_name)){
             if($where==''){
                 $where.=" CategoryId = $category_name ";
@@ -314,7 +321,13 @@ class UserController extends Controller
         }
 //        if sub category
         if(!empty($subcategory_slug)){
-            $subcategory_name=  SubCategory::where('Slug','like',$subcategory_slug)->first()->id;
+            $subcategory_name=  SubCategory::where('Slug','like',$subcategory_slug)->first();
+            if($subcategory_name){
+                $subcategory_name=$subcategory_name->id;
+            }
+            else{
+                $subcategory_name=SubCategory::orderBy('id','desc')->first()->id+1;
+            }
         }
         if(!empty($subcategory_name)){
             if($where=='') {
