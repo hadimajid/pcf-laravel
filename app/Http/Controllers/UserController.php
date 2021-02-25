@@ -301,6 +301,8 @@ class UserController extends Controller
         $where='';
 // If category id
         $b=0;
+        $cat=null;
+
         if(!empty($category_slug)){
             $category_name=  Category::where('Slug','like',$category_slug)->first();
             if($category_name){
@@ -309,7 +311,6 @@ class UserController extends Controller
             }
             else{
                 $category_name=Category::orderBy('id','desc')->first()->id+1;
-                $cat=null;
             }
         }
 
@@ -322,6 +323,8 @@ class UserController extends Controller
             $b=1;
         }
 //        if sub category
+        $sub=null;
+
         if(!empty($subcategory_slug)){
             $subcategory_name=  SubCategory::where('Slug','like',$subcategory_slug)->first();
             if($subcategory_name){
@@ -330,7 +333,6 @@ class UserController extends Controller
             }
             else{
                 $subcategory_name=SubCategory::orderBy('id','desc')->first()->id+1;
-                $sub=null;
             }
         }
         if(!empty($subcategory_name)){
