@@ -590,8 +590,7 @@ class UserController extends Controller
 
         if($cart){
                foreach ($product_id as $key=>$id){
-                    $item=$cart->items->where('product_id','=',$id)->first();
-
+                    $item=CartItems::where('cart_id','=',$cart->id)->where('product_id','=',$id)->first();
                     if($item){
                     $item->quantity=$request->input('quantity')[$key];
                     $item->save();
