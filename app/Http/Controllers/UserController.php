@@ -310,7 +310,7 @@ class UserController extends Controller
                 $cat=$category_name;
             }
             else{
-                $category_name=Category::orderBy('id','desc')->first()->id+1;
+                $category_name=null;
             }
         }
 
@@ -332,7 +332,7 @@ class UserController extends Controller
                 $sub=$subcategory_name;
             }
             else{
-                $subcategory_name=SubCategory::orderBy('id','desc')->first()->id+1;
+                $subcategory_name=null;
             }
         }
         if(!empty($subcategory_name)){
@@ -641,10 +641,11 @@ class UserController extends Controller
         $user= User::find(Auth::guard('user')->user()->id);
         $cart=null;
         if($user->cart){
-            $cart=$user->cart->with('items','items.product','items.product.nextGenImages')->get();
+            $cart=CartItems::where('cart_id',$user->cart->id)->with('product','product.nextGenImages')->get();
+            $price=$cart->pluck('product')->sum('PromotionPrice');
         }
 
-        return Response::json(['cart'=>$cart]);
+        return Response::json(['cart'=>$cart,'total_price'=>$price]);
     }
     public function cartEmpty(Request $request){
         $user= User::find(Auth::guard('user')->user()->id);
