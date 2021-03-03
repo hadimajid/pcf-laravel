@@ -579,26 +579,25 @@ class UserController extends Controller
     }
     public function cart(Request $request){
         $request->validate([
-            'product_id'=>'required|array|min:1',
-            'product_id.*'=>'exists:products,id',
-            'quantity'=>['required','array','min:1',new ArraySize($request->input('product_id'))],
-            'quantity.*'=>'required|numeric|min:1'
+            'product'=>'required|array|min:1',
+            'product.*.id'=>'required|exists:products,id',
+            'product.*.quantity'=>'required|numeric'
         ]);
            $user= User::find(Auth::guard('user')->user()->id);
-           $cart=$user->cart;
-            $product_id=$request->input('product_id');
+           $cart=Cart::where('user_id',$user->id)->first();
+            $products=$request->input('product');
 
         if($cart){
-               foreach ($product_id as $key=>$id){
-                    $item=CartItems::where('cart_id','=',$cart->id)->where('product_id','=',$id)->first();
+               foreach ($products as $key=>$product){
+                    $item=CartItems::where('cart_id','=',$cart->id)->where('product_id','=',$product['id'])->first();
                     if($item){
-                    $item->quantity=$request->input('quantity')[$key];
+                    $item->quantity=$product['quantity'];
                     $item->save();
                     }else{
                         CartItems::create([
                             'cart_id'=>$cart->id,
-                            'product_id'=>$id,
-                            'quantity'=>$request->input('quantity')[$key]
+                            'product_id'=>$product['id'],
+                            'quantity'=>$product['quantity']
                         ]);
                     }
                }
@@ -607,12 +606,12 @@ class UserController extends Controller
                $cart=Cart::create([
                    'user_id' => $user->id,
                ]);
-               foreach ($product_id as $key => $id) {
+            foreach ($products as $key=>$product){
 
                    CartItems::create([
                        'cart_id' => $cart->id,
-                       'product_id' => $id,
-                       'quantity' => $request->input('quantity')[$key]
+                       'product_id' => $product['id'],
+                       'quantity' => $product['quantity']
                    ]);
                }
            }
