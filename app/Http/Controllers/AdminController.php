@@ -895,7 +895,7 @@ class AdminController extends Controller
                         }
                     }
 
-                    $productCheck->New = 0;
+//                    $productCheck->New = 0;
                     $productCheck->save();
                     $check = false;
 
