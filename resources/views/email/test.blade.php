@@ -7,6 +7,6 @@
     <title>Test</title>
 </head>
 <body>
-            {{$data['cron_job']}}
+           <h1> {{$data['cron_job']}}</h1>
 </body>
 </html>

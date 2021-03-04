@@ -16,7 +16,7 @@ class Test extends Mailable
      *
      * @return void
      */
-    private  $data=[];
+    public  $data=[];
     public function __construct($data)
     {
         $this->data=$data;
