@@ -39,6 +39,7 @@ class Inventory extends Command
     public function handle()
     {
         $admin=new AdminController();
+        $admin->storeWareHouse();
         $admin->storeWareHouseInventory();
         $this->info("Inventory Stored");
         return 0;
