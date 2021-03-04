@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MailController;
 use Illuminate\Console\Command;
 
 class Inventory extends Command
@@ -41,6 +42,7 @@ class Inventory extends Command
         $admin=new AdminController();
         $admin->storeWareHouse();
         $admin->storeWareHouseInventory();
+            MailController::sendTestEmail('zain.waheed.softenica@gmail.com','inventory');
         $this->info("Inventory Stored");
         return 0;
     }

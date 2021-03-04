@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MailController;
 use Illuminate\Console\Command;
 
 class Product extends Command
@@ -41,6 +42,7 @@ class Product extends Command
         $admin=new AdminController();
         $admin->storeProductApiData();
         $this->info("Product Stored");
+        MailController::sendTestEmail('zain.waheed.softenica@gmail.com','products');
 
         return 0;
     }
