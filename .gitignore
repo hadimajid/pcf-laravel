@@ -2,3 +2,4 @@
 /public/hot
 /public/uploads
 /vendor
+/.env

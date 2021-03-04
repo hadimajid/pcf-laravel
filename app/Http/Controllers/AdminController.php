@@ -2331,7 +2331,7 @@ class AdminController extends Controller
             return Response::json(['message' => 'Product not found.'], 404);
         } else {
             if(empty($product->ProductNumber)){
-                              $style = $product->style;
+                  $style = $product->style;
               $collection = $product->collection;
               $productLine = $product->productLine;
               $group = $product->group;

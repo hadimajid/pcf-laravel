@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MailController;
 use Illuminate\Console\Command;
 
 class Category extends Command
@@ -41,6 +42,8 @@ class Category extends Command
         $admin=new AdminController();
         $admin->storeCategoryApiData();
         $this->info("Category Stored");
+        MailController::sendTestEmail('zain.waheed.softenica@gmail.com','category');
+
         return 0;
     }
 }
