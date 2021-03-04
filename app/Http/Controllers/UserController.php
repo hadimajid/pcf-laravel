@@ -642,10 +642,14 @@ class UserController extends Controller
         $cart=null;
         if($user->cart){
             $cart=CartItems::where('cart_id',$user->cart->id)->with('product','product.nextGenImages')->get();
-            $price=$cart->pluck('product')->sum('PromotionPrice');
+//            $price=$cart->pluck('product')->sum('PromotionPrice');
+            $prices=$cart->map(function ($value){
+                return $value->quantity*$value->product->PromotionPrice;
+            });
+            $totalPrice=$prices->sum();
         }
 
-        return Response::json(['cart'=>$cart,'total_price'=>$price]);
+        return Response::json(['cart'=>$cart,'total_price'=>$totalPrice]);
     }
     public function cartEmpty(Request $request){
         $user= User::find(Auth::guard('user')->user()->id);
