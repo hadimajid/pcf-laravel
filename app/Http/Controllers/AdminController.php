@@ -2085,7 +2085,6 @@ class AdminController extends Controller
     {
         $rules = [
             'fees' => 'nullable|numeric|min:0',
-            'promotion' => ['required'],
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -2093,20 +2092,39 @@ class AdminController extends Controller
         if ($ws == null) {
             WebsiteSettings::create([
                 'delivery_fees' => $request->input('fees'),
-                'promotion' =>  $request->input('promotion'),
             ]);
             return Response::json(['message' => 'Delivery fees updated.'], 200);
         }
         $ws->delivery_fees = $request->input('fees');
-        $ws->promotion = $request->input('promotion');
         $ws->save();
         return Response::json(['message' => 'Delivery fees updated.'], 200);
     }
+    public function addPrice(Request $request)
+    {
+        $rules = [
+            'promotion' => ['required'],
+            'price' => ['required'],
 
+            ];
+        $validator = Validator::make($request->all(), $rules);
+
+        $ws = WebsiteSettings::first();
+        if ($ws == null) {
+            WebsiteSettings::create([
+                'price' => $request->input('price'),
+                'promotion' =>  $request->input('promotion'),
+            ]);
+            return Response::json(['message' => 'Price details updated.'], 200);
+        }
+        $ws->price = $request->input('price');
+        $ws->promotion = $request->input('promotion');
+        $ws->save();
+        return Response::json(['message' => 'Price details updated.'], 200);
+    }
 
     public function getDeliveryFees()
     {
-        return Response::json(['delivery_fee' => WebsiteSettings::first()->delivery_fees,'promotion' => WebsiteSettings::first()->promotion]);
+        return Response::json(['delivery_fee' => WebsiteSettings::first()->delivery_fees,'promotion' => WebsiteSettings::first()->promotion,'price' => WebsiteSettings::first()->price]);
 
     }
 
