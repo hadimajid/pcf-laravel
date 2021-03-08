@@ -2122,7 +2122,7 @@ class AdminController extends Controller
         if($request->input('price')){
             if ($ws == null) {
                 WebsiteSettings::create([
-                    'promotion' =>  $request->input('promotion'),
+                    'price' =>  $request->input('price'),
                 ]);
             }
             else{
