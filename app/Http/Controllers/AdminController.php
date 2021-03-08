@@ -2102,23 +2102,34 @@ class AdminController extends Controller
     public function addPrice(Request $request)
     {
         $rules = [
-            'promotion' => ['required'],
-            'price' => ['required'],
-
+            'promotion' => ['nullable'],
+            'price' => ['nullable'],
             ];
         $validator = Validator::make($request->all(), $rules);
-
         $ws = WebsiteSettings::first();
-        if ($ws == null) {
-            WebsiteSettings::create([
-                'price' => $request->input('price'),
-                'promotion' =>  $request->input('promotion'),
-            ]);
-            return Response::json(['message' => 'Price details updated.'], 200);
+
+        if($request->input('promotion')){
+            if ($ws == null) {
+                WebsiteSettings::create([
+                    'promotion' =>  $request->input('promotion'),
+                ]);
+            }else{
+                $ws->promotion=$request->input('promotion');
+                $ws->save();
+
+            }
         }
-        $ws->price = $request->input('price');
-        $ws->promotion = $request->input('promotion');
-        $ws->save();
+        if($request->input('price')){
+            if ($ws == null) {
+                WebsiteSettings::create([
+                    'promotion' =>  $request->input('promotion'),
+                ]);
+            }
+            else{
+                $ws->price=$request->input('price');
+                $ws->save();
+            }
+        }
         return Response::json(['message' => 'Price details updated.'], 200);
     }
 
