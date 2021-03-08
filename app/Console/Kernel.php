@@ -2,6 +2,10 @@
 
 namespace App\Console;
 
+use App\Console\Commands\Category;
+use App\Console\Commands\Inventory;
+use App\Console\Commands\Price;
+use App\Console\Commands\Product;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +17,10 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Category::class,
+        Inventory::class,
+        Price::class,
+        Product::class,
     ];
 
     /**
@@ -24,7 +31,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+            $schedule->command('category:store')->dailyAt("00:00");
+            $schedule->command('product:store')->dailyAt("00:00");
+            $schedule->command('inventory:store')->everyMinute();
+
     }
 
     /**

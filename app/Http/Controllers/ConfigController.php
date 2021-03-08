@@ -11,18 +11,23 @@ class ConfigController extends Controller
 //Pricing Formula:
 //[3:47 PM] The regular price is “the price x 2.5”
 //The sale price is “the price x 1.85”
+
+
+
     public static function priceCalculator($price){
-        return $price*env('SALE_PRICE');
+
+
+        return $price*WebsiteSettings::first()->price==null?0:WebsiteSettings::first()->price;
     }
     public static function percentageCalculator(){
-         $temp=(WebsiteSettings::first()->promotion==null?0:WebsiteSettings::first()->promotion)/env('SALE_PRICE');
+         $temp=(WebsiteSettings::first()->promotion==null?0:WebsiteSettings::first()->promotion)/WebsiteSettings::first()->price==null?0:WebsiteSettings::first()->price;
         if($temp>0){
             return (1-$temp)*100;
         }
         return $temp;
     }
     public static function percentageCalculatorDecimal(){
-        $temp=(WebsiteSettings::first()->promotion==null?0:WebsiteSettings::first()->promotion)/env('SALE_PRICE');
+        $temp=(WebsiteSettings::first()->promotion==null?0:WebsiteSettings::first()->promotion)/WebsiteSettings::first()->price==null?0:WebsiteSettings::first()->price;
         if($temp>0){
             return (1-$temp);
         }

@@ -23,6 +23,7 @@ class CreateWebsiteSettingsTable extends Migration
             $table->text('weekend_special')->nullable();
             $table->float('delivery_fees')->nullable();
             $table->float('promotion')->nullable();
+            $table->float('price')->nullable();
             $table->timestamps();
         });
     }
