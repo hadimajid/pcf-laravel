@@ -26,7 +26,7 @@ class Product extends Model
         }
     }
     public function getPromotionPriceAttribute(){
-        if(!empty($this->PromotionCheck)){
+        if($this->PromotionCheck==1){
             return round(ConfigController::discountPrice($this->SalePrice),2);
         }
             return $this->SalePrice;
