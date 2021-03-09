@@ -3715,7 +3715,8 @@ class AdminController extends Controller
     {
         return Response::json([
             'categories' => Category::all()->count(),
-            'products' => Product::all()->count(),
+            'products' => Product::whereNotNull('ProductNumber')->count(),
+            'adminproducts' => Product::whereNull('ProductNumber')->count(),
             'subcategories' => SubCategory::all()->count(),
             'users' => User::all()->count(),
         ]);
