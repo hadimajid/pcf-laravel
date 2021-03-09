@@ -13,11 +13,7 @@ class ConfigController extends Controller
         return $newPrice*$price;
     }
     public static function percentageCalculator(){
-        $temp=(WebsiteSettings::first()->promotion==null?0:WebsiteSettings::first()->promotion)/WebsiteSettings::first()->price==null?0:WebsiteSettings::first()->price;
-        if($temp>0){
-            return (1-$temp)*100;
-        }
-        return $temp;
+       return self::percentageCalculatorDecimal()*100;
     }
     public static function percentageCalculatorDecimal(){
         $discount=WebsiteSettings::first()->promotion==null?0:WebsiteSettings::first()->promotion;
