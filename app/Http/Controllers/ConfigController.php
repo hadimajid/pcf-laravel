@@ -15,8 +15,6 @@ class ConfigController extends Controller
 
 
     public static function priceCalculator($price){
-
-
         return $price*WebsiteSettings::first()->price==null?0:WebsiteSettings::first()->price;
     }
     public static function percentageCalculator(){
@@ -27,10 +25,17 @@ class ConfigController extends Controller
         return $temp;
     }
     public static function percentageCalculatorDecimal(){
-        $temp=(WebsiteSettings::first()->promotion==null?0:WebsiteSettings::first()->promotion)/WebsiteSettings::first()->price==null?0:WebsiteSettings::first()->price;
-        if($temp>0){
-            return (1-$temp);
+        $discount=WebsiteSettings::first()->promotion==null?0:WebsiteSettings::first()->promotion;
+        $price=WebsiteSettings::first()->price==null?0:WebsiteSettings::first()->price;
+        $temp=0;
+        if($discount >0 && $price>0){
+            if($discount<=$price){
+                $temp=1-($discount/$price);
+            }else{
+                $temp=1;
+            }
         }
+
         return $temp;
     }
     public static function discountPrice($price){

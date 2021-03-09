@@ -199,4 +199,6 @@ use Illuminate\Support\Facades\Route;
                     ['message' => 'Invalid Route.'], 404);
         });
 
-
+//Route::get('test',function (){
+//   return ConfigController::discountPrice(352);
+//});
