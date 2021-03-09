@@ -1,11 +1,8 @@
 <?php
-
 namespace App\Models;
-
 use App\Http\Controllers\ConfigController;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 class Product extends Model
 {
     use HasFactory;
@@ -26,11 +23,10 @@ class Product extends Model
         }
     }
     public function getPromotionPriceAttribute(){
-        if($this->PromotionCheck==1){
+        if(!empty($this->PromotionCheck)){
             return round(ConfigController::discountPrice($this->SalePrice),2);
         }
-            return $this->SalePrice;
-
+        return $this->SalePrice;
     }
     public function getDiscountPercentageAttribute(){
         if(!empty($this->PromotionCheck)) {
@@ -38,8 +34,6 @@ class Product extends Model
         }
         return 0;
     }
-
-
 //    public function boxSize(){
 //        return $this->belongsTo(BoxSize::class,'BoxSizeId');
 //    }
@@ -97,5 +91,4 @@ class Product extends Model
     public function price(){
         return $this->hasOne(ProductPrice::class,'ProductId');
     }
-
 }
