@@ -191,9 +191,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('contact-information',[AdminController::class,'getContactInformation']) ;
 //      Route::get('sub-category',[AdminController::class,'getSubCategories']);
         Route::post('category',[UserController::class,'getCategories']);
-        Route::get('test',function (){
-           return Product::first();
-        });
+
         Route::fallback(function(){
                 return response()->json(
                     ['message' => 'Invalid Route.'], 404);
