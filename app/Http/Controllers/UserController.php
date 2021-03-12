@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Wishlist;
 use App\Models\WishlistItem;
 use App\Rules\ArraySize;
+use App\Rules\Unique;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +63,7 @@ class UserController extends Controller
     public function register(Request $request){
         $rules=[
             'email'=>'required|email|unique:users,email',
+            'username'=>'required|unique:users,display_name',
             'password'=>'required',
         ];
         $validator=Validator::make($request->only('email','password'),$rules) ;
@@ -70,7 +72,8 @@ class UserController extends Controller
         }
         User::create([
            'email'=>$request->email,
-            'password'=>Hash::make($request->password)
+            'password'=>Hash::make($request->password),
+            'display_name'=>$request->username
         ]);
         return Response::json(['message'=>'Sign up successful'],200);
     }
@@ -182,7 +185,7 @@ class UserController extends Controller
         $rules=[
             'first_name'=>'required',
             'last_name'=>'required',
-            'display_name'=>'required',
+            'display_name'=>['required',new Unique('users','display_name',\auth()->guard('user')->user()->id)],
 //            'email'=>'required|email',
         ];
         $validator=Validator::make($request->all(),$rules);

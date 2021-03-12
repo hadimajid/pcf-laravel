@@ -29,8 +29,8 @@ use Illuminate\Support\Facades\Route;
                 Route::get('get-shipping-address',[UserController::class,'getShippingAddress']);
                 Route::post('store-shipping-address',[UserController::class,'storeShippingAddress']);
                 Route::put('update-shipping-address',[UserController::class,'updateShippingAddress']);
-                Route::put('update-user-details',[UserController::class,'updateYourProfile']);
-                Route::put('update-user-password',[UserController::class,'updateYourPassword']);
+                Route::put('update-details',[UserController::class,'updateYourProfile']);
+                Route::put('update-password',[UserController::class,'updateYourPassword']);
                 Route::prefix('cart')->group(function (){
                     Route::post('',[UserController::class,'cart']);
                     Route::get('',[UserController::class,'getCart']);
