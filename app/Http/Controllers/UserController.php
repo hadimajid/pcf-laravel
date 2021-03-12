@@ -48,8 +48,8 @@ class UserController extends Controller
 //                    return Response::json(['message'=>'Please verify your email.'],404);
 //                }
                 if(Hash::check($request->password,$user->password)){
-                    Auth::guard('user')->setUser($user);
-                    $token=  \auth()->guard('user')->user()->createToken($request->email,['basic'])->accessToken;
+//                    Auth::guard('user')->setUser($user);
+                    $token=  $user->createToken($request->email,['basic'])->accessToken;
                     return Response::json([
                         'message'=>'Sign in successful',
                         'user'=>\auth()->guard('user')->user(),
@@ -197,7 +197,8 @@ class UserController extends Controller
             $user->save();
             return Response::json([
                 'message'=>'Profile updated.',
-                'data'=>$validator->valid()]
+                'data'=>$validator->valid()
+                ]
             );
         }
     }
