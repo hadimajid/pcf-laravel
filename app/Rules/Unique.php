@@ -34,14 +34,13 @@ class Unique implements Rule
         $check=false;
         if($this->id==null){
                     $result=DB::table($this->tableName)->where($this->columnName,$value)->first();
-                    if(!$result){
-                        $check=true;
-                    }
+
         }else{
-                    $result=DB::table($this->tableName)->where($this->columnName,$value)->where('id',$this->id)->first();
-                    if($result){
-                        $check=true;
-                    }
+                    $result=DB::table($this->tableName)->where($this->columnName,$value)->where('id','!=',$this->id)->first();
+
+        }
+        if(!$result){
+            $check=true;
         }
         return $check;
     }

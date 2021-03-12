@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Wishlist;
 use App\Models\WishlistItem;
 use App\Rules\ArraySize;
+use App\Rules\Unique;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,14 +32,14 @@ class UserController extends Controller
     }
     public function login(Request $request){
             $rules=[
-                'email'=>'required|email',
+                'email'=>'required',
                 'password'=>'required'
             ];
-            $validator=Validator::make($request->only('email','password'),$rules) ;
+            $validator=Validator::make($request->all(),$rules) ;
             if ($validator->fails()) {
             return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
             }
-            $user=User::where('email',$request->email)->first();
+            $user=User::where('email',$request->email)->orWhere('display_name',$request->email)->first();
             if(!empty($user)){
                 if($user->blocked==1){
                     return Response::json(['message'=>'User blocked.'],404);
@@ -47,21 +48,22 @@ class UserController extends Controller
 //                    return Response::json(['message'=>'Please verify your email.'],404);
 //                }
                 if(Hash::check($request->password,$user->password)){
-                    Auth::guard('user')->setUser($user);
-                    $token=  \auth()->guard('user')->user()->createToken($request->email,['basic'])->accessToken;
+//                    Auth::guard('user')->setUser($user);
+                    $token=  $user->createToken($request->email,['basic'])->accessToken;
                     return Response::json([
                         'message'=>'Sign in successful',
-                        'user'=>\auth()->guard('user')->user(),
+                        'user'=>$user,
                         'token'=>$token
                     ],
                         200);
                 }
             }
-            return Response::json(['message'=>'Sign in failed.'],422);
+            return Response::json(['message'=>'Username/Email or Password incorrect.'],422);
     }
     public function register(Request $request){
         $rules=[
             'email'=>'required|email|unique:users,email',
+            'username'=>'required|unique:users,display_name',
             'password'=>'required',
         ];
         $validator=Validator::make($request->only('email','password'),$rules) ;
@@ -70,7 +72,8 @@ class UserController extends Controller
         }
         User::create([
            'email'=>$request->email,
-            'password'=>Hash::make($request->password)
+            'password'=>Hash::make($request->password),
+            'display_name'=>$request->username
         ]);
         return Response::json(['message'=>'Sign up successful'],200);
     }
@@ -182,7 +185,7 @@ class UserController extends Controller
         $rules=[
             'first_name'=>'required',
             'last_name'=>'required',
-            'display_name'=>'required',
+            'display_name'=>['required',new Unique('users','display_name',\auth()->guard('user')->user()->id)],
 //            'email'=>'required|email',
         ];
         $validator=Validator::make($request->all(),$rules);
@@ -194,7 +197,8 @@ class UserController extends Controller
             $user->save();
             return Response::json([
                 'message'=>'Profile updated.',
-                'data'=>$validator->valid()]
+                'data'=>$validator->valid()
+                ]
             );
         }
     }
