@@ -59,7 +59,7 @@ class User extends Authenticatable
         return $this->hasOne(Wishlist::class);
     }
     public function coupons(){
-        return $this->belongsToMany(Coupon::class);
+        return $this->belongsToMany(Coupon::class)->withPivot('status');;
     }
 
 
