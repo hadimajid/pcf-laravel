@@ -32,15 +32,14 @@ class UserController extends Controller
     }
     public function login(Request $request){
             $rules=[
-                'email'=>'required_without:username|email',
-                'username'=>'required_without:email',
+                'email'=>'required',
                 'password'=>'required'
             ];
             $validator=Validator::make($request->all(),$rules) ;
             if ($validator->fails()) {
             return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
             }
-            $user=User::where('email',$request->email)->orWhere('display_name',$request->username)->first();
+            $user=User::where('email',$request->email)->orWhere('display_name',$request->email)->first();
             if(!empty($user)){
                 if($user->blocked==1){
                     return Response::json(['message'=>'User blocked.'],404);
