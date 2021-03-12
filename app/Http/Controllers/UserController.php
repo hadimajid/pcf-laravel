@@ -32,14 +32,15 @@ class UserController extends Controller
     }
     public function login(Request $request){
             $rules=[
-                'email'=>'required|email',
+                'email'=>'required_without:username|email',
+                'username'=>'required_without:email',
                 'password'=>'required'
             ];
-            $validator=Validator::make($request->only('email','password'),$rules) ;
+            $validator=Validator::make($request->all(),$rules) ;
             if ($validator->fails()) {
             return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
             }
-            $user=User::where('email',$request->email)->first();
+            $user=User::where('email',$request->email)->orWhere('display_name',$request->username)->first();
             if(!empty($user)){
                 if($user->blocked==1){
                     return Response::json(['message'=>'User blocked.'],404);
@@ -52,13 +53,13 @@ class UserController extends Controller
                     $token=  $user->createToken($request->email,['basic'])->accessToken;
                     return Response::json([
                         'message'=>'Sign in successful',
-                        'user'=>\auth()->guard('user')->user(),
+                        'user'=>$user,
                         'token'=>$token
                     ],
                         200);
                 }
             }
-            return Response::json(['message'=>'Sign in failed.'],422);
+            return Response::json(['message'=>'Username/Email or Password incorrect.'],422);
     }
     public function register(Request $request){
         $rules=[
