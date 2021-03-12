@@ -10,6 +10,7 @@ use App\Models\Bullet;
 use App\Models\Category;
 use App\Models\CollectionModel;
 use App\Models\Component;
+use App\Models\Coupon;
 use App\Models\Feature;
 use App\Models\Footer;
 use App\Models\Group;
@@ -42,6 +43,7 @@ use App\Models\WebsiteSettings;
 use App\Rules\AlphaSpace;
 use App\Rules\PasswordValidate;
 use App\Rules\Phone;
+use App\Rules\Unique;
 use App\Rules\Zip;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -4088,5 +4090,75 @@ class AdminController extends Controller
         }
         $prices=Pricing::withCount('priceList')->offset($page)->limit($limit)->get();
         return Response::json(['prices'=>$prices,'total_number'=>$count]);
+    }
+    public function getCoupons(Request $request){
+        $limit=10;
+        $page=0;
+        $total=Coupon::all()->count();
+        if($request->limit){
+            $limit=$request->limit;
+        }
+        if($request->page){
+            $page=($request->page-1)*$limit;
+        }
+        $coupons=Coupon::offset($page)->limit($limit)->get();
+        return Response::json(['coupons'=>$coupons?$coupons:null,'total_number'=>$total,'filtered'=>$coupons->count()]);
+    }
+    public function getCouponById(Request $request,$id){
+        $coupon=Coupon::find($id);
+        return Response::json(['coupons'=>$coupon?$coupon:null]);
+    }
+    public function addCoupon(Request $request){
+        $validatedData=$request->validate([
+            'name'=>'required',
+            'code'=>'required|unique:coupons,code',
+            'from'=>'required|date|after:now',
+            'to'=>'required|date|after:from',
+            'discount'=>'required|numeric|min:1|max:100',
+            'max_usage'=>'required|numeric'
+        ]);
+        $coupon=Coupon::create($validatedData);
+
+       return Response::json(['message'=>'Coupon Added Successfully']);
+    }
+    public function updateCoupon(Request $request,$id){
+        $validatedData=$request->validate([
+            'name'=>'required',
+            'code'=>['required',new Unique('coupons','code',$id)],
+            'from'=>'required|date|after:now',
+            'to'=>'required|date|after:from',
+            'discount'=>'required|numeric|min:1|max:100',
+            'max_usage'=>'required|numeric'
+        ]);
+
+        $coupon=Coupon::find($id)->update($validatedData);
+
+       return Response::json(['message'=>'Coupon Updated Successfully']);
+    }
+    public function deleteCoupon($id){
+            $coupon=Coupon::find($id);
+            if($coupon){
+                $coupon->delete();
+                return Response::json(['message'=>'Coupon deleted.']);
+            }
+                return Response::json(['message'=>'Coupon not found.']);
+    }
+    public function assignCoupon(Request $request){
+        $request->validate([
+            'coupon_id'=>'required|exists:coupons,id',
+            'user_id'=>'required|array|min:1',
+            'user_id.*'=>'exists:users,id'
+        ]);
+        try {
+            $coupon=Coupon::find($request->coupon_id);
+            if(!$coupon){
+                return Response::json(['message'=>'Coupon not found.']);
+            }
+            $coupon->users()->attach($request->user_id);
+            return Response::json(['message'=>'Coupon assigned.']);
+        }catch (\Exception $exception){
+            return Response::json(['message'=>'Coupon assgining failed']);
+        }
+
     }
 }
