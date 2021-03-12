@@ -183,7 +183,7 @@ class UserController extends Controller
             'first_name'=>'required',
             'last_name'=>'required',
             'display_name'=>'required',
-            'email'=>'required|email',
+//            'email'=>'required|email',
         ];
         $validator=Validator::make($request->all(),$rules);
         if($validator->fails()){

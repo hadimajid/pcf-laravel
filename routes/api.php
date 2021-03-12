@@ -126,7 +126,6 @@ use Illuminate\Support\Facades\Route;
         Route::post('product-info/coaster',[AdminController::class,'getProductInfo']);
 //      Change password admin
         Route::post('change-password',[AdminController::class,'changePassword']);
-
 //      Materials
         Route::post('material',[AdminController::class,'getMaterial']);
 //      Color
@@ -173,6 +172,15 @@ use Illuminate\Support\Facades\Route;
         Route::delete('sub-admin/delete/{id}',[AdminController::class,'deleteSubAdminById'])->middleware('scope:remove-sub-admin');
 //      Block User
         Route::post('block-user/{id}',[AdminController::class,'blockUser'])->middleware('scope:user-block');
+//      Coupon
+        Route::prefix('coupon')->group(function (){
+            Route::get('',[AdminController::class,'getCoupons']);
+            Route::post('',[AdminController::class,'addCoupon']);
+            Route::post('update/{id}',[AdminController::class,'updateCoupon']);
+            Route::post('assign_user',[AdminController::class,'assignCoupon']);
+            Route::get('{id}',[AdminController::class,'getCouponById']);
+            Route::delete('{id}',[AdminController::class,'deleteCoupon']);
+        });
 });
 //      Site Getter
         Route::get('/logo',[AdminController::class,'getHeader']);
