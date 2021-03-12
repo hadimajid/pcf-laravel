@@ -22,7 +22,7 @@ class ConfigController extends Controller
         if($discount >0 && $price>0){
             if($discount<=$price){
                 $temp=1-($discount/$price);
-            }else{
+            }elseif($discount>$price){
                 $temp=1;
             }
         }
