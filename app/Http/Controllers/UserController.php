@@ -66,7 +66,7 @@ class UserController extends Controller
             'username'=>'required|unique:users,display_name',
             'password'=>'required',
         ];
-        $validator=Validator::make($request->only('email','password'),$rules) ;
+        $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
             return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],422);
         }
