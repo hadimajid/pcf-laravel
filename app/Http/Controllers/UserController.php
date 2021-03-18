@@ -651,7 +651,7 @@ class UserController extends Controller
             $prices=$cart->map(function ($value){
                 return $value->quantity*$value->product->PromotionPrice;
             });
-            $totalPrice=$prices->sum();
+            $totalPrice=round($prices->sum(),2);
         }
 
         return Response::json(['cart'=>$cart,'total_price'=>$totalPrice]);
