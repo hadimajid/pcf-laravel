@@ -197,7 +197,8 @@ class UserController extends Controller
             $user->save();
             return Response::json([
                 'message'=>'Profile updated.',
-                'data'=>$validator->valid()
+//                'data'=>$validator->valid(),
+                'user'=>$user,
                 ]
             );
         }

@@ -16,6 +16,7 @@ class Product extends Model
     }
     public function getSalePriceAttribute($value){
         if(!empty($this->ProductNumber)){
+
             return ConfigController::priceCalculator($value);
         }
         else{

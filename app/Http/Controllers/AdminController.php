@@ -4112,10 +4112,10 @@ class AdminController extends Controller
         $validatedData=$request->validate([
             'name'=>'required',
             'code'=>'required|unique:coupons,code',
-            'from'=>'required|date|after:now',
-            'to'=>'required|date|after:from',
+            'from'=>'required|date',
+            'to'=>'required|date|after_or_equal:from',
             'discount'=>'required|numeric|min:1|max:100',
-            'max_usage'=>'required|numeric'
+            'max_usage'=>'required|numeric|min:1'
         ]);
         $coupon=Coupon::create($validatedData);
 
@@ -4125,10 +4125,10 @@ class AdminController extends Controller
         $validatedData=$request->validate([
             'name'=>'required',
             'code'=>['required',new Unique('coupons','code',$id)],
-            'from'=>'required|date|after:now',
-            'to'=>'required|date|after:from',
+            'from'=>'required|date',
+            'to'=>'required|date|after_or_equal:from',
             'discount'=>'required|numeric|min:1|max:100',
-            'max_usage'=>'required|numeric'
+            'max_usage'=>'required|numeric|min:1'
         ]);
 
         $coupon=Coupon::find($id)->update($validatedData);
