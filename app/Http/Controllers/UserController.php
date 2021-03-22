@@ -637,7 +637,7 @@ class UserController extends Controller
 
                 if($item){
                     $item->delete();
-                    return Response::json(['message'=>'Product Delete From Cart.']);
+                    return Response::json(['message'=>'Product Deleted From Cart.']);
 
                 }
             }
@@ -649,14 +649,11 @@ class UserController extends Controller
         $applyCoupon=false;
         $discount=0;
         if($coupon){
-
             $getCoupon=Coupon::where('code',$coupon)->first();
             if($getCoupon){
                 $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
             }
-
             if(!empty($validUser)){
-
                 $applyCoupon=true;
                 $discount=$getCoupon->discount;
             }
@@ -664,7 +661,7 @@ class UserController extends Controller
         $cart=null;
         $totalPrice=0;
         if($user->cart){
-            $cart=CartItems::where('cart_id',$user->cart->id)->with('product.nextGenImages')->get();
+            $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber','product.nextGenImages:id,name'])->get();
 //            $prices=$cart->map(function ($value){
 //                return $value->quantity*$value->product->PromotionPrice;
 //            });
