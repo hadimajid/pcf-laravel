@@ -661,7 +661,7 @@ class UserController extends Controller
         $cart=null;
         $totalPrice=0;
         if($user->cart){
-            $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber','product.nextGenImages:id,name'])->get();
+            $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber','product.nextGenImages:ProductId,name'])->get();
 //            $prices=$cart->map(function ($value){
 //                return $value->quantity*$value->product->PromotionPrice;
 //            });
@@ -671,7 +671,8 @@ class UserController extends Controller
                 $d=($totalPrice*$discount)/100;
                 $totalPrice=$totalPrice-$d;
             }
-            return Response::json(['cart'=>$cart,'sub_total'=>$totalPrice,'tax'=>ConfigController::calculateTax($totalPrice),'shipping'=>WebsiteSettings::first()->delivery_fees,'total_price'=>ConfigController::calculateTaxPrice($totalPrice),'apply_coupon'=>$applyCoupon,'coupon_discount'=>$discount]);
+            $totalPrice=round($totalPrice,2);
+            return Response::json(['cart'=>$cart,'sub_total'=>$totalPrice,'tax'=>ConfigController::calculateTax($totalPrice),'shipping'=>WebsiteSettings::first()->delivery_fees,'apply_coupon'=>$applyCoupon,'coupon_discount'=>$discount,'total_price'=>ConfigController::calculateTaxPrice($totalPrice)]);
         }else{
             return Response::json(['cart'=>'empty']);
         }
