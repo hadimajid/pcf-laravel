@@ -60,6 +60,7 @@ class ConfigController extends Controller
         $price+=WebsiteSettings::first()->delivery_fees;
         return round($price,2);
     }
+
     public static function calculateCartPrice($id){
         return Product::where('id',$id)->first()->PromotionPrice;
     }
