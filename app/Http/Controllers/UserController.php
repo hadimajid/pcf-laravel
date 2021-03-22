@@ -661,7 +661,7 @@ class UserController extends Controller
         $cart=null;
         $totalPrice=0;
         if($user->cart){
-            $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber','product.nextGenImages:ProductId,name'])->get();
+            $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber','product.nextGenImages:ProductId,name','product.inventory.eta'])->get();
 //            $prices=$cart->map(function ($value){
 //                return $value->quantity*$value->product->PromotionPrice;
 //            });
