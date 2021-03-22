@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\Product;
 use App\Models\WebsiteSettings;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -49,5 +50,17 @@ class ConfigController extends Controller
             return $p;
         });
         return $products;
+    }
+    public static function calculateTax($price){
+        return ($price*WebsiteSettings::first()->tax)/100;
+    }
+    public static function calculateTaxPrice($price){
+
+        $price+=(($price*WebsiteSettings::first()->tax)/100);
+        $price+=WebsiteSettings::first()->delivery_fees;
+        return round($price,2);
+    }
+    public static function calculateCartPrice($id){
+        return Product::where('id',$id)->first()->PromotionPrice;
     }
 }

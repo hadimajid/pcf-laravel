@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 //      Guest routes
         Route::middleware('guest:user')->group(function (){
@@ -33,7 +34,7 @@ use Illuminate\Support\Facades\Route;
                 Route::put('update-password',[UserController::class,'updateYourPassword']);
                 Route::prefix('cart')->group(function (){
                     Route::post('',[UserController::class,'cart']);
-                    Route::get('',[UserController::class,'getCart']);
+                    Route::get('{coupon?}',[UserController::class,'getCart']);
                     Route::post('/delete',[UserController::class,'cartDelete']);
                     Route::post('/empty',[UserController::class,'cartEmpty']);
                 });
@@ -204,7 +205,3 @@ use Illuminate\Support\Facades\Route;
                 return response()->json(
                     ['message' => 'Invalid Route.'], 404);
         });
-
-//Route::get('test',function (){
-//   return ConfigController::discountPrice(352);
-//});

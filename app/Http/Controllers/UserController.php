@@ -6,6 +6,7 @@ use App\Models\BillingAddress;
 use App\Models\Cart;
 use App\Models\CartItems;
 use App\Models\Category;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
@@ -13,6 +14,7 @@ use App\Models\Rating;
 use App\Models\ShippingAddress;
 use App\Models\SubCategory;
 use App\Models\User;
+use App\Models\WebsiteSettings;
 use App\Models\Wishlist;
 use App\Models\WishlistItem;
 use App\Rules\ArraySize;
@@ -642,19 +644,40 @@ class UserController extends Controller
            }
         return Response::json(['message'=>'Product Not In Cart.']);
     }
-    public function getCart(){
+    public function getCart($coupon=null){
         $user= User::find(Auth::guard('user')->user()->id);
-        $cart=null;
-        if($user->cart){
-            $cart=CartItems::where('cart_id',$user->cart->id)->with('product','product.nextGenImages')->get();
-//            $price=$cart->pluck('product')->sum('PromotionPrice');
-            $prices=$cart->map(function ($value){
-                return $value->quantity*$value->product->PromotionPrice;
-            });
-            $totalPrice=round($prices->sum(),2);
-        }
+        $applyCoupon=false;
+        $discount=0;
+        if($coupon){
 
-        return Response::json(['cart'=>$cart,'total_price'=>$totalPrice]);
+            $getCoupon=Coupon::where('code',$coupon)->first();
+            if($getCoupon){
+                $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
+            }
+
+            if(!empty($validUser)){
+
+                $applyCoupon=true;
+                $discount=$getCoupon->discount;
+            }
+        }
+        $cart=null;
+        $totalPrice=0;
+        if($user->cart){
+            $cart=CartItems::where('cart_id',$user->cart->id)->with('product.nextGenImages')->get();
+//            $prices=$cart->map(function ($value){
+//                return $value->quantity*$value->product->PromotionPrice;
+//            });
+            $prices=$cart->pluck('price');
+            $totalPrice=round($prices->sum(),2);
+            if($discount){
+                $d=($totalPrice*$discount)/100;
+                $totalPrice=$totalPrice-$d;
+            }
+            return Response::json(['cart'=>$cart,'sub_total'=>$totalPrice,'tax'=>ConfigController::calculateTax($totalPrice),'shipping'=>WebsiteSettings::first()->delivery_fees,'total_price'=>ConfigController::calculateTaxPrice($totalPrice),'apply_coupon'=>$applyCoupon,'coupon_discount'=>$discount]);
+        }else{
+            return Response::json(['cart'=>'empty']);
+        }
     }
     public function cartEmpty(Request $request){
         $user= User::find(Auth::guard('user')->user()->id);
