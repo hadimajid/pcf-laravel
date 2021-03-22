@@ -808,10 +808,8 @@ class UserController extends Controller
         }catch (\Exception $exception){
             return Response::json(['message'=>'You already rated this product.'],422);
 //            return Response::json(['message'=>$exception->getMessage()],422);
-
         }
         return Response::json(['message'=>'Product rated successfully.']);
-
     }
 
 }

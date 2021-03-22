@@ -4160,7 +4160,7 @@ class AdminController extends Controller
             $coupon->users()->attach($request->user_id);
             return Response::json(['message'=>'Coupon assigned.']);
         }catch (\Exception $exception){
-            return Response::json(['message'=>'Coupon assgining failed']);
+            return Response::json(['message'=>'Coupon assigning failed']);
         }
 
     }
