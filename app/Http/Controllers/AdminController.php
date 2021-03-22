@@ -2087,6 +2087,7 @@ class AdminController extends Controller
     {
         $rules = [
             'fees' => 'nullable|numeric|min:0',
+            'tax' => 'nullable|numeric|min:0',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -2094,12 +2095,14 @@ class AdminController extends Controller
         if ($ws == null) {
             WebsiteSettings::create([
                 'delivery_fees' => $request->input('fees'),
+                'tax' => $request->input('tax'),
             ]);
             return Response::json(['message' => 'Delivery fees updated.'], 200);
         }
         $ws->delivery_fees = $request->input('fees');
+        $ws->tax = $request->input('tax');
         $ws->save();
-        return Response::json(['message' => 'Delivery fees updated.'], 200);
+        return Response::json(['message' => 'Delivery fees and Tax updated.'], 200);
     }
     public function addPrice(Request $request)
     {
@@ -2137,7 +2140,7 @@ class AdminController extends Controller
 
     public function getDeliveryFees()
     {
-        return Response::json(['delivery_fee' => WebsiteSettings::first()->delivery_fees,'promotion' => WebsiteSettings::first()->promotion,'price' => WebsiteSettings::first()->price]);
+        return Response::json(['delivery_fee' => WebsiteSettings::first()->delivery_fees,'tax' => WebsiteSettings::first()->tax,'promotion' => WebsiteSettings::first()->promotion,'price' => WebsiteSettings::first()->price]);
 
     }
 
