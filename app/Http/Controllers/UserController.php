@@ -833,5 +833,24 @@ class UserController extends Controller
         }
         return Response::json(['message'=>'Product rated successfully.']);
     }
+    public function getOrders(Request $request){
+        $page=0;
+        $limit=Order::all()->count();
+        if(!empty($request->limit) && !empty($request->page)){
+            $limit=$request->limit;
+            $page=($request->page-1)*$limit;
+        }
+        $where=" user_id = ".\auth()->guard('user')->id();
+        $orders=Order::whereRaw($where)->limit($limit)->offset($page)->get();
+
+
+        $total=Order::whereRaw($where)->count();
+
+        return Response::json([
+            'orders'=>$orders,
+            'total_number'=>$total,
+            'filtered'=>$orders->count()
+        ]);
+    }
 
 }

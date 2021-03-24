@@ -42,7 +42,10 @@ use Illuminate\Support\Facades\Route;
                     Route::post('/delete',[UserController::class,'wishlistDelete']);
                     Route::post('/empty',[UserController::class,'wishlistEmpty']);
                 });
-            Route::post('order',[UserController::class,'createOrder']);
+                Route::prefix('order')->group(function (){
+                    Route::post('',[UserController::class,'createOrder']);
+                    Route::get('',[UserController::class,'getOrders']);
+                });
             Route::post('rate',[UserController::class,'rateProduct']);
 
         });
