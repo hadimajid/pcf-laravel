@@ -777,10 +777,9 @@ class UserController extends Controller
     public function createOrder(Request $request){
 
         $request->validate([
-            'product_id'=>'required|array|min:1',
-            'product_id.*'=>'exists:products,id',
-            'quantity'=>['required','array','min:1',new ArraySize($request->input('product_id'))],
-            'quantity.*'=>'required|numeric|min:1'
+            'product'=>'required|array|min:1',
+            'product.*.id'=>'exists:products,id',
+            'product.*.quantity'=>'required|numeric|min:1'
         ]);
 
         $user= User::find(Auth::guard('user')->user()->id);
@@ -789,12 +788,12 @@ class UserController extends Controller
             'user_id'=>$user->id,
             'status'=>'pending',
         ]);
-        $productIds=$request->input('product_id');
-        foreach ($productIds as $key=>$productId){
+        $productIds=$request->input('product');
+        foreach ($productIds as $key=>$product){
             $orderItem=OrderItem::create([
                 'order_id'=>$order->id,
-                'product_id'=>$productId,
-                'quantity'=>$request->input('quantity')[$key],
+                'product_id'=>$product['id'],
+                'quantity'=>$product['quantity'],
             ]);
         }
         return Response::json(['message'=>'Order sent.']);

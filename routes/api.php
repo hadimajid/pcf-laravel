@@ -159,7 +159,7 @@ use Illuminate\Support\Facades\Route;
 //      Social Network
         Route::post('add-social',[AdminController::class,'addSocialNetworks']);
         Route::post('delete-social/{id}',[AdminController::class,'deleteSocialNetwork']);
-//      Store api key and paypal email
+//      Store api key and PayPal email
         Route::post('api',[AdminController::class,'addApiKey']);
 });
 //      Sub Admin
