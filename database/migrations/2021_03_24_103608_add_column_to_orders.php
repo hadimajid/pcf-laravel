@@ -15,7 +15,6 @@ class AddColumnToOrders extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->boolean('ship')->after('status')->nullable()->default(false);
-            $table->text('shipping_address')->after('ship')->nullable();
 
         });
     }
@@ -28,7 +27,7 @@ class AddColumnToOrders extends Migration
     public function down()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn(['shipping_address','ship']);
+            $table->dropColumn(['ship']);
         });
     }
 }

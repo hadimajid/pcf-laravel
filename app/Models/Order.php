@@ -11,10 +11,13 @@ class Order extends Model
     protected $guarded=[];
 
     public function user(){
-        return $this->belongsTo(User::class);
+        return $this->hasOne(User::class);
     }
     public function items(){
         return $this->hasMany(OrderItem::class);
+    }
+    public function address(){
+        return $this->hasOne(ShippingAddress::class);
     }
 
 }

@@ -775,19 +775,33 @@ class UserController extends Controller
         return Response::json(['message'=>'Products deleted from wishlist.']);
     }
     public function createOrder(Request $request){
-
         $request->validate([
             'product'=>'required|array|min:1',
             'product.*.id'=>'exists:products,id',
-            'product.*.quantity'=>'required|numeric|min:1'
+            'product.*.quantity'=>'required|numeric|min:1',
+            'ship'=>'nullable',
+            'shipping_address'=>'required_if:ship,1|array',
+            'shipping_address.name'=>'required',
+            'shipping_address.company_name'=>'required',
+            'shipping_address.street_address'=>'required',
+            'shipping_address.city'=>'required',
+            'shipping_address.state'=>'required',
+            'shipping_address.zip'=>'required',
         ]);
-
         $user= User::find(Auth::guard('user')->user()->id);
-
+        $ship=$request->input('ship');
         $order=Order::create([
             'user_id'=>$user->id,
             'status'=>'pending',
+            'ship'=>$ship?$ship:0,
         ]);
+        if($ship==1){
+            $shipping=new ShippingAddress();
+            $temp=$request->input('shipping_address');
+            $temp=array_merge($temp,['order_id'=>$order->id]);
+            $shipping->fill($temp);
+            $shipping->save();
+        }
         $productIds=$request->input('product');
         foreach ($productIds as $key=>$product){
             $orderItem=OrderItem::create([
@@ -797,8 +811,6 @@ class UserController extends Controller
             ]);
         }
         return Response::json(['message'=>'Order sent.']);
-
-
     }
     public function rateProduct(Request $request){
         $request->validate([
