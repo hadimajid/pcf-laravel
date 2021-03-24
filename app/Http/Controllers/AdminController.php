@@ -4163,7 +4163,6 @@ class AdminController extends Controller
         }catch (\Exception $exception){
             return Response::json(['message'=>'Coupon assigning failed']);
         }
-
     }
     public function getOrders(Request $request){
         $page=0;
