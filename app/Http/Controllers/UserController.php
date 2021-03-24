@@ -797,6 +797,8 @@ class UserController extends Controller
             ]);
         }
         return Response::json(['message'=>'Order sent.']);
+
+
     }
     public function rateProduct(Request $request){
         $request->validate([
