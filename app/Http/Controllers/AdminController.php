@@ -21,6 +21,7 @@ use App\Models\InventoryEta;
 use App\Models\Material;
 use App\Models\Measurement;
 use App\Models\NextGenImage;
+use App\Models\Order;
 use App\Models\PasswordReset;
 use App\Models\Permission;
 use App\Models\Piece;
@@ -4163,5 +4164,24 @@ class AdminController extends Controller
             return Response::json(['message'=>'Coupon assigning failed']);
         }
 
+    }
+    public function getOrders(Request $request){
+        $page=0;
+        $limit=Order::all()->count();
+        if(!empty($request->limit) && !empty($request->page)){
+            $limit=$request->limit;
+            $page=($request->page-1)*$limit;
+        }
+        $where=" id != 0";
+        $orders=Order::whereRaw($where)->with(['user'])->limit($limit)->offset($page)->get();
+
+
+        $total=Order::whereRaw($where)->count();
+
+        return Response::json([
+            'orders'=>$orders,
+            'total_number'=>$total,
+            'filtered'=>$orders->count()
+        ]);
     }
 }

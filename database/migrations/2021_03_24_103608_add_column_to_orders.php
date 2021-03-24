@@ -15,10 +15,8 @@ class AddColumnToOrders extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->boolean('ship')->after('status')->nullable()->default(false);
-
         });
     }
-
     /**
      * Reverse the migrations.
      *

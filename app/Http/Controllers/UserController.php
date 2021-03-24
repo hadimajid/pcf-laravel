@@ -72,7 +72,7 @@ class UserController extends Controller
             return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],422);
         }
         User::create([
-           'email'=>$request->email,
+            'email'=>$request->email,
             'password'=>Hash::make($request->password),
             'display_name'=>$request->username
         ]);

@@ -180,6 +180,9 @@ use Illuminate\Support\Facades\Route;
             Route::get('{id}',[AdminController::class,'getCouponById']);
             Route::delete('{id}',[AdminController::class,'deleteCoupon']);
         });
+        Route::prefix('order')->group(function (){
+            Route::get('',[AdminController::class,'getOrders']);
+        });
 });
 //      Site Getter
         Route::get('/logo',[AdminController::class,'getHeader']);
