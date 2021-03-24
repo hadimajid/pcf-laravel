@@ -688,6 +688,7 @@ class UserController extends Controller
     }
     public function cartEmpty(Request $request){
         $user= User::find(Auth::guard('user')->user()->id);
+
         $cart=$user->cart;
         if($cart){
             if($cart->items){
