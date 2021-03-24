@@ -673,7 +673,15 @@ class UserController extends Controller
                 $totalPrice=$totalPrice-$d;
             }
             $totalPrice=round($totalPrice,2);
-            return Response::json(['cart'=>$cart,'sub_total'=>$subTotal,'tax'=>ConfigController::calculateTax($totalPrice),'shipping'=>WebsiteSettings::first()->delivery_fees,'apply_coupon'=>$applyCoupon,'coupon_discount'=>$discount,'total_price'=>ConfigController::calculateTaxPrice($totalPrice)]);
+            return Response::json([
+            'cart'=>$cart,
+            'sub_total'=>$subTotal,
+            'tax'=>ConfigController::calculateTax($totalPrice),
+            'shipping'=>WebsiteSettings::first()->delivery_fees,
+            'apply_coupon'=>$applyCoupon,
+            'coupon_discount'=>$discount,
+            'total_price'=>ConfigController::calculateTaxPrice($totalPrice)
+            ]);
         }else{
             return Response::json(['cart'=>'empty']);
         }
