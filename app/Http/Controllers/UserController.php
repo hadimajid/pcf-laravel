@@ -19,11 +19,13 @@ use App\Models\Wishlist;
 use App\Models\WishlistItem;
 use App\Rules\ArraySize;
 use App\Rules\Unique;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -43,13 +45,14 @@ class UserController extends Controller
             $user=User::where('email',$request->email)->orWhere('display_name',$request->email)->first();
             if(!empty($user)){
                 if($user->blocked==1){
-                    return Response::json(['message'=>'User blocked.'],404);
+                    return Response::json(['message'=>'User blocked.'],422);
                 }
-//                if($user->email_verified_at==null){
-//                    return Response::json(['message'=>'Please verify your email.'],404);
-//                }
+                if(empty($user->email_verified_at)){
+                    return Response::json(['message'=>'Please verify your email.'],422);
+                }
+
                 if(Hash::check($request->password,$user->password)){
-//                    Auth::guard('user')->setUser($user);
+
                     $token=  $user->createToken($request->email,['basic'])->accessToken;
                     return Response::json([
                         'message'=>'Sign in successful',
@@ -66,17 +69,57 @@ class UserController extends Controller
             'email'=>'required|email|unique:users,email',
             'username'=>'required|unique:users,display_name',
             'password'=>'required',
+            'url'=>'required',
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
             return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],422);
         }
-        User::create([
+        $token=strtoupper(Str::random(20));
+        $code=strtoupper(Str::random(5));
+        $user=User::create([
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
-            'display_name'=>$request->username
+            'display_name'=>$request->username,
+            'token'=>$token,
+            'code'=>$code
         ]);
+
+        MailController::sendVerifyEmail($user->email,$token,$code,$request->url);
         return Response::json(['message'=>'Sign up successful'],200);
+    }
+    public function verify(Request $request,$token,$email){
+        $user=User::where('email',$email)->where('token',$token)->first();
+        if(empty($user)){
+            return Response::json('Invalid Link.');
+        }
+        if(!empty($user->email_verified_at)){
+            return Response::json('Email Already Verified.');
+        }
+        $user->email_verified_at=Carbon::now();
+        $user->token=null;
+        $user->code=null;
+        $user->save();
+
+        return Response::json('Email successfully verified.');
+
+
+    }
+    public function resendVerifyEmail(Request $request){
+        $user=User::where('email',$request->email)->first();
+        if(empty($user)){
+            return Response::json('User doesn\'t exist.');
+        }
+        $token=strtoupper(Str::random(20));
+        $code=strtoupper(Str::random(5));
+        $user->token=$token;
+        $user->code=$code;
+        $user->save();
+        MailController::sendVerifyEmail($user->email,$token,$code,$request->url);
+
+        return Response::json('Email sent.');
+
+
     }
     public function checkLoggedIn()
     {

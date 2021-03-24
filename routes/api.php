@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Route;
             Route::prefix('user')->group(function (){
                 Route::post('login',[UserController::class,'login']);
                 Route::post('registration',[UserController::class,'register']);
+                Route::get('verify/{token}/{email}',[UserController::class,'verify']);
+                Route::post('resend-verify-email',[UserController::class,'resendVerifyEmail']);
         });
 //      Admin
         Route::prefix('admin')->group(function (){
