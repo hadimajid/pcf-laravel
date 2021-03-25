@@ -40,7 +40,7 @@ class UserController extends Controller
             ];
             $validator=Validator::make($request->all(),$rules) ;
             if ($validator->fails()) {
-            return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
+            return Response::json(['errors'=>$validator->errors()],400);
             }
             $user=User::where('email',$request->email)->orWhere('display_name',$request->email)->first();
             if(!empty($user)){
@@ -73,7 +73,7 @@ class UserController extends Controller
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
-            return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],422);
+            return Response::json(['errors'=>$validator->errors()],422);
         }
         $token=strtoupper(Str::random(20));
         $code=strtoupper(Str::random(5));
@@ -146,40 +146,32 @@ class UserController extends Controller
             'street_address'=>'required',
             'city'=>'required',
             'state'=>'required',
-            'zip'=>'required'
+            'zip'=>'required',
+            'country'=>'required',
+            'phone'=>'required',
+            'email'=>'required|email',
+
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
-            return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
+            return Response::json(['errors'=>$validator->errors()],400);
         }
-        $billing=new BillingAddress();
-        $request->merge(['user_id'=>\auth()->guard('user')->user()->id]);
-        $billing->fill($request->all());
-        $billing->save();
-        return Response::json([
-            'message'=>'Billing address added.',
-            'data'=>$validator->valid()]);
-    }
-    public function updateBillingAddress(Request $request){
-        $rules=[
-            'name'=>'required',
-            'company_name'=>'required',
-            'street_address'=>'required',
-            'city'=>'required',
-            'state'=>'required',
-            'zip'=>'required'
-        ];
-        $validator=Validator::make($request->all(),$rules) ;
-        if ($validator->fails()) {
-            return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
+        $user=User::find(\auth()->guard('user')->user()->id);
+        if(empty($user->billingAddress)){
+            $billing=new BillingAddress();
+            $request->merge(['user_id'=>\auth()->guard('user')->user()->id]);
+            $billing->fill($request->all());
+            $billing->save();
+        }else{
+            $billing=$user->billingAddress;
+            $billing->fill($validator->valid());
+            $billing->save();
         }
-        $billing=\auth()->guard('user')->user()->billingAddress;
-        $billing->fill($validator->valid());
-        $billing->save();
         return Response::json([
             'message'=>'Billing address updated.',
-            'data'=>$validator->valid()]);
+            'data'=>$billing]);
     }
+
     public function getShippingAddress(Request $request){
         $shippingAddress=Auth::guard('user')->user()->shippingAddress;
         return Response::json(['shipping_address'=>$shippingAddress]);
@@ -187,44 +179,53 @@ class UserController extends Controller
     public function storeShippingAddress(Request $request){
         $rules=[
             'name'=>'required',
-            'company_name'=>'required',
+            'company_name'=>'nullable',
             'street_address'=>'required',
             'city'=>'required',
             'state'=>'required',
-            'zip'=>'required'
+            'zip'=>'required',
+            'country'=>'required',
+            'phone'=>'required',
+            'email'=>'required|email',
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
-            return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
+            return Response::json(['errors'=>$validator->errors()],400);
         }
+        $user=User::find(\auth()->guard('user')->user()->id);
+        if(empty($user->shippingAddress)){
         $shipping=new ShippingAddress();
         $request->merge(['user_id'=>\auth()->guard('user')->user()->id]);
         $shipping->fill($request->all());
         $shipping->save();
+    }else{
+        $shipping=$user->shippingAddress;
+        $shipping->fill($validator->valid());
+        $shipping->save();
+    }
         return Response::json([
             'message'=>'Shipping address added.',
             'data'=>$validator->valid()]);
     }
-    public function updateShippingAddress(Request $request){
-        $rules=[
-            'name'=>'required',
-            'company_name'=>'required',
-            'street_address'=>'required',
-            'city'=>'required',
-            'state'=>'required',
-            'zip'=>'required'
-        ];
-        $validator=Validator::make($request->all(),$rules) ;
-        if ($validator->fails()) {
-            return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
-        }
-        $shipping=\auth()->guard('user')->user()->shippingAddress;
-        $shipping->fill($validator->valid());
-        $shipping->save();
-        return Response::json([
-            'message'=>'Shipping address updated.',
-            'data'=>$validator->valid()]);
-    }
+//    public function updateShippingAddress(Request $request){
+//        $rules=[
+//            'name'=>'required',
+//            'company_name'=>'required',
+//            'street_address'=>'required',
+//            'city'=>'required',
+//            'state'=>'required',
+//            'zip'=>'required'
+//        ];
+//        $validator=Validator::make($request->all(),$rules) ;
+//        if ($validator->fails()) {
+//            return Response::json(['errors'=>$validator->errors()],400);
+//        }
+//        $shipping=\auth()->guard('user')->user()->shippingAddress;
+//
+//        return Response::json([
+//            'message'=>'Shipping address updated.',
+//            'data'=>$validator->valid()]);
+//    }
     public function updateYourProfile(Request $request){
         $rules=[
             'first_name'=>'required',
@@ -234,7 +235,7 @@ class UserController extends Controller
         ];
         $validator=Validator::make($request->all(),$rules);
         if($validator->fails()){
-            return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
+            return Response::json(['errors'=>$validator->errors()],400);
         }else{
             $user=User::find(\auth()->guard('user')->user()->id);
             $user->fill($validator->valid());
@@ -255,7 +256,7 @@ class UserController extends Controller
         ];
         $validator=Validator::make($request->all(),$rules);
         if($validator->fails()){
-            return Response::json(['errors'=>$validator->errors(),'old_data'=>$validator->valid()],400);
+            return Response::json(['errors'=>$validator->errors()],400);
         }
         else{
             $user=User::find(\auth()->guard('user')->user()->id);
