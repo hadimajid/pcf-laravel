@@ -36,7 +36,8 @@ class UserController extends Controller
     public function login(Request $request){
             $rules=[
                 'email'=>'required',
-                'password'=>'required'
+                'password'=>'required',
+                'url'=>'required'
             ];
             $validator=Validator::make($request->all(),$rules) ;
             if ($validator->fails()) {
@@ -48,7 +49,13 @@ class UserController extends Controller
                     return Response::json(['message'=>'User blocked.'],422);
                 }
                 if(empty($user->email_verified_at)){
-                    return Response::json(['message'=>'Please verify your email.'],422);
+                    $token=strtoupper(Str::random(20));
+                    $code=strtoupper(Str::random(5));
+                    $user->token=$token;
+                    $user->code=$code;
+                    $user->save();
+                    MailController::sendVerifyEmail($user->email,$token,$code,$request->url);
+                    return Response::json(['message'=>'Please verify your email an email has been sent to you.'],422);
                 }
 
                 if(Hash::check($request->password,$user->password)){
@@ -117,7 +124,7 @@ class UserController extends Controller
         $user->save();
         MailController::sendVerifyEmail($user->email,$token,$code,$request->url);
 
-        return Response::json('Email sent.');
+        return Response::json(['message'=>'Email sent.']);
 
 
     }
