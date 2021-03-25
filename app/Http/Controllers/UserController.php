@@ -91,17 +91,17 @@ class UserController extends Controller
     public function verify(Request $request,$token,$email){
         $user=User::where('email',$email)->where('token',$token)->first();
         if(empty($user)){
-            return Response::json('Invalid Link.');
+            return Response::json(["message"=>'Invalid Link.'],422);
         }
         if(!empty($user->email_verified_at)){
-            return Response::json('Email Already Verified.');
+            return Response::json(["message"=>'Email Already Verified.']);
         }
         $user->email_verified_at=Carbon::now();
         $user->token=null;
         $user->code=null;
         $user->save();
 
-        return Response::json('Email successfully verified.');
+        return Response::json(["message"=>'Email successfully verified.']);
 
 
     }
