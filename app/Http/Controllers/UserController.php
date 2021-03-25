@@ -20,6 +20,7 @@ use App\Models\WishlistItem;
 use App\Rules\ArraySize;
 use App\Rules\Unique;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -199,11 +200,11 @@ class UserController extends Controller
         $request->merge(['user_id'=>\auth()->guard('user')->user()->id]);
         $shipping->fill($request->all());
         $shipping->save();
-    }else{
+        }else{
         $shipping=$user->shippingAddress;
         $shipping->fill($validator->valid());
         $shipping->save();
-    }
+        }
         return Response::json([
             'message'=>'Shipping address added.',
             'data'=>$validator->valid()]);
@@ -825,36 +826,89 @@ class UserController extends Controller
             'product.*.quantity'=>'required|numeric|min:1',
             'ship'=>'nullable',
             'shipping_address'=>'required_if:ship,1|array',
-            'shipping_address.name'=>'required',
-            'shipping_address.company_name'=>'required',
-            'shipping_address.street_address'=>'required',
-            'shipping_address.city'=>'required',
-            'shipping_address.state'=>'required',
-            'shipping_address.zip'=>'required',
+            'coupon'=>'nullable',
+            'shipping_address.name'=>'required_if:ship,1',
+            'shipping_address.company_name'=>'nullable',
+            'shipping_address.street_address'=>'required_if:ship,1',
+            'shipping_address.city'=>'required_if:ship,1',
+            'shipping_address.state'=>'required_if:ship,1',
+            'shipping_address.zip'=>'required_if:ship,1',
+            'shipping_address.country'=>'required_if:ship,1',
+            'shipping_address.phone'=>'required_if:ship,1',
+            'shipping_address.email'=>'required_if:ship,1|email',
+
         ]);
-        $user= User::find(Auth::guard('user')->user()->id);
-        $ship=$request->input('ship');
-        $order=Order::create([
-            'user_id'=>$user->id,
-            'status'=>'pending',
-            'ship'=>$ship?$ship:0,
-        ]);
-        if($ship==1){
-            $shipping=new ShippingAddress();
-            $temp=$request->input('shipping_address');
-            $temp=array_merge($temp,['order_id'=>$order->id]);
-            $shipping->fill($temp);
-            $shipping->save();
-        }
-        $productIds=$request->input('product');
-        foreach ($productIds as $key=>$product){
-            $orderItem=OrderItem::create([
-                'order_id'=>$order->id,
-                'product_id'=>$product['id'],
-                'quantity'=>$product['quantity'],
+        try {
+            DB::beginTransaction();
+            $user= User::find(Auth::guard('user')->user()->id);
+            $ship=$request->input('ship');
+            $order=Order::create([
+                'user_id'=>$user->id,
+                'status'=>'pending',
+                'ship'=>$ship?$ship:0,
+                'tax'=>0,
+                'sub_total'=>0,
+                'shipping'=>0,
+                'total'=>0
             ]);
+            if($ship==1){
+                $temp=$request->input('shipping_address');
+                if(empty($user->shippingAddress)){
+                    $shipping=new ShippingAddress();
+                    $temp->merge(['user_id'=>$user->id]);
+                    $shipping->fill($temp);
+                    $shipping->save();
+                }else{
+                    $shipping=$user->shippingAddress;
+                    $shipping->fill($temp);
+                    $shipping->save();
+                }
+            }
+            $productIds=$request->input('product');
+            foreach ($productIds as $key=>$product){
+                $orderItem=OrderItem::create([
+                    'order_id'=>$order->id,
+                    'product_id'=>$product['id'],
+                    'quantity'=>$product['quantity'],
+                ]);
+            }
+            $discount=0;
+            $coupon=$request->input('coupon');
+            if($coupon){
+                $getCoupon=Coupon::where('code',$coupon)->first();
+                if($getCoupon){
+                    $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
+                }
+                if(!empty($validUser)){
+                    $discount=$getCoupon->discount;
+                }
+            }
+
+            $o=OrderItem::where('order_id',$order->id)->get();
+            $prices=$o->pluck('price');
+            $totalPrice=round($prices->sum(),2);
+            if($discount){
+                $d=($totalPrice*$discount)/100;
+                $totalPrice=$totalPrice-$d;
+            }
+            $subTotal=$totalPrice;
+            $tax=ConfigController::calculateTax($totalPrice);
+            $delivery_fees=WebsiteSettings::first()->delivery_fees;
+            $totalPrice=ConfigController::calculateTaxPrice($totalPrice);
+            $order->tax=$tax;
+            $order->sub_total=$subTotal;
+            $order->shipping=$delivery_fees;
+            $order->total=$totalPrice;
+            $order->discount=$discount;
+            $order->save();
+            DB::commit();
+            return Response::json(['message'=>'Order sent.']);
+
+        }catch (\Exception $ex){
+            DB::rollback();
+            return Response::json(['message'=>'Some error has occurred while placing order.']);
         }
-        return Response::json(['message'=>'Order sent.']);
+
     }
     public function rateProduct(Request $request){
         $request->validate([
@@ -886,9 +940,7 @@ class UserController extends Controller
             $page=($request->page-1)*$limit;
         }
         $where=" user_id = ".\auth()->guard('user')->id();
-        $orders=Order::whereRaw($where)->limit($limit)->offset($page)->get();
-
-
+        $orders=Order::whereRaw($where)->with('items')->withCount('items')->limit($limit)->offset($page)->get();
         $total=Order::whereRaw($where)->count();
 
         return Response::json([
