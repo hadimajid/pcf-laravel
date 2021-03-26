@@ -171,7 +171,8 @@ class UserController extends Controller
         }
         return Response::json([
             'message'=>'Billing address updated.',
-            'data'=>$billing]);
+            'data'=>$billing
+        ]);
     }
 
     public function getShippingAddress(Request $request){
