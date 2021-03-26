@@ -732,7 +732,7 @@ class UserController extends Controller
             return Response::json(['cart'=>'empty']);
         }
     }
-    public function cartEmpty(Request $request){
+    public function cartEmpty(){
         $user= User::find(Auth::guard('user')->user()->id);
 
         $cart=$user->cart;
@@ -822,6 +822,7 @@ class UserController extends Controller
     }
     public function createOrder(Request $request){
         $request->validate([
+            'notes'=>'nullable',
             'ship'=>'nullable',
             'update'=>'nullable',
             'shipping_address'=>'required_if:ship,1|array',
@@ -879,6 +880,7 @@ class UserController extends Controller
             $order=Order::create([
                 'user_id'=>$user->id,
                 'status'=>'pending',
+                'notes'=>$request->notes,
                 'ship'=>$ship?$ship:0,
                 'tax'=>$tax,
                 'sub_total'=>$subTotal,
@@ -941,11 +943,12 @@ class UserController extends Controller
                 }
             }
             DB::commit();
+            $this->cartEmpty();
             return Response::json(['message'=>'Order sent.']);
 
         }catch (\Exception $ex){
             DB::rollback();
-            return Response::json([$ex->getMessage()]);
+//            return Response::json([$ex->getMessage()]);
             return Response::json(['message'=>'Some error has occurred while placing order.']);
         }
 
