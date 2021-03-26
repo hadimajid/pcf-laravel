@@ -848,7 +848,6 @@ class UserController extends Controller
         ]);
         try {
             DB::beginTransaction();
-
             $user= User::find(Auth::guard('user')->user()->id);
             $cart=$user->cart->with('items')->first();
             $o= $cart->items;
@@ -949,7 +948,7 @@ class UserController extends Controller
         }catch (\Exception $ex){
             DB::rollback();
             return Response::json([$ex->getMessage()],422);
-            return Response::json(['message'=>'Some error has occurred while placing order.'],422);
+//            return Response::json(['message'=>'Some error has occurred while placing order.'],422);
         }
 
     }
