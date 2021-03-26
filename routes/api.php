@@ -3,13 +3,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Route;
 //      Guest routes
-        Route::middleware('guest:user')->group(function (){
+//        Route::middleware(['guest:user','guest:admin'])->group(function (){
             Route::prefix('user')->group(function (){
                 Route::post('login',[UserController::class,'login']);
                 Route::post('registration',[UserController::class,'register']);
                 Route::get('verify/{token}/{email}',[UserController::class,'verify']);
                 Route::post('resend-verify-email',[UserController::class,'resendVerifyEmail']);
-        });
+                Route::post('order',[UserController::class,'createOrder']);
+            });
 //      Admin
         Route::prefix('admin')->group(function (){
                 Route::post('login',[AdminController::class,'login'])->name('admin.login');
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 //              Route::post('password-reset-update-code/{email}',[AdminController::class,'verifyCodeUpdate']);
                 Route::post('password-reset-update',[AdminController::class,'resetPasswordUpdate']);
             });
-        });
+//        });
 //      User routes
         Route::middleware('auth:user')->prefix('user')->group(function (){
                 Route::post('is-logged-in',[UserController::class,'checkLoggedIn']);
@@ -49,7 +50,6 @@ use Illuminate\Support\Facades\Route;
                     Route::get('',[UserController::class,'getOrders']);
                 });
             Route::post('rate',[UserController::class,'rateProduct']);
-
         });
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
