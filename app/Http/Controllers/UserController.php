@@ -72,6 +72,7 @@ class UserController extends Controller
             'username'=>'required|unique:users,display_name',
             'password'=>'required',
             'url'=>'required',
+            'order'=>'nullable'
         ];
         $validator=Validator::make($request->all(),$rules) ;
         if ($validator->fails()) {
@@ -88,6 +89,14 @@ class UserController extends Controller
         ]);
 
         MailController::sendVerifyEmail($user->email,$token,$code,$request->url);
+        if(!empty($request->input('order'))){
+            $token=  $user->createToken($request->email,['basic'])->accessToken;
+            return Response::json([
+                'message'=>'Sign up successful',
+                'user'=>$user,
+                'token'=>$token
+            ],200);
+        }
         return Response::json(['message'=>'Sign up successful'],200);
     }
     public function verify(Request $request,$token,$email){
@@ -642,16 +651,24 @@ class UserController extends Controller
 
         if($cart){
                foreach ($products as $key=>$product){
-                    $item=CartItems::where('cart_id','=',$cart->id)->where('product_id','=',$product['id'])->first();
-                    if($item){
-                    $item->quantity=$product['quantity'];
-                    $item->save();
+
+                    if($this->productQuantityCheck($product['id'],$product['quantity'])){
+                        $item=CartItems::where('cart_id','=',$cart->id)->where('product_id','=',$product['id'])->first();
+                        if($item){
+                            $item->quantity=$product['quantity'];
+                            $item->save();
+                        }else{
+                            CartItems::create([
+                                'cart_id'=>$cart->id,
+                                'product_id'=>$product['id'],
+                                'quantity'=>$product['quantity']
+                            ]);
+                        }
                     }else{
-                        CartItems::create([
-                            'cart_id'=>$cart->id,
-                            'product_id'=>$product['id'],
-                            'quantity'=>$product['quantity']
-                        ]);
+                        $item=CartItems::where('cart_id','=',$cart->id)->where('product_id','=',$product['id'])->first();
+                        if($item) {
+                        $item->delete();
+                        }
                     }
                }
 
@@ -659,7 +676,10 @@ class UserController extends Controller
                $cart=Cart::create([
                    'user_id' => $user->id,
                ]);
+
             foreach ($products as $key=>$product){
+
+                if($this->productQuantityCheck($product['id'],$product['quantity'])){
 
                    CartItems::create([
                        'cart_id' => $cart->id,
@@ -667,8 +687,16 @@ class UserController extends Controller
                        'quantity' => $product['quantity']
                    ]);
                }
-           }
+            }
+       }
         return Response::json(['message'=>'User cart is updated.']);
+    }
+    public function productQuantityCheck($id,$quantity){
+        $product=Product::find($id);
+        if($product->inventory->QtyAvail>=$quantity){
+         return true;
+        }
+        return false;
     }
     public function cartDelete(Request $request){
         $request->validate([
@@ -734,7 +762,6 @@ class UserController extends Controller
     }
     public function cartEmpty(){
         $user= User::find(Auth::guard('user')->user()->id);
-
         $cart=$user->cart;
         if($cart){
             if($cart->items){
@@ -847,109 +874,115 @@ class UserController extends Controller
             'billing_address.email'=>'required|email',
         ]);
         try {
-            DB::beginTransaction();
-
-            $user= User::find(Auth::guard('user')->user()->id);
-            $cart=$user->cart->with('items')->first();
-            $o= $cart->items;
-            $prices=$o->pluck('price');
-            $totalPrice=round($prices->sum(),2);
-            $discount=0;
-            $coupon=$request->input('coupon');
-            if($coupon){
-                $getCoupon=Coupon::where('code',$coupon)->first();
-                if($getCoupon){
-                    $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
+                DB::beginTransaction();
+                $user= User::find(Auth::guard('user')->user()->id);
+                $items=CartItems::where('cart_id',$user->cart->id)->get();
+                $o=[];
+                foreach ($items as $item){
+                    if($this->productQuantityCheck($item->product_id,$item->quantity)){
+                        $o[]=$item;
+                    }
                 }
-                if(!empty($validUser)){
-                    $discount=$getCoupon->discount;
+                $o=collect($o);
+                $count=$o->count();
+                if(empty($count)){
+                    return Response::json(['message'=>'Cart Empty Cannot Place Order!']);
                 }
-            }
-            if($discount){
-                $d=($totalPrice*$discount)/100;
-                $totalPrice=$totalPrice-$d;
-            }
-            $subTotal=$totalPrice;
-            $tax=ConfigController::calculateTax($totalPrice);
-            $delivery_fees=WebsiteSettings::first()->delivery_fees;
-            $totalPrice=ConfigController::calculateTaxPrice($totalPrice);
-
-
-            $ship=$request->input('ship');
-            $update=$request->input('update');
-            $order=Order::create([
-                'user_id'=>$user->id,
-                'status'=>'pending',
-                'notes'=>$request->notes,
-                'ship'=>$ship?$ship:0,
-                'tax'=>$tax,
-                'sub_total'=>$subTotal,
-                'shipping'=>$delivery_fees,
-                'total'=>$totalPrice,
-                'discount'=>$discount,
-            ]);
-            if($update==1){
-                $temp=$request->input('shipping_address');
-                if(empty($user->shippingAddress)){
-                    $shipping=new ShippingAddress();
-                    $temp=array_merge($temp,['user_id'=>$user->id]);
-                    $shipping->fill($temp);
-                    $shipping->save();
-                }else{
-                    $shipping=$user->shippingAddress;
-                    $shipping->fill($temp);
-                    $shipping->save();
+                $prices=$o->pluck('price');
+                $totalPrice=round($prices->sum(),2);
+                $discount=0;
+                $coupon=$request->input('coupon');
+                if($coupon){
+                    $getCoupon=Coupon::where('code',$coupon)->first();
+                    if($getCoupon){
+                        $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
+                    }
+                    if(!empty($validUser)){
+                        $discount=$getCoupon->discount;
+                    }
                 }
+                if($discount){
+                    $d=($totalPrice*$discount)/100;
+                    $totalPrice=$totalPrice-$d;
+                }
+                $subTotal=$totalPrice;
+                $tax=ConfigController::calculateTax($totalPrice);
+                $delivery_fees=WebsiteSettings::first()->delivery_fees;
+                $totalPrice=ConfigController::calculateTaxPrice($totalPrice);
 
 
-            }
-            if(empty($user->billingAddress)){
-                $temp=$request->input('billing_address');
-                $billingAddress=new BillingAddress();
-                $temp=array_merge($temp,['user_id'=>$user->id]);
-                $billingAddress->fill($temp);
-                $billingAddress->save();
-            }else{
-                $temp=$request->input('billing_address');
-                $billingAddress=$user->billingAddress;
-                $billingAddress->fill($temp);
-                $billingAddress->save();
-            }
-            foreach ($o as $key=>$product){
-                $orderItem=OrderItem::create([
-                    'order_id'=>$order->id,
-                    'product_id'=>$product->product_id,
-                    'quantity'=>$product->quantity,
+                $ship=$request->input('ship');
+                $update=$request->input('update');
+                $order=Order::create([
+                    'user_id'=>$user->id,
+                    'status'=>'pending',
+                    'notes'=>$request->notes,
+                    'ship'=>$ship?$ship:0,
+                    'tax'=>$tax,
+                    'sub_total'=>$subTotal,
+                    'shipping'=>$delivery_fees,
+                    'total'=>$totalPrice,
+                    'discount'=>$discount,
                 ]);
-            }
-            $address=$order->address;
-            if(empty($address)){
-                if($ship==1){
+                if($update==1){
                     $temp=$request->input('shipping_address');
-                    $address=new ShippingAddress();
-                    $temp=array_merge($temp,['order_id'=>$order->id]);
-                    $address->fill($temp);
-                    $address->save();
-                }else{
-                    $temp=$billingAddress->toArray();
-                    unset($temp['user_id']);
-                    unset($temp['id']);
-                    unset($temp['created_at']);
-                    unset($temp['updated_at']);
-                    $address=new ShippingAddress();
-                    $temp=array_merge($temp,['order_id'=>$order->id]);
-                    $address->fill($temp);
-                    $address->save();
+                    if(empty($user->shippingAddress)){
+                        $shipping=new ShippingAddress();
+                        $temp=array_merge($temp,['user_id'=>$user->id]);
+                        $shipping->fill($temp);
+                        $shipping->save();
+                    }else{
+                        $shipping=$user->shippingAddress;
+                        $shipping->fill($temp);
+                        $shipping->save();
+                    }
                 }
-            }
-            DB::commit();
-            $this->cartEmpty();
-            return Response::json(['message'=>'Order sent.']);
-
+                if(empty($user->billingAddress)){
+                    $temp=$request->input('billing_address');
+                    $billingAddress=new BillingAddress();
+                    $temp=array_merge($temp,['user_id'=>$user->id]);
+                    $billingAddress->fill($temp);
+                    $billingAddress->save();
+                }else{
+                    $temp=$request->input('billing_address');
+                    $billingAddress=$user->billingAddress;
+                    $billingAddress->fill($temp);
+                    $billingAddress->save();
+                }
+                foreach ($o as $key=>$product){
+                    $orderItem=OrderItem::create([
+                        'order_id'=>$order->id,
+                        'product_id'=>$product->product_id,
+                        'quantity'=>$product->quantity,
+                    ]);
+                }
+                $address=$order->address;
+                if(empty($address)){
+                    if($ship==1){
+                        $temp=$request->input('shipping_address');
+                        $address=new ShippingAddress();
+                        $temp=array_merge($temp,['order_id'=>$order->id]);
+                        $address->fill($temp);
+                        $address->save();
+                    }else{
+                        $temp=$billingAddress->toArray();
+                        unset($temp['user_id']);
+                        unset($temp['id']);
+                        unset($temp['created_at']);
+                        unset($temp['updated_at']);
+                        $address=new ShippingAddress();
+                        $temp=array_merge($temp,['order_id'=>$order->id]);
+                        $address->fill($temp);
+                        $address->save();
+                    }
+                }
+                DB::commit();
+                $this->cartEmpty();
+                return Response::json(['message'=>'Order sent.']);
         }catch (\Exception $ex){
             DB::rollback();
             return Response::json([$ex->getMessage()],422);
-            return Response::json(['message'=>'Some error has occurred while placing order.'],422);
+//            return Response::json(['message'=>'Some error has occurred while placing order.'],422);
         }
 
     }
