@@ -874,18 +874,20 @@ class UserController extends Controller
             'billing_address.email'=>'required|email',
         ]);
         try {
-
-            if(Auth::guard('user')->check()){
                 DB::beginTransaction();
                 $user= User::find(Auth::guard('user')->user()->id);
                 $items=CartItems::where('cart_id',$user->cart->id)->get();
-                return $items;
-                $o= $items;
-                $count=$items->count();
+                $o=[];
+                foreach ($items as $item){
+                    if($this->productQuantityCheck($item->product_id,$item->quantity)){
+                        $o[]=$item;
+                    }
+                }
+                $o=collect($o);
+                $count=$o->count();
                 if(empty($count)){
                     return Response::json(['message'=>'Cart Empty Cannot Place Order!']);
                 }
-
                 $prices=$o->pluck('price');
                 $totalPrice=round($prices->sum(),2);
                 $discount=0;
@@ -977,7 +979,6 @@ class UserController extends Controller
                 DB::commit();
                 $this->cartEmpty();
                 return Response::json(['message'=>'Order sent.']);
-            }
         }catch (\Exception $ex){
             DB::rollback();
             return Response::json([$ex->getMessage()],422);

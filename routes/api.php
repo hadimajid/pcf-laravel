@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Route;
                 Route::post('registration',[UserController::class,'register']);
                 Route::get('verify/{token}/{email}',[UserController::class,'verify']);
                 Route::post('resend-verify-email',[UserController::class,'resendVerifyEmail']);
-                Route::post('order',[UserController::class,'createOrder']);
             });
 //      Admin
         Route::prefix('admin')->group(function (){
@@ -27,10 +26,10 @@ use Illuminate\Support\Facades\Route;
                 Route::post('logout',[UserController::class,'logout']);
                 Route::get('get-billing-address',[UserController::class,'getBillingAddress']);
                 Route::post('store-billing-address',[UserController::class,'storeBillingAddress']);
-//                Route::put('update-billing-address',[UserController::class,'updateBillingAddress']);
+//              Route::put('update-billing-address',[UserController::class,'updateBillingAddress']);
                 Route::get('get-shipping-address',[UserController::class,'getShippingAddress']);
                 Route::post('store-shipping-address',[UserController::class,'storeShippingAddress']);
-//                Route::put('update-shipping-address',[UserController::class,'updateShippingAddress']);
+//              Route::put('update-shipping-address',[UserController::class,'updateShippingAddress']);
                 Route::put('update-details',[UserController::class,'updateYourProfile']);
                 Route::put('update-password',[UserController::class,'updateYourPassword']);
                 Route::prefix('cart')->group(function (){
