@@ -822,10 +822,8 @@ class UserController extends Controller
     }
     public function createOrder(Request $request){
         $request->validate([
-            'product'=>'required|array|min:1',
-            'product.*.id'=>'exists:products,id',
-            'product.*.quantity'=>'required|numeric|min:1',
             'ship'=>'nullable',
+            'update'=>'nullable',
             'shipping_address'=>'required_if:ship,1|array',
             'coupon'=>'nullable',
             'shipping_address.name'=>'required_if:ship,1',
@@ -837,42 +835,24 @@ class UserController extends Controller
             'shipping_address.country'=>'required_if:ship,1',
             'shipping_address.phone'=>'required_if:ship,1',
             'shipping_address.email'=>'required_if:ship,1|email',
-
+            'billing_address.name'=>'required',
+            'billing_address.company_name'=>'nullable',
+            'billing_address.street_address'=>'required',
+            'billing_address.city'=>'required',
+            'billing_address.state'=>'required',
+            'billing_address.zip'=>'required',
+            'billing_address.country'=>'required',
+            'billing_address.phone'=>'required',
+            'billing_address.email'=>'required|email',
         ]);
         try {
             DB::beginTransaction();
+
             $user= User::find(Auth::guard('user')->user()->id);
-            $ship=$request->input('ship');
-            $order=Order::create([
-                'user_id'=>$user->id,
-                'status'=>'pending',
-                'ship'=>$ship?$ship:0,
-                'tax'=>0,
-                'sub_total'=>0,
-                'shipping'=>0,
-                'total'=>0
-            ]);
-            if($ship==1){
-                $temp=$request->input('shipping_address');
-                if(empty($user->shippingAddress)){
-                    $shipping=new ShippingAddress();
-                    $temp->merge(['user_id'=>$user->id]);
-                    $shipping->fill($temp);
-                    $shipping->save();
-                }else{
-                    $shipping=$user->shippingAddress;
-                    $shipping->fill($temp);
-                    $shipping->save();
-                }
-            }
-            $productIds=$request->input('product');
-            foreach ($productIds as $key=>$product){
-                $orderItem=OrderItem::create([
-                    'order_id'=>$order->id,
-                    'product_id'=>$product['id'],
-                    'quantity'=>$product['quantity'],
-                ]);
-            }
+            $cart=$user->cart->with('items')->first();
+            $o= $cart->items;
+            $prices=$o->pluck('price');
+            $totalPrice=round($prices->sum(),2);
             $discount=0;
             $coupon=$request->input('coupon');
             if($coupon){
@@ -884,10 +864,6 @@ class UserController extends Controller
                     $discount=$getCoupon->discount;
                 }
             }
-
-            $o=OrderItem::where('order_id',$order->id)->get();
-            $prices=$o->pluck('price');
-            $totalPrice=round($prices->sum(),2);
             if($discount){
                 $d=($totalPrice*$discount)/100;
                 $totalPrice=$totalPrice-$d;
@@ -896,17 +872,80 @@ class UserController extends Controller
             $tax=ConfigController::calculateTax($totalPrice);
             $delivery_fees=WebsiteSettings::first()->delivery_fees;
             $totalPrice=ConfigController::calculateTaxPrice($totalPrice);
-            $order->tax=$tax;
-            $order->sub_total=$subTotal;
-            $order->shipping=$delivery_fees;
-            $order->total=$totalPrice;
-            $order->discount=$discount;
-            $order->save();
+
+
+            $ship=$request->input('ship');
+            $update=$request->input('update');
+            $order=Order::create([
+                'user_id'=>$user->id,
+                'status'=>'pending',
+                'ship'=>$ship?$ship:0,
+                'tax'=>$tax,
+                'sub_total'=>$subTotal,
+                'shipping'=>$delivery_fees,
+                'total'=>$totalPrice,
+                'discount'=>$discount,
+            ]);
+            if($update==1){
+                $temp=$request->input('shipping_address');
+                if(empty($user->shippingAddress)){
+                    $shipping=new ShippingAddress();
+                    $temp=array_merge($temp,['user_id'=>$user->id]);
+                    $shipping->fill($temp);
+                    $shipping->save();
+                }else{
+                    $shipping=$user->shippingAddress;
+                    $shipping->fill($temp);
+                    $shipping->save();
+                }
+
+
+            }
+            if(empty($user->billingAddress)){
+                $temp=$request->input('billing_address');
+                $billingAddress=new BillingAddress();
+                $temp=array_merge($temp,['user_id'=>$user->id]);
+                $billingAddress->fill($temp);
+                $billingAddress->save();
+            }else{
+                $temp=$request->input('billing_address');
+                $billingAddress=$user->billingAddress;
+                $billingAddress->fill($temp);
+                $billingAddress->save();
+            }
+            foreach ($o as $key=>$product){
+                $orderItem=OrderItem::create([
+                    'order_id'=>$order->id,
+                    'product_id'=>$product->product_id,
+                    'quantity'=>$product->quantity,
+                ]);
+            }
+            $address=$order->address;
+            if(empty($address)){
+                if($ship==1){
+                    $temp=$request->input('shipping_address');
+                    $address=new ShippingAddress();
+                    $temp=array_merge($temp,['order_id'=>$order->id]);
+                    $address->fill($temp);
+                    $address->save();
+                }else{
+                    $temp=$billingAddress->toArray();
+                    unset($temp['user_id']);
+                    unset($temp['id']);
+                    unset($temp['created_at']);
+                    unset($temp['updated_at']);
+                    $address=new ShippingAddress();
+                    $temp=array_merge($temp,['order_id'=>$order->id]);
+                    $address->fill($temp);
+                    $address->save();
+                }
+            }
             DB::commit();
             return Response::json(['message'=>'Order sent.']);
 
         }catch (\Exception $ex){
             DB::rollback();
+            return Response::json([$ex->getMessage()]);
             return Response::json(['message'=>'Some error has occurred while placing order.']);
         }
 
