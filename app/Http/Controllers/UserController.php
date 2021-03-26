@@ -751,7 +751,7 @@ class UserController extends Controller
             'cart'=>$cart,
             'sub_total'=>$subTotal,
             'tax'=>ConfigController::calculateTax($totalPrice),
-            'shipping'=>WebsiteSettings::first()->delivery_fees,
+            'shipping'=>$subTotal?WebsiteSettings::first()->delivery_fees:0,
             'apply_coupon'=>$applyCoupon,
             'coupon_discount'=>$discount,
             'total_price'=>ConfigController::calculateTaxPrice($totalPrice)
