@@ -948,7 +948,7 @@ class UserController extends Controller
 
         }catch (\Exception $ex){
             DB::rollback();
-//            return Response::json([$ex->getMessage()]);
+            return Response::json([$ex->getMessage()]);
             return Response::json(['message'=>'Some error has occurred while placing order.'],422);
         }
 
