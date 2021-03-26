@@ -144,7 +144,7 @@ class UserController extends Controller
     public function storeBillingAddress(Request $request){
         $rules=[
             'name'=>'required',
-            'company_name'=>'required',
+            'company_name'=>'nullable',
             'street_address'=>'required',
             'city'=>'required',
             'state'=>'required',
