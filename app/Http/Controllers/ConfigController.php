@@ -55,7 +55,9 @@ class ConfigController extends Controller
         return round(($price*WebsiteSettings::first()->tax)/100,2);
     }
     public static function calculateTaxPrice($price){
-
+        if(empty($price)){
+            return 0;
+        }
         $price+=(($price*WebsiteSettings::first()->tax)/100);
         $price+=WebsiteSettings::first()->delivery_fees;
         return round($price,2);
