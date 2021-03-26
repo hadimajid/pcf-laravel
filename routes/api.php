@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Route;
                 Route::prefix('order')->group(function (){
                     Route::post('',[UserController::class,'createOrder']);
                     Route::get('',[UserController::class,'getOrders']);
+                    Route::get('{id}',[UserController::class,'getOrderById']);
                 });
             Route::post('rate',[UserController::class,'rateProduct']);
         });

@@ -1016,13 +1016,19 @@ class UserController extends Controller
             $page=($request->page-1)*$limit;
         }
         $where=" user_id = ".\auth()->guard('user')->id();
-        $orders=Order::whereRaw($where)->with('items')->withCount('items')->limit($limit)->offset($page)->get();
+        $orders=Order::whereRaw($where)->with('items','address')->withCount('items')->limit($limit)->offset($page)->get();
         $total=Order::whereRaw($where)->count();
 
         return Response::json([
             'orders'=>$orders,
             'total_number'=>$total,
             'filtered'=>$orders->count()
+        ]);
+    }
+    public function getOrderById($id){
+        $order=Order::where('id',$id)->with('items','address')->withCount('items')->first();
+        return Response::json([
+            'order'=>$order,
         ]);
     }
 
