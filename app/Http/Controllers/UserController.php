@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PasswordReset;
 use App\Models\Product;
 use App\Models\Rating;
 use App\Models\ShippingAddress;
@@ -18,6 +19,7 @@ use App\Models\WebsiteSettings;
 use App\Models\Wishlist;
 use App\Models\WishlistItem;
 use App\Rules\ArraySize;
+use App\Rules\PasswordValidate;
 use App\Rules\Unique;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -131,6 +133,61 @@ class UserController extends Controller
         return Response::json(['message'=>'Email sent.']);
 
 
+    }
+    public function sendForgotPasswordMail(Request $request){
+        $request->validate([
+           'email'=>'required|email',
+           'url'=>'required',
+        ]);
+        $user=User::where('email',$request->email)->first();
+        if(!$user){
+            return Response::json(['message'=>'User doesn\'t exist'],422);
+        }else{
+            $token=Str::random(20);
+            PasswordReset::create([
+                'email'=>$user->email,
+                'token'=>$token
+            ]);
+            MailController::sendUserForgotPasswordMail($user->email,$token,$request->url);
+            return Response::json(['message'=>'Password reset email sent.']);
+
+        }
+    }
+    public function verifyForgotEmail(Request $request){
+        $token=$request->get('token');
+        $email=$request->get('email');
+        if(!$token && !$email ){
+            return Response::json(['message'=>'Link broken'],422);
+        }
+        $password=PasswordReset::where(['email'=>$email,'token'=>$token])->first();
+
+        if(!$password){
+            return Response::json(['message'=>'Link broken'],422);
+        }else{
+            return Response::json(['message'=>'Link Verified'],200);
+        }
+    }
+    public function changeForgotPassword(Request $request){
+        $token=$request->get('token');
+        $email=$request->get('email');
+        $request->validate([
+            'password'=>['required',new PasswordValidate()],
+            'confirm_password'=>'required|same:password',
+        ]);
+        if(!$token && !$email ){
+            return Response::json(['message'=>'Link broken.'],422);
+        }
+        $password=PasswordReset::where(['email'=>$email,'token'=>$token])->first();
+
+        if(!$password){
+            return Response::json(['message'=>'Link broken.'],422);
+        }else{
+            $user=User::where('email',$email)->first();
+            $user->password=Hash::make($request->password);
+            $user->save();
+            return Response::json(['message'=>'Password successfully changed.'],200);
+
+        }
     }
     public function checkLoggedIn()
     {
