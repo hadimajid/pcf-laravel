@@ -4171,10 +4171,41 @@ class AdminController extends Controller
             $page=($request->page-1)*$limit;
         }
         $where=" id != 0";
-        $orders=Order::whereRaw($where)->with(['user'])->limit($limit)->offset($page)->get();
+        $userWhere=" id != 0";
+        $productWhere=" id != 0";
+        $cityWhere=" id != 0";
+        if($request->input('order_number')){
+            $orderNumber=$request->input('order_number');
+            $where.="  and id = $orderNumber";
+        }
+        if($request->input('username')){
+            $username=$request->input('username');
+            $userWhere.=" and display_name like '%$username%'";
+        }
+        if($request->input('product_name')){
+            $productName=$request->input('product_name');
+            $productWhere.=" and Name like '%$productName%'";
+        }
+        if($request->input('city_name')){
+            $cityName=$request->input('city_name');
+            $cityWhere.=" and city like '%$cityName%'";
+        }
+        $orders=Order::whereRaw($where)->whereHas('user',function($query) use ($userWhere){
+                    $query->whereRaw($userWhere);
+                })->whereHas('items.product',function($query) use ($productWhere){
+                    $query->whereRaw($productWhere);
+                })->whereHas('address',function($query) use ($cityWhere) {
+                        $query->whereRaw($cityWhere);})
+            ->with(['user','items.product','address'])->limit($limit)->offset($page)->get();
 
 
-        $total=Order::whereRaw($where)->count();
+        $total=Order::whereRaw($where)->whereHas('user',function($query) use ($userWhere){
+            $query->whereRaw($userWhere);
+        })->whereHas('items.product',function($query) use ($productWhere){
+            $query->whereRaw($productWhere);
+        })->whereHas('address',function($query) use ($cityWhere) {
+            $query->whereRaw($cityWhere);})
+            ->count();
 
         return Response::json([
             'orders'=>$orders,
@@ -4216,7 +4247,10 @@ class AdminController extends Controller
             $limit=$request->limit;
             $page=($request->limit-1)*$limit;
         }
-
+        if($request->input('username')){
+            $username=$request->input('username');
+            $where.=" and display_name like '%$username%'";
+        }
         $users=User::whereRaw($where)->limit($limit)->offset($page)->get();
         return Response::json(['users'=>$users,'total_number'=>$total,'filtered'=>$users->count()]);
     }
