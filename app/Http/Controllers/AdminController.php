@@ -4247,7 +4247,10 @@ class AdminController extends Controller
             $limit=$request->limit;
             $page=($request->limit-1)*$limit;
         }
-
+        if($request->input('username')){
+            $username=$request->input('username');
+            $where.=" display_name like '%$username%'";
+        }
         $users=User::whereRaw($where)->limit($limit)->offset($page)->get();
         return Response::json(['users'=>$users,'total_number'=>$total,'filtered'=>$users->count()]);
     }
