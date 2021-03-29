@@ -4183,6 +4183,12 @@ class AdminController extends Controller
             'filtered'=>$orders->count()
         ]);
     }
+    public function getOrderById($id){
+        $order=Order::where('id',$id)->with('items.product.nextGenImages','address')->withCount('items')->first();
+        return Response::json([
+            'order'=>$order,
+        ]);
+    }
     public function cancelOrder($id){
         $order=Order::where('id',$id)->first();
         $message='';

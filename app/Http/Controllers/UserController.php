@@ -74,7 +74,7 @@ class UserController extends Controller
             'url'=>'required',
             'order'=>'nullable'
         ];
-        $validator=Validator::make($request->all(),$rules) ;
+        $validator=Validator::make($request->all(),$rules);
         if ($validator->fails()) {
             return Response::json(['errors'=>$validator->errors()],422);
         }
