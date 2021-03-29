@@ -172,7 +172,7 @@ class UserController extends Controller
             return Response::json(['message'=>'Link Verified'],200);
         }
     }
-    public function changeForgotPassword(Request $request,$token,$email){
+    public function changeForgotPassword(Request $request){
 
         $request->validate([
             'password'=>['required',new PasswordValidate()],
