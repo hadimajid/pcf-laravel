@@ -178,7 +178,11 @@ class UserController extends Controller
             return Response::json(['message'=>'Link broken.'],422);
         }
         $password=PasswordReset::where(['email'=>$email,'token'=>$token])->first();
-
+        $date=Carbon::now();
+        $passwordDate=new Carbon(strtotime($password->created_at));
+        if($date->diff($passwordDate)>env('PASSWORD_EXPIRE')){
+            return Response::json(['message'=>'Link Expired.'],422);
+        }
         if(!$password){
             return Response::json(['message'=>'Link broken.'],422);
         }else{
