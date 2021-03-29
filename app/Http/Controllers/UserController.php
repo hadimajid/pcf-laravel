@@ -1031,5 +1031,27 @@ class UserController extends Controller
             'order'=>$order,
         ]);
     }
+    public function cancelOrder($id){
+        $order=Order::where('id',$id)->where('user_id',auth()->guard('user')->id())->first();
+        $message='';
+        $status='';
+            if(!empty($order)){
+                $status=$order->status;
+
+            }
+        if($status=='pending'){
+            $order->status='cancelled';
+            $order->cancelled_by='user';
+            $message="Order Cancelled!";
+            $order->save();
+        }
+        else if($status=='cancelled'){
+            $message="Order Already Cancelled!";
+        }
+        else{
+            $message="You cannot cancel order.";
+        }
+        return Response::json(['message'=>$message]);
+    }
 
 }

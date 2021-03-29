@@ -4183,4 +4183,24 @@ class AdminController extends Controller
             'filtered'=>$orders->count()
         ]);
     }
+    public function cancelOrder($id){
+        $order=Order::where('id',$id)->first();
+        $message='';
+        $status='';
+        if(!empty($order)){
+            $status=$order->status;
+
+        }
+        if($status!='cancelled'){
+            $order->status='cancelled';
+            $order->cancelled_by='admin';
+            $message="Order Cancelled!";
+            $order->save();
+        }
+        else if($status=='cancelled'){
+            $message="Order Already Cancelled!";
+        }
+
+        return Response::json(['message'=>$message]);
+    }
 }

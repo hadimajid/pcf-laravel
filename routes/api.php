@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Route;
                     Route::post('',[UserController::class,'createOrder']);
                     Route::get('',[UserController::class,'getOrders']);
                     Route::get('{id}',[UserController::class,'getOrderById']);
+                    Route::post('cancel/{id}',[UserController::class,'cancelOrder']);
                 });
             Route::post('rate',[UserController::class,'rateProduct']);
         });
@@ -187,6 +188,8 @@ use Illuminate\Support\Facades\Route;
         });
         Route::prefix('order')->group(function (){
             Route::get('',[AdminController::class,'getOrders']);
+            Route::post('cancel/{id}',[AdminController::class,'cancelOrder']);
+
         });
 });
 //      Site Getter
