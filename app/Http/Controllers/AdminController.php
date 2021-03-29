@@ -2348,7 +2348,6 @@ class AdminController extends Controller
             return false;
         }
     }
-
     public function revokeAllToken($admin)
     {
         $adminTokens = $admin->tokens;
