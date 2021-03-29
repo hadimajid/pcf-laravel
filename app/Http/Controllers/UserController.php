@@ -1026,7 +1026,7 @@ class UserController extends Controller
         ]);
     }
     public function getOrderById($id){
-        $order=Order::where('id',$id)->with('items','address')->withCount('items')->first();
+        $order=Order::where('id',$id)->where('user_id',auth()->guard('user')->id())->with('items.product.nextGenImages','address')->withCount('items')->first();
         return Response::json([
             'order'=>$order,
         ]);
