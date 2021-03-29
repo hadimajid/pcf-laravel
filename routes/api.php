@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Route;
                 Route::get('verify/{token}/{email}',[UserController::class,'verify']);
                 Route::post('resend-verify-email',[UserController::class,'resendVerifyEmail']);
                 Route::post('send-forgot-password',[UserController::class,'sendForgotPasswordMail']);
-                Route::get('verify-forgot-password',[UserController::class,'verifyForgotEmail']);
-                Route::post('change-forgot-password',[UserController::class,'changeForgotPassword']);
+                Route::get('verify-forgot-password/{token}/{email}',[UserController::class,'verifyForgotEmail']);
+                Route::post('change-forgot-password/{token}/{email}',[UserController::class,'changeForgotPassword']);
             });
 //      Admin
         Route::prefix('admin')->group(function (){

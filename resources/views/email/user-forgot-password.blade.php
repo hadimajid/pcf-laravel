@@ -386,7 +386,7 @@
                                 </td>
                             </tr>
                             <tr><td height="20"></td></tr>
-                            <tr><td align="center"><a href="{{$data['url'].'/'.$data['token']}}" style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;background-color: #626262;color: #ffffff;padding: 0px 30px;height: 45px;line-height: 45px;text-align: center;display: inline-block;border-radius: 5px;text-decoration: none;font-size: 17px;">Reset Password</a></td></tr>
+                            <tr><td align="center"><a href="{{$data['url'].'/'.$data['token'].'/'.$data['email']}}" style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;background-color: #626262;color: #ffffff;padding: 0px 30px;height: 45px;line-height: 45px;text-align: center;display: inline-block;border-radius: 5px;text-decoration: none;font-size: 17px;">Reset Password</a></td></tr>
 {{--                            <tr><td align="center">Or</td></tr>--}}
 {{--                            <tr><td align="center">Enter this code {{$data['code']}}</td></tr>--}}
                             <tr><td height="20"></td></tr>

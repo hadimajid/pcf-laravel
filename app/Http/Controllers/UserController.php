@@ -153,23 +153,28 @@ class UserController extends Controller
 
         }
     }
-    public function verifyForgotEmail(Request $request){
-        $token=$request->get('token');
-        $email=$request->get('email');
+    public function verifyForgotEmail(Request $request,$token,$email){
+//        $token=$request->get('token');
+//        $email=$request->get('email');
         if(!$token && !$email ){
             return Response::json(['message'=>'Link broken'],422);
         }
-        $password=PasswordReset::where(['email'=>$email,'token'=>$token])->first();
+        $password=PasswordReset::where(['email'=>$email,'token'=>$token])->orderBy('created_at','desc')->first();
 
         if(!$password){
             return Response::json(['message'=>'Link broken'],422);
         }else{
+            $date=Carbon::now();
+            $passwordDate=new Carbon(strtotime($password->created_at));
+            if($passwordDate->diffInMinutes($date)>env('PASSWORD_EXPIRE')){
+                return Response::json(['message'=>'Link Expired.'],422);
+            }
             return Response::json(['message'=>'Link Verified'],200);
         }
     }
-    public function changeForgotPassword(Request $request){
-        $token=$request->get('token');
-        $email=$request->get('email');
+    public function changeForgotPassword(Request $request,$token,$email){
+//        $token=$request->get('token');
+//        $email=$request->get('email');
         $request->validate([
             'password'=>['required',new PasswordValidate()],
             'confirm_password'=>'required|same:password',
@@ -177,18 +182,23 @@ class UserController extends Controller
         if(!$token && !$email ){
             return Response::json(['message'=>'Link broken.'],422);
         }
-        $password=PasswordReset::where(['email'=>$email,'token'=>$token])->first();
-        $date=Carbon::now();
-        $passwordDate=new Carbon(strtotime($password->created_at));
-        if($date->diff($passwordDate)>env('PASSWORD_EXPIRE')){
-            return Response::json(['message'=>'Link Expired.'],422);
-        }
+        $password=PasswordReset::where(['email'=>$email,'token'=>$token])->orderBy('created_at','desc')->first();
+
         if(!$password){
             return Response::json(['message'=>'Link broken.'],422);
         }else{
+
+            $date=Carbon::now();
+            $passwordDate=new Carbon(strtotime($password->created_at));
+
+            if($passwordDate->diffInMinutes($date)>env('PASSWORD_EXPIRE')){
+                return Response::json(['message'=>'Link Expired.'],422);
+            }
             $user=User::where('email',$email)->first();
             $user->password=Hash::make($request->password);
             $user->save();
+            PasswordReset::where('email',$user->email)->delete();
+            $this->revokeAllToken($user);
             return Response::json(['message'=>'Password successfully changed.'],200);
 
         }
@@ -1114,5 +1124,12 @@ class UserController extends Controller
         }
         return Response::json(['message'=>$message]);
     }
-
+    public function revokeAllToken(User $user)
+    {
+        $userTokens = $user->tokens;
+        foreach ($userTokens as $token) {
+            $token->revoke();
+        }
+        return Response::json(['message' => "Tokens revoked."], 200);
+    }
 }
