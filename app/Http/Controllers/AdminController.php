@@ -2348,7 +2348,6 @@ class AdminController extends Controller
             return false;
         }
     }
-
     public function revokeAllToken($admin)
     {
         $adminTokens = $admin->tokens;
@@ -4181,6 +4180,12 @@ class AdminController extends Controller
             'orders'=>$orders,
             'total_number'=>$total,
             'filtered'=>$orders->count()
+        ]);
+    }
+    public function getOrderById($id){
+        $order=Order::where('id',$id)->with('items.product.nextGenImages','address')->withCount('items')->first();
+        return Response::json([
+            'order'=>$order,
         ]);
     }
     public function cancelOrder($id){

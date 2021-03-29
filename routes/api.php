@@ -1,15 +1,20 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
-//      Guest routes
+//        Guest routes
 //        Route::middleware(['guest:user','guest:admin'])->group(function (){
             Route::prefix('user')->group(function (){
                 Route::post('login',[UserController::class,'login']);
                 Route::post('registration',[UserController::class,'register']);
                 Route::get('verify/{token}/{email}',[UserController::class,'verify']);
                 Route::post('resend-verify-email',[UserController::class,'resendVerifyEmail']);
-            });
+                Route::post('send-forgot-password',[UserController::class,'sendForgotPasswordMail']);
+                Route::get('verify-forgot-password/{token}/{email}',[UserController::class,'verifyForgotEmail']);
+                Route::post('change-forgot-password/{token}/{email}',[UserController::class,'changeForgotPassword']);
+
+         });
 //      Admin
         Route::prefix('admin')->group(function (){
                 Route::post('login',[AdminController::class,'login'])->name('admin.login');
@@ -192,6 +197,7 @@ use Illuminate\Support\Facades\Route;
         });
         Route::prefix('order')->group(function (){
             Route::get('',[AdminController::class,'getOrders']);
+            Route::get('{id}',[AdminController::class,'getOrderById']);
             Route::post('cancel/{id}',[AdminController::class,'cancelOrder']);
 
         });
