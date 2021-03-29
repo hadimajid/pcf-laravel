@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 //      Guest routes
 //        Route::middleware(['guest:user','guest:admin'])->group(function (){
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\Route;
                 Route::post('send-forgot-password',[UserController::class,'sendForgotPasswordMail']);
                 Route::get('verify-forgot-password/{token}/{email}',[UserController::class,'verifyForgotEmail']);
                 Route::post('change-forgot-password/{token}/{email}',[UserController::class,'changeForgotPassword']);
-            });
+
+         });
 //      Admin
         Route::prefix('admin')->group(function (){
                 Route::post('login',[AdminController::class,'login'])->name('admin.login');
