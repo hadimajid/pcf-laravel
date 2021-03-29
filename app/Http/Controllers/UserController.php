@@ -153,9 +153,9 @@ class UserController extends Controller
 
         }
     }
-    public function verifyForgotEmail(Request $request,$token,$email){
-//        $token=$request->get('token');
-//        $email=$request->get('email');
+    public function verifyForgotEmail(Request $request){
+        $token=$request->get('token');
+        $email=$request->get('email');
         if(!$token && !$email ){
             return Response::json(['message'=>'Link broken'],422);
         }
