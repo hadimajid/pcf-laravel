@@ -4245,7 +4245,7 @@ class AdminController extends Controller
         $where=' id != 0';
         if($request->limit && $request->page){
             $limit=$request->limit;
-            $page=($request->limit-1)*$limit;
+            $page=($request->page-1)*$limit;
         }
         if($request->input('username')){
             $username=$request->input('username');
