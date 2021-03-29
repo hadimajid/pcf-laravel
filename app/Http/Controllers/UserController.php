@@ -173,12 +173,15 @@ class UserController extends Controller
         }
     }
     public function changeForgotPassword(Request $request,$token,$email){
-//        $token=$request->get('token');
-//        $email=$request->get('email');
+
         $request->validate([
             'password'=>['required',new PasswordValidate()],
             'confirm_password'=>'required|same:password',
+            'token'=>'required',
+            'email'=>'required|email',
         ]);
+                $token=$request->input('token');
+        $email=$request->input('email');
         if(!$token && !$email ){
             return Response::json(['message'=>'Link broken.'],422);
         }
