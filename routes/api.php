@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Route;
                     Route::post('',[UserController::class,'createOrder']);
                     Route::get('',[UserController::class,'getOrders']);
                     Route::get('{id}',[UserController::class,'getOrderById']);
+                    Route::post('cancel/{id}',[UserController::class,'cancelOrder']);
                 });
             Route::post('rate',[UserController::class,'rateProduct']);
         });
@@ -176,6 +177,10 @@ use Illuminate\Support\Facades\Route;
         Route::delete('sub-admin/delete/{id}',[AdminController::class,'deleteSubAdminById'])->middleware('scope:remove-sub-admin');
 //      Block User
         Route::post('block-user/{id}',[AdminController::class,'blockUser'])->middleware('scope:user-block');
+//      user
+            Route::prefix('user')->group(function () {
+                Route::get('',[AdminController::class,'getAllUsers']);
+            });
 //      Coupon
         Route::prefix('coupon')->group(function (){
             Route::get('',[AdminController::class,'getCoupons']);
@@ -187,6 +192,8 @@ use Illuminate\Support\Facades\Route;
         });
         Route::prefix('order')->group(function (){
             Route::get('',[AdminController::class,'getOrders']);
+            Route::post('cancel/{id}',[AdminController::class,'cancelOrder']);
+
         });
 });
 //      Site Getter

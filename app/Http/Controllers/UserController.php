@@ -1026,10 +1026,32 @@ class UserController extends Controller
         ]);
     }
     public function getOrderById($id){
-        $order=Order::where('id',$id)->with('items.product','address')->withCount('items')->first();
+        $order=Order::where('id',$id)->where('user_id',auth()->guard('user')->id())->with('items.product.nextGenImages','address')->withCount('items')->first();
         return Response::json([
             'order'=>$order,
         ]);
+    }
+    public function cancelOrder($id){
+        $order=Order::where('id',$id)->where('user_id',auth()->guard('user')->id())->first();
+        $message='';
+        $status='';
+            if(!empty($order)){
+                $status=$order->status;
+
+            }
+        if($status=='pending'){
+            $order->status='cancelled';
+            $order->cancelled_by='user';
+            $message="Order Cancelled!";
+            $order->save();
+        }
+        else if($status=='cancelled'){
+            $message="Order Already Cancelled!";
+        }
+        else{
+            $message="You cannot cancel order.";
+        }
+        return Response::json(['message'=>$message]);
     }
 
 }

@@ -4183,4 +4183,36 @@ class AdminController extends Controller
             'filtered'=>$orders->count()
         ]);
     }
+    public function cancelOrder($id){
+        $order=Order::where('id',$id)->first();
+        $message='';
+        $status='';
+        if(!empty($order)){
+            $status=$order->status;
+
+        }
+        if($status!='cancelled'){
+            $order->status='cancelled';
+            $order->cancelled_by='admin';
+            $message="Order Cancelled!";
+            $order->save();
+        }
+        else if($status=='cancelled'){
+            $message="Order Already Cancelled!";
+        }
+        return Response::json(['message'=>$message]);
+    }
+    public function getAllUsers(Request $request){
+        $total=User::all()->count();
+        $limit=$total;
+        $page=0;
+        $where=' id != 0';
+        if($request->limit && $request->page){
+            $limit=$request->limit;
+            $page=($request->limit-1)*$limit;
+        }
+
+        $users=User::whereRaw($where)->limit($limit)->offset($page)->get();
+        return Response::json(['users'=>$users,'total_number'=>$total,'filtered'=>$users->count()]);
+    }
 }
