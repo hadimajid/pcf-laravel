@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
-//      Guest routes
+//        Guest routes
 //        Route::middleware(['guest:user','guest:admin'])->group(function (){
             Route::prefix('user')->group(function (){
                 Route::post('login',[UserController::class,'login']);
