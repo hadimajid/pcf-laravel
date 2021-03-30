@@ -4178,6 +4178,10 @@ class AdminController extends Controller
             $orderNumber=$request->input('order_number');
             $where.="  and id = $orderNumber";
         }
+        if($request->input('status')){
+            $status=$request->input('status');
+            $where.="  and status = '$status'";
+        }
         if($request->input('username')){
             $username=$request->input('username');
             $userWhere.=" and display_name like '%$username%'";
