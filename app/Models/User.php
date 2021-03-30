@@ -55,7 +55,7 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
     public function items(){
-        return $this->hasManyThrough(Order::class,OrderItem::class);
+        return $this->hasManyThrough(OrderItem::class,Order::class);
     }
     public function cart(){
         return $this->hasOne(Cart::class);
