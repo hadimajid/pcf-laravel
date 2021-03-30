@@ -4200,7 +4200,7 @@ class AdminController extends Controller
                     $query->whereRaw($productWhere);
                 })->whereHas('address',function($query) use ($cityWhere) {
                         $query->whereRaw($cityWhere);})
-            ->with(['user','items.product','address'])->limit($limit)->offset($page)->get();
+            ->with(['user','items.product','address'])->withCount('items')->limit($limit)->offset($page)->get();
 
 
         $total=Order::whereRaw($where)->whereHas('user',function($query) use ($userWhere){
