@@ -4255,7 +4255,7 @@ class AdminController extends Controller
         return Response::json(['users'=>$users,'total_number'=>$total,'filtered'=>$users->count()]);
     }
     public function getUserById(Request $request,$id){
-        $user=User::where('id',$id)->withCount('orders')->with('orders.items')->get();
+        $user=User::where('id',$id)->withCount('orders')->with('orders.items')->first();
         return Response::json(['user'=>$user]);
     }
 }
