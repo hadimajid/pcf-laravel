@@ -4236,6 +4236,7 @@ class AdminController extends Controller
                 $order->status=$request->status;
                 $order->cancelled_by=null;
             }
+            $order->save();
         }
         return Response::json(['message'=>"Order Status Updated."]);
     }
