@@ -4251,7 +4251,11 @@ class AdminController extends Controller
             $username=$request->input('username');
             $where.=" and display_name like '%$username%'";
         }
-        $users=User::whereRaw($where)->withCount('orders')->limit($limit)->offset($page)->get();
+        $users=User::whereRaw($where)->withCount('orders')->with('orders.items')->limit($limit)->offset($page)->get();
         return Response::json(['users'=>$users,'total_number'=>$total,'filtered'=>$users->count()]);
+    }
+    public function getUserById(Request $request,$id){
+        $user=User::where('id',$id)->withCount('orders')->with('orders.items')->get();
+        return Response::json(['user'=>$user]);
     }
 }

@@ -185,6 +185,7 @@ use Illuminate\Support\Facades\Route;
 //      user
             Route::prefix('user')->group(function () {
                 Route::get('',[AdminController::class,'getAllUsers']);
+                Route::get('{id}',[AdminController::class,'getUserById']);
             });
 //      Coupon
         Route::prefix('coupon')->group(function (){
