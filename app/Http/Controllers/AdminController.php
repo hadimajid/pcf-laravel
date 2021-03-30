@@ -4178,6 +4178,10 @@ class AdminController extends Controller
             $orderNumber=$request->input('order_number');
             $where.="  and id = $orderNumber";
         }
+        if($request->input('status')){
+            $status=$request->input('status');
+            $where.="  and status = '$status'";
+        }
         if($request->input('username')){
             $username=$request->input('username');
             $userWhere.=" and display_name like '%$username%'";
@@ -4219,24 +4223,21 @@ class AdminController extends Controller
             'order'=>$order,
         ]);
     }
-    public function cancelOrder($id){
+    public function cancelOrder(Request $request,$id){
+        $request->validate([
+            'status'=>'required'
+        ]);
         $order=Order::where('id',$id)->first();
-        $message='';
-        $status='';
         if(!empty($order)){
-            $status=$order->status;
-
+            if($request->status=='cancelled'){
+                $order->status=$request->status;
+                $order->cancelled_by='admin';
+            }else{
+                $order->status=$request->status;
+                $order->cancelled_by=null;
+            }
         }
-        if($status!='cancelled'){
-            $order->status='cancelled';
-            $order->cancelled_by='admin';
-            $message="Order Cancelled!";
-            $order->save();
-        }
-        else if($status=='cancelled'){
-            $message="Order Already Cancelled!";
-        }
-        return Response::json(['message'=>$message]);
+        return Response::json(['message'=>"Order Status Updated."]);
     }
     public function getAllUsers(Request $request){
         $total=User::all()->count();
