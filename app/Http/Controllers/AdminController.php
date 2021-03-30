@@ -4219,24 +4219,21 @@ class AdminController extends Controller
             'order'=>$order,
         ]);
     }
-    public function cancelOrder($id){
+    public function cancelOrder(Request $request,$id){
+        $request->validate([
+            'status'=>'required'
+        ]);
         $order=Order::where('id',$id)->first();
-        $message='';
-        $status='';
         if(!empty($order)){
-            $status=$order->status;
-
+            if($request->status=='cancelled'){
+                $order->status=$request->status;
+                $order->cancelled_by='admin';
+            }else{
+                $order->status=$request->status;
+                $order->cancelled_by=null;
+            }
         }
-        if($status!='cancelled'){
-            $order->status='cancelled';
-            $order->cancelled_by='admin';
-            $message="Order Cancelled!";
-            $order->save();
-        }
-        else if($status=='cancelled'){
-            $message="Order Already Cancelled!";
-        }
-        return Response::json(['message'=>$message]);
+        return Response::json(['message'=>"Order Status Updated."]);
     }
     public function getAllUsers(Request $request){
         $total=User::all()->count();

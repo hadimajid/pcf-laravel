@@ -199,7 +199,7 @@ use Illuminate\Support\Facades\Route;
         Route::prefix('order')->group(function (){
             Route::get('',[AdminController::class,'getOrders']);
             Route::get('{id}',[AdminController::class,'getOrderById']);
-            Route::post('cancel/{id}',[AdminController::class,'cancelOrder']);
+            Route::post('status/{id}',[AdminController::class,'cancelOrder']);
 
         });
 });
