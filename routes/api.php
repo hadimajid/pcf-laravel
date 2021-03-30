@@ -197,7 +197,7 @@ use Illuminate\Support\Facades\Route;
             Route::delete('{id}',[AdminController::class,'deleteCoupon']);
         });
         Route::prefix('order')->group(function (){
-            Route::get('',[AdminController::class,'getOrders']);
+            Route::post('',[AdminController::class,'getOrders']);
             Route::get('{id}',[AdminController::class,'getOrderById']);
             Route::post('status/{id}',[AdminController::class,'cancelOrder']);
 
