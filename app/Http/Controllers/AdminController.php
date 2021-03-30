@@ -4252,14 +4252,14 @@ class AdminController extends Controller
             $where.=" and display_name like '%$username%'";
         }
         $users=User::whereRaw($where)->withCount('orders')->with(['orders'=>function($query){
-            $query->count('items');
-        },'orders.items.product'])->limit($limit)->offset($page)->get();
+            $query->withCount('items');
+        },'orders.items.product.nextGenImages'])->limit($limit)->offset($page)->get();
         return Response::json(['users'=>$users,'total_number'=>$total,'filtered'=>$users->count()]);
     }
     public function getUserById(Request $request,$id){
         $user=User::where('id',$id)->withCount('orders')->with(['orders'=>function($query){
-            $query->count('items');
-        },'orders.items.product'])->first();
+            $query->withCount('items');
+        },'orders.items.product.nextGenImages'])->first();
         return Response::json(['user'=>$user]);
     }
 }
