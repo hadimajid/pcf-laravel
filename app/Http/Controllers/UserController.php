@@ -351,7 +351,7 @@ class UserController extends Controller
                 return Response::json([
                         'message'=>'Current password incorrect.',
                     ]
-                );
+                ,422);
             }
             $user->password=Hash::make($request->new_password);
             $user->save();
@@ -371,24 +371,26 @@ class UserController extends Controller
         if(!empty($request->input('page'))){
             $page=($request->input('page')-1)*$limit;
         }
-        if(empty($request->input('category_name'))) {
-            $categories = Category::
-                withCount('subCategories', 'products')
-                ->with('subCategories')
-                ->offset($page)
-                ->limit($limit)
-                ->get();
+        $where=" id!=0";
+        $whereHas=" id!=0";
+        if(!empty($request->input('category_name'))) {
+            $cat=$request->input('category_name');
+            $where.=" and CategoryName like '%$cat%'";
         }
-        else{
+        if(!empty($request->input('new'))) {
+            $whereHas.=" and New = 1";
+        }
             $categories=Category::
-                where('CategoryName','like','%'.$request->input('category_name').'%')
+                whereRaw($where)
+                ->whereHas('products',function ($query) use ($whereHas){
+                        $query->whereRaw($whereHas);
+                })
                 ->withCount('subCategories','products')
                 ->with('subCategories')
                 ->offset($page)
                 ->limit($limit)
                 ->get();
-            $count=Category::where('CategoryName','like','%'.$request->input('category_name').'%')->count();
-        }
+            $count=Category::whereRaw($where)->count();
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
     }
     //    Get All Products Search Filter Paginate
@@ -978,6 +980,8 @@ class UserController extends Controller
                 if($discount){
                     $d=($totalPrice*$discount)/100;
                     $totalPrice=$totalPrice-$d;
+                    $validUser->pivot->status="expired";
+                    $validUser->pivot->save();
                 }
                 $subTotal=$totalPrice;
                 $tax=ConfigController::calculateTax($totalPrice);

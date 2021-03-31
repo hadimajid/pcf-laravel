@@ -3093,15 +3093,6 @@ class AdminController extends Controller
                     ->get();
                 $count = Product::whereNull('ProductNumber')->count();
             }
-//            if($a==1 && $b==0){
-//                $count=Product::whereNull('ProductNumber')
-//                    ->whereRaw($where)
-//                    ->count();
-//            }
-//            if($a==1 && $b==1){
-//                $count=$products->count();
-//            }
-
 
         }
 //        $products=ConfigController::price($products);
