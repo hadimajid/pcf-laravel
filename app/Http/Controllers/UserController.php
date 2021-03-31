@@ -407,7 +407,7 @@ class UserController extends Controller
             $where.=" and CategoryName like '%$cat%'";
         }
 
-            $whereHas.=" and New = 1";
+            $whereHas=" and New = 1";
 
             $categories=Category::
                 whereRaw($where)
