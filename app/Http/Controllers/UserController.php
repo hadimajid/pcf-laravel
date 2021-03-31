@@ -372,43 +372,14 @@ class UserController extends Controller
             $page=($request->input('page')-1)*$limit;
         }
         $where=" id!=0";
-
+        $whereHas=" id!=0";
         if(!empty($request->input('category_name'))) {
             $cat=$request->input('category_name');
             $where.=" and CategoryName like '%$cat%'";
         }
-
-            $categories=Category::
-                whereRaw($where)
-
-                ->withCount('subCategories','products')
-                ->with('subCategories')
-                ->offset($page)
-                ->limit($limit)
-                ->get();
-            $count=Category::whereRaw($where)
-               ->count();
-        return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
-    }
-    public function getCategoriesNew(Request $request){
-        $page=0;
-        $limit=Category::all()->count();
-        $count=Category::all()->count();
-        if(!empty($request->input('limit'))){
-            $limit=$request->input('limit');
+        if(!empty($request->input('new'))) {
+            $whereHas.=" and New = 1";
         }
-        if(!empty($request->input('page'))){
-            $page=($request->input('page')-1)*$limit;
-        }
-        $where=" id!=0";
-
-        if(!empty($request->input('category_name'))) {
-            $cat=$request->input('category_name');
-            $where.=" and CategoryName like '%$cat%'";
-        }
-
-            $whereHas="  New = 1";
-
             $categories=Category::
                 whereRaw($where)
                 ->whereHas('products',function ($query) use ($whereHas){
