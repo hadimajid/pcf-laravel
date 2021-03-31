@@ -4033,6 +4033,23 @@ class AdminController extends Controller
         }
         return Response::json(['message' => 'Product New Arrival Status Updated.']);
     }
+    public function featuredProduct(Request $request)
+    {
+        $request->validate([
+            'product_id' => ['required', 'array', 'min:1'],
+            'product_id.*' => ['required','exists:products,id']
+        ]);
+        $productIds = $request->input('product_id');
+
+        foreach ($productIds as $id) {
+            $product = Product::find($id);
+            if ($product) {
+                $product->Featured = !($product->Featured);
+                $product->save();
+            }
+        }
+        return Response::json(['message' => 'Product Featured Status Updated.']);
+    }
 
     public function hot(Request $request)
     {
