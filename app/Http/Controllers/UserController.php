@@ -48,7 +48,7 @@ class UserController extends Controller
             $user=User::where('email',$request->email)->orWhere('display_name',$request->email)->first();
             if(!empty($user)){
                 if($user->blocked==1){
-                    return Response::json(['message'=>'User blocked.'],422);
+                    return Response::json(['message'=>'Your account has been blocked please contact admin for further details..'],422);
                 }
                 if(empty($user->email_verified_at)){
 
