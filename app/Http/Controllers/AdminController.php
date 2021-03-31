@@ -3998,76 +3998,88 @@ class AdminController extends Controller
         ]);
     }
 
-    public function hideProduct(Request $request)
+    public function statusProduct(Request $request)
     {
         $request->validate([
             'product_id' => ['required', 'array', 'min:1'],
-            'product_id.*' => ['required','exists:products,id']
+            'product_id.*' => ['required','exists:products,id'],
+            'type'=>['required']
         ]);
         $productIds = $request->input('product_id');
 
         foreach ($productIds as $id) {
             $product = Product::find($id);
             if ($product) {
-                $product->Hide = !($product->Hide);
+                if($request->input('type')==='hide') {
+                    $product->Hide = !($product->Hide);
+                }
+                if($request->input('type')==='hot') {
+                    $product->Hot = !($product->Hot);
+                }
+                if($request->input('type')==='featured') {
+                    $product->Featured = !($product->Featured);
+                }
+                if($request->input('type')==='new') {
+                    $product->New = !($product->New);
+                }
                 $product->save();
             }
         }
-        return Response::json(['message' => 'Product Hidden Status Updated.']);
+        return Response::json(['message' => 'Product Status Updated.']);
     }
 
-    public function newProduct(Request $request)
-    {
-        $request->validate([
-            'product_id' => ['required', 'array', 'min:1'],
-            'product_id.*' => ['required','exists:products,id']
-        ]);
-        $productIds = $request->input('product_id');
-
-        foreach ($productIds as $id) {
-            $product = Product::find($id);
-            if ($product) {
-                $product->New = !($product->New);
-                $product->save();
-            }
-        }
-        return Response::json(['message' => 'Product New Arrival Status Updated.']);
-    }
-    public function featuredProduct(Request $request)
-    {
-        $request->validate([
-            'product_id' => ['required', 'array', 'min:1'],
-            'product_id.*' => ['required','exists:products,id']
-        ]);
-        $productIds = $request->input('product_id');
-
-        foreach ($productIds as $id) {
-            $product = Product::find($id);
-            if ($product) {
-                $product->Featured = !($product->Featured);
-                $product->save();
-            }
-        }
-        return Response::json(['message' => 'Product Featured Status Updated.']);
-    }
-
-    public function hot(Request $request)
-    {
-        $request->validate([
-            'product_id' => ['required', 'array', 'min:1'],
-            'product_id.*' => ['required','exists:products,id']
-        ]);
-        $productIds = $request->input('product_id');
-
-        foreach ($productIds as $id) {
-            $product = Product::find($id);
-            if ($product) {
-                $product->Hot = !($product->Hot);
-                $product->save();
-            }
-        }
-        return Response::json(['message' => 'Product Hot Status Updated.']);
-    }
+//    public function newProduct(Request $request)
+//    {
+//        $request->validate([
+//            'product_id' => ['required', 'array', 'min:1'],
+//            'product_id.*' => ['required','exists:products,id']
+//        ]);
+//        $productIds = $request->input('product_id');
+//
+//        foreach ($productIds as $id) {
+//            $product = Product::find($id);
+//            if ($product) {
+//                $product->New = !($product->New);
+//                $product->save();
+//            }
+//        }
+//        return Response::json(['message' => 'Product New Arrival Status Updated.']);
+//    }
+//    public function featuredProduct(Request $request)
+//    {
+//        $request->validate([
+//            'product_id' => ['required', 'array', 'min:1'],
+//            'product_id.*' => ['required','exists:products,id']
+//        ]);
+//        $productIds = $request->input('product_id');
+//
+//        foreach ($productIds as $id) {
+//            $product = Product::find($id);
+//            if ($product) {
+//                $product->Featured = !($product->Featured);
+//                $product->save();
+//            }
+//        }
+//        return Response::json(['message' => 'Product Featured Status Updated.']);
+//    }
+//
+//    public function hot(Request $request)
+//    {
+//        $request->validate([
+//            'product_id' => ['required', 'array', 'min:1'],
+//            'product_id.*' => ['required','exists:products,id']
+//        ]);
+//        $productIds = $request->input('product_id');
+//
+//        foreach ($productIds as $id) {
+//            $product = Product::find($id);
+//            if ($product) {
+//                $product->Hot = !($product->Hot);
+//                $product->save();
+//            }
+//        }
+//        return Response::json(['message' => 'Product Hot Status Updated.']);
+//    }
     public function getPriceList(Request $request){
         $code=Pricing::first()->id;
             if($request->input('price_code')){
