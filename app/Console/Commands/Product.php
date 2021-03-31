@@ -42,7 +42,7 @@ class Product extends Command
         $admin=new AdminController();
         $admin->storeProductApiData();
         $this->info("Product Stored");
-        MailController::sendTestEmail('zain.waheed.softenica@gmail.com','products');
+//        MailController::sendTestEmail('zain.waheed.softenica@gmail.com','products');
 
         return 0;
     }

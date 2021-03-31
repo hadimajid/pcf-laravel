@@ -48,18 +48,18 @@ class UserController extends Controller
             $user=User::where('email',$request->email)->orWhere('display_name',$request->email)->first();
             if(!empty($user)){
                 if($user->blocked==1){
-                    return Response::json(['message'=>'Your account has been blocked please contact admin for further details..'],422);
+                    return Response::json(['message'=>'block'],422);
                 }
                 if(empty($user->email_verified_at)){
 
-                    return Response::json(['message'=>'Please verify your email an email has been sent to you.'],422);
+                    return Response::json(['message'=>'Please verify your email address. An email has been sent to you for verification.'],422);
                 }
 
                 if(Hash::check($request->password,$user->password)){
 
                     $token=  $user->createToken($request->email,['basic'])->accessToken;
                     return Response::json([
-                        'message'=>'Sign in successful',
+                        'message'=>'Successfully Logged In!',
                         'user'=>$user,
                         'token'=>$token
                     ],
@@ -94,27 +94,27 @@ class UserController extends Controller
         if(!empty($request->input('order'))){
             $token=  $user->createToken($request->email,['basic'])->accessToken;
             return Response::json([
-                'message'=>'Sign up successful',
+                'message'=>'Sign up successful!',
                 'user'=>$user,
                 'token'=>$token
             ],200);
         }
-        return Response::json(['message'=>'Sign up successful'],200);
+        return Response::json(['message'=>'Sign up successful!'],200);
     }
     public function verify(Request $request,$token,$email){
         $user=User::where('email',$email)->where('token',$token)->first();
         if(empty($user)){
-            return Response::json(["message"=>'Invalid Link.'],422);
+            return Response::json(["message"=>'Sorry! The link is Invalid/Expired.'],422);
         }
         if(!empty($user->email_verified_at)){
-            return Response::json(["message"=>'Email Already Verified.']);
+            return Response::json(["message"=>'Email is Already Verified.']);
         }
         $user->email_verified_at=Carbon::now();
         $user->token=null;
         $user->code=null;
         $user->save();
 
-        return Response::json(["message"=>'Email successfully verified.']);
+        return Response::json(["message"=>'Email verified, thank you!']);
 
 
     }
@@ -141,7 +141,7 @@ class UserController extends Controller
         ]);
         $user=User::where('email',$request->email)->first();
         if(!$user){
-            return Response::json(['message'=>'User doesn\'t exist'],422);
+            return Response::json(['message'=>'This user does not exist in our system.'],422);
         }else{
             $token=Str::random(20);
             PasswordReset::create([
@@ -149,7 +149,7 @@ class UserController extends Controller
                 'token'=>$token
             ]);
             MailController::sendUserForgotPasswordMail($user->email,$token,$request->url);
-            return Response::json(['message'=>'Password reset email sent.']);
+            return Response::json(['message'=>'An email has been sent to you with password reset instructions.']);
 
         }
     }
@@ -157,19 +157,19 @@ class UserController extends Controller
 //        $token=$request->get('token');
 //        $email=$request->get('email');
         if(!$token && !$email ){
-            return Response::json(['message'=>'Link broken'],422);
+            return Response::json(['message'=>'Sorry! The link is Invalid/Expired.'],422);
         }
         $password=PasswordReset::where(['email'=>$email,'token'=>$token])->orderBy('created_at','desc')->first();
 
         if(!$password){
-            return Response::json(['message'=>'Link broken'],422);
+            return Response::json(['message'=>'Sorry! The link is Invalid/Expired.'],422);
         }else{
             $date=Carbon::now();
             $passwordDate=new Carbon(strtotime($password->created_at));
             if($passwordDate->diffInMinutes($date)>env('PASSWORD_EXPIRE')){
-                return Response::json(['message'=>'Link Expired.'],422);
+                return Response::json(['message'=>'Sorry! The link is Invalid/Expired.'],422);
             }
-            return Response::json(['message'=>'Link Verified'],200);
+            return Response::json(['message'=>'Sorry! The link is Invalid/Expired.'],200);
         }
     }
     public function changeForgotPassword(Request $request){
@@ -183,26 +183,26 @@ class UserController extends Controller
                 $token=$request->input('token');
         $email=$request->input('email');
         if(!$token && !$email ){
-            return Response::json(['message'=>'Link broken.'],422);
+            return Response::json(['message'=>'Sorry! The link is Invalid/Expired.'],422);
         }
         $password=PasswordReset::where(['email'=>$email,'token'=>$token])->orderBy('created_at','desc')->first();
 
         if(!$password){
-            return Response::json(['message'=>'Link broken.'],422);
+            return Response::json(['message'=>'Sorry! The link is Invalid/Expired.'],422);
         }else{
 
             $date=Carbon::now();
             $passwordDate=new Carbon(strtotime($password->created_at));
 
             if($passwordDate->diffInMinutes($date)>env('PASSWORD_EXPIRE')){
-                return Response::json(['message'=>'Link Expired.'],422);
+                return Response::json(['message'=>'Sorry! The link is Invalid/Expired.'],422);
             }
             $user=User::where('email',$email)->first();
             $user->password=Hash::make($request->password);
             $user->save();
             PasswordReset::where('email',$user->email)->delete();
             $this->revokeAllToken($user);
-            return Response::json(['message'=>'Password successfully changed.'],200);
+            return Response::json(['message'=>'PPassword successfully updated!'],200);
 
         }
     }
@@ -253,7 +253,7 @@ class UserController extends Controller
             $billing->save();
         }
         return Response::json([
-            'message'=>'Billing address updated.',
+            'message'=>'Billing address successfully updated!',
             'data'=>$billing
         ]);
     }
@@ -290,7 +290,7 @@ class UserController extends Controller
         $shipping->save();
         }
         return Response::json([
-            'message'=>'Shipping address added.',
+            'message'=>'Shipping address successfully updated!',
             'data'=>$validator->valid()]);
     }
 //    public function updateShippingAddress(Request $request){
@@ -327,7 +327,7 @@ class UserController extends Controller
             $user->fill($validator->valid());
             $user->save();
             return Response::json([
-                'message'=>'Profile updated.',
+                'message'=>'Profile successfully updated!',
 //                'data'=>$validator->valid(),
                 'user'=>$user,
                 ]
@@ -356,7 +356,7 @@ class UserController extends Controller
             $user->password=Hash::make($request->new_password);
             $user->save();
             return Response::json([
-                    'message'=>'Password updated.',
+                    'message'=>'Password successfully updated!',
                 ]
             );
         }

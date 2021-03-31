@@ -42,7 +42,7 @@ class Category extends Command
         $admin=new AdminController();
         $admin->storeCategoryApiData();
         $this->info("Category Stored");
-        MailController::sendTestEmail('zain.waheed.softenica@gmail.com','category');
+//        MailController::sendTestEmail('zain.waheed.softenica@gmail.com','category');
 
         return 0;
     }

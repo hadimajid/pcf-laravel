@@ -42,7 +42,7 @@ class Inventory extends Command
         $admin=new AdminController();
         $admin->storeWareHouse();
         $admin->storeWareHouseInventory();
-            MailController::sendTestEmail('zain.waheed.softenica@gmail.com','inventory');
+//            MailController::sendTestEmail('zain.waheed.softenica@gmail.com','inventory');
         $this->info("Inventory Stored");
         return 0;
     }
