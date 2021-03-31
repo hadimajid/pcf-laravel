@@ -390,7 +390,9 @@ class UserController extends Controller
                 ->offset($page)
                 ->limit($limit)
                 ->get();
-            $count=Category::whereRaw($where)->count();
+            $count=Category::whereRaw($where)->whereHas('products',function ($query) use ($whereHas){
+                $query->whereRaw($whereHas);
+            })->count();
         return Response::json(['categories'=>$categories,'total_number'=>$count,'filtered'=>$categories->count()],200);
     }
     //    Get All Products Search Filter Paginate
