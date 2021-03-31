@@ -978,6 +978,8 @@ class UserController extends Controller
                 if($discount){
                     $d=($totalPrice*$discount)/100;
                     $totalPrice=$totalPrice-$d;
+                    $validUser->pivot->status="expired";
+                    $validUser->pivot->save();
                 }
                 $subTotal=$totalPrice;
                 $tax=ConfigController::calculateTax($totalPrice);
