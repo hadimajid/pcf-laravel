@@ -202,7 +202,7 @@ class UserController extends Controller
             $user->save();
             PasswordReset::where('email',$user->email)->delete();
             $this->revokeAllToken($user);
-            return Response::json(['message'=>'PPassword successfully updated!'],200);
+            return Response::json(['message'=>'Password successfully updated!'],200);
 
         }
     }
