@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 //        Guest routes
 //        Route::middleware(['guest:user','guest:admin'])->group(function (){
             Route::prefix('user')->group(function (){
+                Route::post('contact-us',[UserController::class,'contactUs']);
                 Route::post('login',[UserController::class,'login']);
                 Route::post('registration',[UserController::class,'register']);
                 Route::get('verify/{token}/{email}',[UserController::class,'verify']);

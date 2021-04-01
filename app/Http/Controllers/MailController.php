@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\AdminForgotPassword;
+use App\Mail\ContactUs;
 use App\Mail\Test;
 use App\Mail\UserForgotPassword;
 use App\Mail\VerifyEmail;
@@ -22,5 +23,8 @@ class MailController extends Controller
     }
     public static function sendTestEmail($email,$message){
         Mail::to($email)->send(new Test(['cron_job'=>$message]));
+    }
+    public static function sendContactUsEmail($contact_email,$email,$name,$phone,$subject,$message){
+        Mail::to($contact_email)->send(new ContactUs(['email'=>$email,'name'=>$name,'phone'=>$phone,'subject'=>$subject,'message'=>$message]));
     }
 }

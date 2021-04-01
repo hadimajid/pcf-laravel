@@ -1172,4 +1172,17 @@ class UserController extends Controller
         }
         return Response::json(['message' => "Tokens revoked."], 200);
     }
+    public function contactUs(Request $request){
+        $request->validate([
+           'name'=>'required',
+           'email'=>'required|email',
+           'phone'=>'required',
+           'subject'=>'required',
+           'message'=>'required',
+            'contact_email'=>'required'
+        ]);
+
+        MailController::sendContactUsEmail($request->contact_email,$request->email,$request->name,$request->phone,$request->subject,$request->message);
+        return Response::json(['message'=>'Contact us email sent to admin.']);
+    }
 }
