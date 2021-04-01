@@ -377,10 +377,6 @@
                                 <td style="border: 1px solid #555; color: #000;">{{$details['email']}}</td>
                             </tr>
                             <tr>
-                                <th style="border: 1px solid #555; color: #000; text-align: left; width: 40%;">Phone Number:</th>
-                                <td style="border: 1px solid #555; color: #000;">{{$details['phone']}}</td>
-                            </tr>
-                            <tr>
                                 <th style="border: 1px solid #555; color: #000; text-align: left; width: 40%;">Subject:</th>
                                 <td style="border: 1px solid #555; color: #000;">{{$details['subject']}}</td>
                             </tr>
