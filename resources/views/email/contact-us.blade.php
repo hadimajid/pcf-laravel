@@ -4,7 +4,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,">
-    <title>Forgot Password</title>
+    <title>Verify Email</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,700,600italic,700italic,800,800italic" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Dancing+Script:400,700&display=swap" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Oswald:200,300,400,500,600,700" rel="stylesheet">
@@ -347,10 +347,11 @@
 
 <body>
 
+{{--NEW--}}
 <table align="center" bgcolor="#ffffff" border="0" cellpadding="0" cellspacing="0" width="100%" mc:repeatable="product-name-1" class="mcbc-main">
     <tr>
         <td align="center" class="res-padding">
-            <table align="center" border="0" bgcolor="white" class="display-width-inner" cellpadding="0" cellspacing="0" width="700" style="">
+            <table align="center" border="0" bgcolor="#626262" class="display-width-inner" cellpadding="0" cellspacing="0" width="700" style="">
                 <tr><td height="40"></td></tr>
                 <tr>
                     <td align="center" class="shop-padding" style="padding: 0px 20px;">
@@ -366,24 +367,34 @@
                 </tr>
                 <tr><td height="20"></td></tr>
                 <tr>
-                    <td align="center" class="res-padding">
-                        <table align="center" border="0" class="display-width-inner" cellpadding="12" cellspacing="0" width="600" style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; border: 1px solid #555; color: #000;">
+                    <td>
+                        <table align="center" border="0" class="display-width-inner" cellpadding="0" cellspacing="0" width="600">
+
+                            <tr><td height="15"></td></tr>
+
                             <tr>
-                                <th style="border: 1px solid #555; color: #000; text-align: left; width: 40%;">Name:</th>
-                                <td style="border: 1px solid #555; color: #000;">{{$details['name']}}</td>
+                                <td align="center" class="res-padding" style="color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px; letter-spacing: 1px;">
+                                    <table align="center" border="0" class="display-width-inner" cellpadding="12" cellspacing="0" width="600" style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; border: 1px solid #555; color: #000;">
+                                        <tr>
+                                            <th style="border: 1px solid #555; color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px; text-align: left; width: 40%;">Name:</th>
+                                            <td style="border: 1px solid #555; color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px;">{{$details['name']}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="border: 1px solid #555; color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px; text-align: left; width: 40%;">Email Address:</th>
+                                            <td style="border: 1px solid #555; color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px;">{{$details['email']}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="border: 1px solid #555; color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px; text-align: left; width: 40%;">Subject:</th>
+                                            <td style="border: 1px solid #555; color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px;">{{$details['subject']}}</td>
+                                        </tr>
+                                        <tr>
+                                            <th style="border: 1px solid #555; color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px; vertical-align: top; text-align: left; width: 40%;">Message:</th>
+                                            <td style="border: 1px solid #555; color: white; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:14px;">{{$details['message']}}</td>
+                                        </tr>
+                                    </table>
+                                </td>
                             </tr>
-                            <tr>
-                                <th style="border: 1px solid #555; color: #000; text-align: left; width: 40%;">Email Address:</th>
-                                <td style="border: 1px solid #555; color: #000;">{{$details['email']}}</td>
-                            </tr>
-                            <tr>
-                                <th style="border: 1px solid #555; color: #000; text-align: left; width: 40%;">Subject:</th>
-                                <td style="border: 1px solid #555; color: #000;">{{$details['subject']}}</td>
-                            </tr>
-                            <tr>
-                                <th style="border: 1px solid #555; color: #000; vertical-align: top; text-align: left; width: 40%;">Message:</th>
-                                <td style="border: 1px solid #555; color: #000;">{{$details['message']}}</td>
-                            </tr>
+
                         </table>
                     </td>
                 </tr>
@@ -395,5 +406,3 @@
 </body>
 
 </html>
-
-
