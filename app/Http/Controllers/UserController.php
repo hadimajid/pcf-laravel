@@ -382,7 +382,7 @@ class UserController extends Controller
                 whereRaw($where)
 
                 ->withCount(['subCategories', 'products'=>function($query){
-                    $query->where('Hide',1);
+                    $query->where('Hide',0);
                 }])
                 ->with('subCategories')
                 ->offset($page)
