@@ -481,7 +481,7 @@ class UserController extends Controller
                 $category_name=$category_name->id;
             }
             else{
-                $category_name=0;
+                $category_name='a';
             }
         }
 
@@ -503,7 +503,7 @@ class UserController extends Controller
                 $subcategory_name=$subcategory_name->id;
             }
             else{
-                $subcategory_name=0;
+                $subcategory_name='a';
             }
         }
         if(!empty($subcategory_name)){
