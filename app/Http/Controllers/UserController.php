@@ -481,7 +481,7 @@ class UserController extends Controller
                 $category_name=$category_name->id;
             }
             else{
-                $category_name='a';
+                $category_name=Category::orderBy('id','desc')->first()->id+1;
             }
         }
 
@@ -503,7 +503,8 @@ class UserController extends Controller
                 $subcategory_name=$subcategory_name->id;
             }
             else{
-                $subcategory_name='a';
+                $subcategory_name=SubCategory::orderBy('id','desc')->first()->id+1;
+
             }
         }
         if(!empty($subcategory_name)){
