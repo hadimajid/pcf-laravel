@@ -1177,13 +1177,13 @@ class UserController extends Controller
         $request->validate([
            'name'=>'required',
            'email'=>'required|email',
-           'phone'=>'required',
+//           'phone'=>'required',
            'subject'=>'required',
            'message'=>'required',
             'contact_email'=>'required'
         ]);
 
-        MailController::sendContactUsEmail($request->contact_email,$request->email,$request->name,$request->phone,$request->subject,$request->message);
+        MailController::sendContactUsEmail($request->contact_email,$request->email,$request->name,$request->subject,$request->message);
         return Response::json(['message'=>'Contact us email sent to admin.']);
     }
 }

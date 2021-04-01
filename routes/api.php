@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 //        Guest routes
 //        Route::middleware(['guest:user','guest:admin'])->group(function (){
             Route::prefix('user')->group(function (){
-                Route::post('contact-us',[UserController::class,'contactUs']);
                 Route::post('login',[UserController::class,'login']);
                 Route::post('registration',[UserController::class,'register']);
                 Route::get('verify/{token}/{email}',[UserController::class,'verify']);
@@ -223,7 +222,9 @@ use Illuminate\Support\Facades\Route;
 //      Route::get('sub-category',[AdminController::class,'getSubCategories']);
         Route::post('category',[UserController::class,'getCategories']);
         Route::post('category/new',[UserController::class,'getCategoriesNew']);
-        Route::fallback(function(){
+        Route::post('contact-us',[UserController::class,'contactUs']);
+
+Route::fallback(function(){
                 return response()->json(
                     ['message' => 'Invalid Route.'], 404);
         });
