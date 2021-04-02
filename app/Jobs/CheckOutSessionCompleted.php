@@ -46,10 +46,10 @@ class CheckOutSessionCompleted implements ShouldQueue
      */
     public function handle()
     {
-        $dataObject= $this->webhookCall->payload['data']['object'];
-        if($dataObject['payment_status']=='paid'){
-            try {
-                DB::beginTransaction();
+        $dataObject=$this->webhookCall->payload['data']['object'];
+        if($dataObject['payment_status']==='paid'){
+//            try {
+//                DB::beginTransaction();
                 $user= User::find($dataObject['metadata']['user_id']);
                 $items=CartItems::where('cart_id',$user->cart->id)->get();
                 $o=[];
@@ -116,16 +116,17 @@ class CheckOutSessionCompleted implements ShouldQueue
                     'total_price'=>$dataObject['amount_total']/100,
                 ]);
                 $payment->save();
-                DB::commit();
+//                DB::commit();
                 $this->cartEmpty();
-                exit();
+//                exit();
 //                return Response::json(['message'=>'Order sent.']);
-            }catch (\Exception $ex){
-                DB::rollback();
-                exit();
+//            }
+//            catch (\Exception $ex){
+//                DB::rollback();
+//                exit();
 //                return Response::json([$ex->getMessage()],422);
 //            return Response::json(['message'=>'Some error has occurred while placing order.'],422);
-            }
+//            }
 
         }
 
