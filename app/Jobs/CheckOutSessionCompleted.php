@@ -110,6 +110,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                 ]);
                 $shipping_address=ShippingAddress::find($dataObject['metadata']['shipping_id']);
                 $shipping_address->order_id=$order->id;
+            $shipping_address->save();
                 foreach ($o as $key=>$product){
                     $orderItem=OrderItem::create([
                         'order_id'=>$order->id,
