@@ -68,7 +68,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $totalPrice=round($prices->sum(),2);
                 $discount=0;
             if($dataObject['metadata']['coupon']=="No Coupon"){
-                $notes=null;
+                $coupon=null;
             }else{
                 $coupon=$dataObject['metadata']['coupon'];
 
