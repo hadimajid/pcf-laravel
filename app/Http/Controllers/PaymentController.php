@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BillingAddress;
 use App\Models\Cart;
 use App\Models\CartItems;
+use App\Models\Coupon;
 use App\Models\ShippingAddress;
 use App\Models\WebsiteSettings;
 use Illuminate\Http\Request;
@@ -119,8 +120,9 @@ class PaymentController extends Controller
 //                $checkoutItem[$key]['tax_rates']=[$tax_rate->id];
 //                $checkoutItem[$key]['price_data']['product_data']['images']=[$_SERVER['APP_URL'].'/'.$item->product->nextGenImages->pluck('name')[0]];
 //            }
+            $coupon=null;
             $checkoutItem[0]['price_data']['currency']='usd';
-            $checkoutItem[0]['price_data']['unit_amount']=$cart->total_price*100;
+            $checkoutItem[0]['price_data']['unit_amount']=$this->getCart($user,$coupon)['total_price']*100;
             $checkoutItem[0]['price_data']['product_data']['name']="Total Bill";
             $checkoutItem[0]['quantity']=1;
             $checkoutItem[0]['price_data']['product_data']['images']=[];
@@ -176,5 +178,45 @@ class PaymentController extends Controller
             DB::rollback();
             return Response::json(['error'=>$ex->getMessage()],422);
         }
+    }
+    public function getCart($user,$coupon=null){
+        $applyCoupon=false;
+        $discount=0;
+        if($coupon){
+            $getCoupon=Coupon::where('code',$coupon)->first();
+            if($getCoupon){
+                $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
+            }
+            if(!empty($validUser)){
+                $applyCoupon=true;
+                $discount=$getCoupon->discount;
+            }
+        }
+        $cart=null;
+        $totalPrice=0;
+        if($user->cart){
+            $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber,slug','product.nextGenImages:ProductId,name','product.inventory.eta'])->get();
+//            $prices=$cart->map(function ($value){
+//                return $value->quantity*$value->product->PromotionPrice;
+//            });
+            $prices=$cart->pluck('price');
+            $totalPrice=round($prices->sum(),2);
+            $subTotal=$totalPrice;
+            if($discount){
+                $d=($totalPrice*$discount)/100;
+                $totalPrice=$totalPrice-$d;
+            }
+            $totalPrice=round($totalPrice,2);
+            return [
+                'cart'=>$cart,
+                'sub_total'=>$subTotal,
+                'tax'=>ConfigController::calculateTax($totalPrice),
+                'shipping'=>$subTotal?WebsiteSettings::first()->delivery_fees:0,
+                'apply_coupon'=>$applyCoupon,
+                'coupon_discount'=>$discount,
+                'total_price'=>ConfigController::calculateTaxPrice($totalPrice)
+            ];
+        }
+        return [];
     }
 }
