@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Stripe\Checkout\Session;
+use Stripe\Customer;
 use Stripe\Stripe;
 use Stripe\StripeClient;
 
@@ -134,7 +135,24 @@ class PaymentController extends Controller
 //                    'state'=>$add['state'],
 //                ]
 //            ],
+            $customer=Customer::create([
+                'email'=>$user->email,
+                'name'=>$user->first_name.' '.$user->last_name,
+                'shipping'=>[
+                    'name'=>$add['name'],
+                    'address'=>[
+                        'city'=>$add['city'],
+                        'country'=>$add['country'],
+                        'line1'=>$add['street_address'],
+                        'line2'=>$add['street_address'],
+                        'postal_code'=>$add['zip'],
+                        'state'=>$add['state'],
+                    ]
+                ],
+
+            ]);
             $checkout_session = Session::create([
+                'customer'=>$customer->id,
                 'payment_method_types' => ['card'],
                 'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
                 'shipping_address_collection' => [
