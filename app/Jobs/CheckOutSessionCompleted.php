@@ -125,8 +125,9 @@ class CheckOutSessionCompleted implements ShouldQueue
                     'total_price'=>$dataObject['amount_total']/100,
                 ]);
                 $payment->save();
+                CartItems::where('cart_id',$user->cart->id)->delete();
 //                DB::commit();
-                $this->cartEmpty();
+
 //                exit();
 //                return Response::json(['message'=>'Order sent.']);
 //            }
