@@ -76,6 +76,10 @@ class PaymentController extends Controller
             'payment_method_types' => ['card'],
             'line_items' => $checkoutItem,
             'mode' => 'payment',
+            'metadata'=>[
+                'user_id'=>  $user->id,
+                'cart_id'=>$cart->id
+            ],
             'success_url' => $request->input('success_url'),
             'cancel_url' => $request->input('cancel_url'),
         ]);
