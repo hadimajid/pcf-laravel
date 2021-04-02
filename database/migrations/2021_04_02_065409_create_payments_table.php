@@ -13,12 +13,15 @@ class CreatePaymentsTable extends Migration
      */
     public function up()
     {
-//        Schema::create('payments', function (Blueprint $table) {
-////            $table->id();
-////            $table->string('payment_id');
-////            $table->string('price');
-////            $table->timestamps();
-//        });
+        Schema::create('payments', function (Blueprint $table) {
+            $table->id();
+            $table->string('payment_id');
+            $table->string('charge_id')->nullable();
+            $table->unsignedBigInteger('order_id');
+            $table->enum('payment_by',['stripe','paypal','other']);
+            $table->string('total_price');
+            $table->timestamps();
+        });
     }
 
     /**

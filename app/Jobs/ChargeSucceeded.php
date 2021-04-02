@@ -33,6 +33,7 @@ class ChargeSucceeded implements ShouldQueue
      */
     public function handle()
     {
-        //
+        $dataObject= $this->webhookCall->payload['data']['object'];
+
     }
 }
