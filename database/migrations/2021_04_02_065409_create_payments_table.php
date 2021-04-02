@@ -20,6 +20,7 @@ class CreatePaymentsTable extends Migration
             $table->unsignedBigInteger('order_id');
             $table->enum('payment_by',['stripe','paypal','other']);
             $table->string('total_price');
+            $table->enum('status',['paid','unpaid']);
             $table->timestamps();
         });
     }

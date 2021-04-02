@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Payment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,6 +35,8 @@ class ChargeSucceeded implements ShouldQueue
     public function handle()
     {
         $dataObject= $this->webhookCall->payload['data']['object'];
-
+        $payment=Payment::where('payment_id',$dataObject->payment_intent);
+        $payment->charge_id=$dataObject->id;
+        $payment->save();
     }
 }
