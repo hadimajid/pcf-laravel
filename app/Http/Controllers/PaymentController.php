@@ -137,6 +137,9 @@ class PaymentController extends Controller
             $checkout_session = Session::create([
                 'payment_method_types' => ['card'],
                 'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
+                'shipping_address_collection' => [
+                    'allowed_countries' => ['US', 'CA'],
+                ],
                 'client_reference_id'=>$user->id,
                 'line_items' => $checkoutItem,
                 'mode' => 'payment',
