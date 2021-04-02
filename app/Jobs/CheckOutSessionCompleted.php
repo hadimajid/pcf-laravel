@@ -67,7 +67,12 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $prices=$o->pluck('price');
                 $totalPrice=round($prices->sum(),2);
                 $discount=0;
+            if($dataObject['metadata']['coupon']=="No Coupon"){
+                $notes=null;
+            }else{
                 $coupon=$dataObject['metadata']['coupon'];
+
+            }
                 if($coupon){
                     $getCoupon=Coupon::where('code',$coupon)->first();
                     if($getCoupon){
@@ -87,11 +92,15 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $tax=ConfigController::calculateTax($totalPrice);
                 $delivery_fees=WebsiteSettings::first()->delivery_fees;
                 $totalPrice=ConfigController::calculateTaxPrice($totalPrice);
-
+                if($dataObject['metadata']['notes']=="No Notes"){
+                    $notes=null;
+                }else{
+                    $notes=$dataObject['metadata']['notes'];
+                }
                 $order=Order::create([
                     'user_id'=>$user->id,
                     'status'=>'pending',
-                    'notes'=>$dataObject['metadata']['notes'],
+                    'notes'=>$notes,
                     'ship'=>$dataObject['metadata']['ship'],
                     'tax'=>$tax,
                     'sub_total'=>$subTotal,
