@@ -116,7 +116,7 @@ class PaymentController extends Controller
                 $checkoutItem[$key]['price_data']['unit_amount']=$item->product->PromotionPrice*100;
                 $checkoutItem[$key]['price_data']['product_data']['name']=$item->product->Name;
                 $checkoutItem[$key]['quantity']=$item->quantity;
-                $checkoutItem[$key]['tax_rates']=[$tax_rate->id];
+//                $checkoutItem[$key]['tax_rates']=[$tax_rate->id];
                 $checkoutItem[$key]['price_data']['product_data']['images']=[$_SERVER['APP_URL'].'/'.$item->product->nextGenImages->pluck('name')[0]];
             }
 
@@ -149,9 +149,10 @@ class PaymentController extends Controller
             $checkout_session = Session::create([
                 'customer'=>$customer->id,
                 'payment_method_types' => ['card'],
-                'amount'=>$cart->total_price,
+                'total_amount'=>$cart->total_price,
                 'client_reference_id'=>$user->id,
                 'mode' => 'payment',
+                'line_items' => $checkoutItem,
                 'metadata'=>[
                     'user_id'=>  $user->id,
                     'cart_id'=>$cart->id,
