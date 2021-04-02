@@ -47,10 +47,10 @@ class CheckOutSessionCompleted implements ShouldQueue
     public function handle()
     {
         $dataObject= $this->webhookCall->payload['data']['object'];
-        if($dataObject->payment_status=='paid'){
+        if($dataObject['payment_status']=='paid'){
             try {
                 DB::beginTransaction();
-                $user= User::find($dataObject->metadata->user_id);
+                $user= User::find($dataObject['metadata']['user_id']);
                 $items=CartItems::where('cart_id',$user->cart->id)->get();
                 $o=[];
                 foreach ($items as $item){
@@ -67,7 +67,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $prices=$o->pluck('price');
                 $totalPrice=round($prices->sum(),2);
                 $discount=0;
-                $coupon=$dataObject->metadata->coupon;
+                $coupon=$dataObject['metadata']['coupon'];
                 if($coupon){
                     $getCoupon=Coupon::where('code',$coupon)->first();
                     if($getCoupon){
@@ -91,15 +91,15 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $order=Order::create([
                     'user_id'=>$user->id,
                     'status'=>'pending',
-                    'notes'=>$dataObject->metadata->notes,
-                    'ship'=>$dataObject->metadata->ship,
+                    'notes'=>$dataObject['metadata']['notes'],
+                    'ship'=>$dataObject['metadata']['ship'],
                     'tax'=>$tax,
                     'sub_total'=>$subTotal,
                     'shipping'=>$delivery_fees,
                     'total'=>$totalPrice,
                     'discount'=>$discount,
                 ]);
-                $shipping_address=ShippingAddress::find($dataObject->metadata->shipping_id);
+                $shipping_address=ShippingAddress::find($dataObject['metadata']['shipping_id']);
                 $shipping_address->order_id=$order->id;
                 foreach ($o as $key=>$product){
                     $orderItem=OrderItem::create([
@@ -109,11 +109,11 @@ class CheckOutSessionCompleted implements ShouldQueue
                     ]);
                 }
                 $payment=new Payment([
-                    'payment_id'=>$dataObject->payment_intent,
+                    'payment_id'=>$dataObject['payment_intent'],
                     'charge_id'=>null,
                     'order_id'=>$order->id,
                     'payment_by'=>'stripe',
-                    'total_price'=>$dataObject->amount_total/100,
+                    'total_price'=>$dataObject['amount_total']/100,
                 ]);
                 $payment->save();
                 DB::commit();
