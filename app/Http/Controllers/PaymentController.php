@@ -84,9 +84,14 @@ class PaymentController extends Controller
 
             if($ship===1){
                 $add=$request->input('shipping_address');
+
             }else{
                 $add=$request->input('billing_address');
             }
+            $shippingTemp=new ShippingAddress();
+            $shippingTemp->fill($add);
+            $shippingTemp->save();
+
             $cart=$user->cart;
             if(!$cart){
                 return false;
@@ -118,7 +123,17 @@ class PaymentController extends Controller
 //                    }
 //                });
             }
-
+//            'shipping'=>[
+//                'name'=>$add['name'],
+//                'address'=>[
+//                    'city'=>$add['city'],
+//                    'country'=>$add['country'],
+//                    'line1'=>$add['street_address'],
+//                    'line2'=>$add['street_address'],
+//                    'postal_code'=>$add['zip'],
+//                    'state'=>$add['state'],
+//                ]
+//            ],
             $checkout_session = Session::create([
                 'payment_method_types' => ['card'],
                 'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
@@ -127,21 +142,11 @@ class PaymentController extends Controller
                 ],
                 'client_reference_id'=>$user->id,
                 'line_items' => $checkoutItem,
-                'shipping'=>[
-                    'name'=>$add['name'],
-                    'address'=>[
-                        'city'=>$add['city'],
-                        'country'=>$add['country'],
-                        'line1'=>$add['street_address'],
-                        'line2'=>$add['street_address'],
-                        'postal_code'=>$add['zip'],
-                        'state'=>$add['state'],
-                    ]
-                ],
                 'mode' => 'payment',
                 'metadata'=>[
                     'user_id'=>  $user->id,
                     'cart_id'=>$cart->id,
+                    'shipping_id'=>$shippingTemp->id,
                 ],
                 'success_url' => $request->input('success_url'),
                 'cancel_url' => $request->input('cancel_url'),
