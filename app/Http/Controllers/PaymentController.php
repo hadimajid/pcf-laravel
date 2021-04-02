@@ -140,6 +140,7 @@ class PaymentController extends Controller
                 'name'=>$user->first_name.' '.$user->last_name,
                 'shipping'=>[
                     'name'=>$add['name'],
+                    'phone'=>$add['phone'],
                     'address'=>[
                         'city'=>$add['city'],
                         'country'=>$add['country'],
