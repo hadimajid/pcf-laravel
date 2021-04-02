@@ -149,13 +149,8 @@ class PaymentController extends Controller
             $checkout_session = Session::create([
                 'customer'=>$customer->id,
                 'payment_method_types' => ['card'],
-                'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
-                'billing_address_collection' => 'required',
-                'shipping_address_collection' => [
-                    'allowed_countries' => ['US', 'CA'],
-                ],
+                'amount'=>$cart->total_price,
                 'client_reference_id'=>$user->id,
-                'line_items' => $checkoutItem,
                 'mode' => 'payment',
                 'metadata'=>[
                     'user_id'=>  $user->id,
@@ -165,6 +160,26 @@ class PaymentController extends Controller
                 'success_url' => $request->input('success_url'),
                 'cancel_url' => $request->input('cancel_url'),
             ]);
+//            $checkout_session = Session::create([
+//                'customer'=>$customer->id,
+//                'payment_method_types' => ['card'],
+//                'shipping'=>$customer->shipping,
+//                'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
+//                'shipping_address_collection' => [
+//                    'allowed_countries' => ['US', 'CA'],
+//                ],
+//
+//                'client_reference_id'=>$user->id,
+//                'line_items' => $checkoutItem,
+//                'mode' => 'payment',
+//                'metadata'=>[
+//                    'user_id'=>  $user->id,
+//                    'cart_id'=>$cart->id,
+//                    'shipping_id'=>$shippingTemp->id,
+//                ],
+//                'success_url' => $request->input('success_url'),
+//                'cancel_url' => $request->input('cancel_url'),
+//            ]);
             DB::commit();
             return Response::json(['id' => $checkout_session->id],200);
         }catch (\Exception $ex){
