@@ -36,7 +36,9 @@ class ChargeSucceeded implements ShouldQueue
     {
         $dataObject= $this->webhookCall->payload['data']['object'];
         $payment=Payment::where('payment_id',$dataObject['payment_intent'])->first();
-        $payment->charge_id=$dataObject->id;
-        $payment->save();
+        if($payment){
+            $payment->charge_id=$payment->id;
+            $payment->save();
+        }
     }
 }
