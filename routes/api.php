@@ -27,6 +27,9 @@ use Illuminate\Support\Facades\Route;
 //        });
 //      User routes
         Route::middleware('auth:user')->prefix('user')->group(function (){
+            Route::prefix('checkout')->group(function () {
+                Route::post('stripe',[PaymentController::class,'checkOutWithStripe']);
+            });
                 Route::post('is-logged-in',[UserController::class,'checkLoggedIn']);
                 Route::post('logout',[UserController::class,'logout']);
                 Route::get('get-billing-address',[UserController::class,'getBillingAddress']);
