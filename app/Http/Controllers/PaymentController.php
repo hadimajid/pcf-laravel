@@ -12,10 +12,10 @@ use Stripe\StripeClient;
 
 class PaymentController extends Controller
 {
-//    private $stripe;
+    private StripeClient $stripe;
     public function __construct()
     {
-//        $this->stripe=new StripeClient(env('STRIPE_SK'));
+        $this->stripe=new StripeClient(env('STRIPE_SK'));
         Stripe::setApiKey(env('STRIPE_SK'));
 
     }
