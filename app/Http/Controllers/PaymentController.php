@@ -118,23 +118,8 @@ class PaymentController extends Controller
                 $checkoutItem[$key]['quantity']=$item->quantity;
                 $checkoutItem[$key]['tax_rates']=[$tax_rate->id];
                 $checkoutItem[$key]['price_data']['product_data']['images']=[$_SERVER['APP_URL'].'/'.$item->product->nextGenImages->pluck('name')[0]];
-//                $item->product->nextGenImages->pluck('name')->map(function ($value){
-//                    if($value){
-//                        return $_SERVER['APP_URL'].'/'.$value;
-//                    }
-//                });
             }
-//            'shipping'=>[
-//                'name'=>$add['name'],
-//                'address'=>[
-//                    'city'=>$add['city'],
-//                    'country'=>$add['country'],
-//                    'line1'=>$add['street_address'],
-//                    'line2'=>$add['street_address'],
-//                    'postal_code'=>$add['zip'],
-//                    'state'=>$add['state'],
-//                ]
-//            ],
+
             $customer=Customer::create([
                 'email'=>$user->email,
                 'name'=>$user->first_name.' '.$user->last_name,
@@ -166,6 +151,9 @@ class PaymentController extends Controller
                 'payment_method_types' => ['card'],
                 'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
                 'shipping_address_collection' => [
+                    'allowed_countries' => ['US', 'CA'],
+                ],
+                'billing_address_collection' => [
                     'allowed_countries' => ['US', 'CA'],
                 ],
                 'client_reference_id'=>$user->id,
