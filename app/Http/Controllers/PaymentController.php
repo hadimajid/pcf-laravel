@@ -148,8 +148,7 @@ class PaymentController extends Controller
                         'postal_code'=>$add['zip'],
                         'state'=>$add['state'],
                     ]
-                ],'billing'=>[
-                    'name'=>$add['name'],
+                ],
                     'address'=>[
                         'city'=>$add['city'],
                         'country'=>$add['country'],
@@ -157,7 +156,7 @@ class PaymentController extends Controller
                         'line2'=>$add['street_address'],
                         'postal_code'=>$add['zip'],
                         'state'=>$add['state'],
-                    ]
+
                 ],
 
             ]);
