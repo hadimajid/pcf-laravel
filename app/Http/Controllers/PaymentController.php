@@ -111,14 +111,20 @@ class PaymentController extends Controller
                 'jurisdiction' => 'US - CA',
                 'description' => 'CA Sales Tax',
             ]);
-            foreach ($items as $key=>$item){
-                $checkoutItem[$key]['price_data']['currency']='usd';
-                $checkoutItem[$key]['price_data']['unit_amount']=$item->product->PromotionPrice*100;
-                $checkoutItem[$key]['price_data']['product_data']['name']=$item->product->Name;
-                $checkoutItem[$key]['quantity']=$item->quantity;
+//            foreach ($items as $key=>$item){
+//                $checkoutItem[$key]['price_data']['currency']='usd';
+//                $checkoutItem[$key]['price_data']['unit_amount']=$item->product->PromotionPrice*100;
+//                $checkoutItem[$key]['price_data']['product_data']['name']=$item->product->Name;
+//                $checkoutItem[$key]['quantity']=$item->quantity;
 //                $checkoutItem[$key]['tax_rates']=[$tax_rate->id];
-                $checkoutItem[$key]['price_data']['product_data']['images']=[$_SERVER['APP_URL'].'/'.$item->product->nextGenImages->pluck('name')[0]];
-            }
+//                $checkoutItem[$key]['price_data']['product_data']['images']=[$_SERVER['APP_URL'].'/'.$item->product->nextGenImages->pluck('name')[0]];
+//            }
+            $checkoutItem[0]['price_data']['currency']='usd';
+            $checkoutItem[0]['price_data']['unit_amount']=$cart->total_price*100;
+            $checkoutItem[0]['price_data']['product_data']['name']="Total Bill";
+            $checkoutItem[0]['quantity']=1;
+            $checkoutItem[0]['price_data']['product_data']['images']=[];
+
 
             $customer=Customer::create([
                 'email'=>$user->email,
@@ -149,10 +155,13 @@ class PaymentController extends Controller
             $checkout_session = Session::create([
                 'customer'=>$customer->id,
                 'payment_method_types' => ['card'],
-                'total_amount'=>$cart->total_price,
+                'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
+                'shipping_address_collection' => [
+                    'allowed_countries' => ['US', 'CA'],
+                ],
                 'client_reference_id'=>$user->id,
-                'mode' => 'payment',
                 'line_items' => $checkoutItem,
+                'mode' => 'payment',
                 'metadata'=>[
                     'user_id'=>  $user->id,
                     'cart_id'=>$cart->id,
@@ -161,26 +170,6 @@ class PaymentController extends Controller
                 'success_url' => $request->input('success_url'),
                 'cancel_url' => $request->input('cancel_url'),
             ]);
-//            $checkout_session = Session::create([
-//                'customer'=>$customer->id,
-//                'payment_method_types' => ['card'],
-//                'shipping'=>$customer->shipping,
-//                'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
-//                'shipping_address_collection' => [
-//                    'allowed_countries' => ['US', 'CA'],
-//                ],
-//
-//                'client_reference_id'=>$user->id,
-//                'line_items' => $checkoutItem,
-//                'mode' => 'payment',
-//                'metadata'=>[
-//                    'user_id'=>  $user->id,
-//                    'cart_id'=>$cart->id,
-//                    'shipping_id'=>$shippingTemp->id,
-//                ],
-//                'success_url' => $request->input('success_url'),
-//                'cancel_url' => $request->input('cancel_url'),
-//            ]);
             DB::commit();
             return Response::json(['id' => $checkout_session->id],200);
         }catch (\Exception $ex){
