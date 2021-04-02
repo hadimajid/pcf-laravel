@@ -231,3 +231,4 @@ Route::fallback(function(){
                 return response()->json(
                     ['message' => 'Invalid Route.'], 404);
         });
+Route::stripeWebhooks('stripe');

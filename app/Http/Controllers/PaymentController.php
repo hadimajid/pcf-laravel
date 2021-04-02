@@ -12,7 +12,7 @@ use Stripe\StripeClient;
 
 class PaymentController extends Controller
 {
-    private StripeClient $stripe;
+    private $stripe;
     public function __construct()
     {
         $this->stripe=new StripeClient(env('STRIPE_SK'));
@@ -21,8 +21,8 @@ class PaymentController extends Controller
     }
     public function checkOutWithStripe(Request $request){
         $request->validate([
-           'success_url'=>'required',
-           'cancel_url'=>'required',
+           'success_url'=>'required|url',
+           'cancel_url'=>'required|url',
         ]);
         $user=auth()->guard('user')->user();
         $cart=$user->cart;
