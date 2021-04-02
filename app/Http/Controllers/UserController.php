@@ -318,7 +318,6 @@ class UserController extends Controller
             'first_name'=>'required',
             'last_name'=>'required',
             'display_name'=>['required',Rule::unique('users','display_name')->ignore(\auth()->guard('user')->id())],
-//            'display_name'=>['required',new Unique('users','display_name',\auth()->guard('user')->user()->id)],
         ];
         $validator=Validator::make($request->all(),$rules);
         if($validator->fails()){
