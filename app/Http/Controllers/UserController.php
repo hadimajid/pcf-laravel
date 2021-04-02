@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -316,8 +317,8 @@ class UserController extends Controller
         $rules=[
             'first_name'=>'required',
             'last_name'=>'required',
-            'display_name'=>['required',new Unique('users','display_name',\auth()->guard('user')->user()->id)],
-//            'email'=>'required|email',
+            'display_name'=>['required',Rule::unique('users','display_name')->ignore(\auth()->guard('user')->id())],
+//            'display_name'=>['required',new Unique('users','display_name',\auth()->guard('user')->user()->id)],
         ];
         $validator=Validator::make($request->all(),$rules);
         if($validator->fails()){
