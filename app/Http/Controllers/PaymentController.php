@@ -150,9 +150,7 @@ class PaymentController extends Controller
                 'customer'=>$customer->id,
                 'payment_method_types' => ['card'],
                 'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
-                'shipping_address_collection' => [
-                    'allowed_countries' => ['US', 'CA'],
-                ],
+                'shipping_address_collection' => 'required',
                 'billing_address_collection' => [
                     'allowed_countries' => ['US', 'CA'],
                 ],
