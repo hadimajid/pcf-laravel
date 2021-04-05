@@ -54,7 +54,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
+use Intervention\Image\ImageManagerStatic as Image;
 class AdminController extends Controller
 {
     public function __construct()
@@ -631,7 +631,9 @@ class AdminController extends Controller
 
         return Response::json(['sub_categories' => $subcategories, 'total_number' => $count, 'filtered' => $subcategories->count()], 200);
     }
+    public function newTest(){
 
+    }
 //    API CALLS from http://api.coasteramer.com/
     public function storeProductApiData()
     {
@@ -751,9 +753,7 @@ class AdminController extends Controller
                     $productCheck->BoxWidth = $product->BoxSize->Width;
                     $productCheck->BoxHeight = $product->BoxSize->Height;
 
-                    foreach ($productCheck->measurements as $mes) {
-                        $mes->delete();
-                    }
+                    Measurement::where('ProductId',$productCheck)->delete();
                     foreach ($product->MeasurementList as $measurementList) {
                         $Length = null;
                         $Width = null;
@@ -813,9 +813,9 @@ class AdminController extends Controller
                     }
 
 
-                    foreach ($productCheck->materials as $mat) {
-                        $mat->delete();
-                    }
+
+                    Material::where('ProductId',$productCheck)->delete();
+
                     foreach ($product->MaterialList as $materialList) {
                         Material::create([
                             'Field' => $materialList->Field,
@@ -825,9 +825,8 @@ class AdminController extends Controller
                     }
 
 
-                    foreach ($productCheck->additionalFields as $additionalField) {
-                        $additionalField->delete();
-                    }
+                    AdditionalField::where('ProductId',$productCheck)->delete();
+
                     foreach ($product->AdditionalFieldList as $additionalFieldList) {
                         AdditionalField::create([
                             'Field' => $additionalFieldList->Field,
@@ -837,11 +836,7 @@ class AdminController extends Controller
                     }
 
 
-                    if ($productCheck->relatedProducts) {
-                        foreach ($productCheck->relatedProducts as $relatedProduct) {
-                            $relatedProduct->delete();
-                        }
-                    }
+                    RelatedProductList::where('ProductId',$productCheck)->delete();
 
                     foreach ($product->RelatedProductList as $relatedProductList) {
                         RelatedProductList::create([
@@ -851,9 +846,8 @@ class AdminController extends Controller
                     }
 
 
-                    foreach ($productCheck->components as $component) {
-                        $component->delete();
-                    }
+                    Component::where('ProductId',$productCheck)->delete();
+
                     if (property_exists($product, 'Components')) {
                         foreach ($product->Components as $component) {
 
@@ -870,7 +864,7 @@ class AdminController extends Controller
                             ]);
                         }
                     }
-                    if ($product->NumNextGenImages != $productCheck->NumNextGenImages) {
+//                    if ($product->NumNextGenImages != $productCheck->NumNextGenImages) {
                         foreach ($productCheck->nextGenImages as $img) {
                             if (file_exists(public_path($img))) {
                                 unlink(public_path($img));
@@ -882,23 +876,26 @@ class AdminController extends Controller
                             try {
 
                                 $img = file_get_contents('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
+                                $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
+                                $image_resize->resize(200, 200);
                                 $extension = explode('.', $image);
                                 $tempName = explode('/', $image);
                                 $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
-
                                 file_put_contents(public_path('uploads/product/' . $name), $img);
+                                $image_resize->save(public_path('uploads/thumbnail/' . $name));
                                 NextGenImage::create([
                                     'Name' => 'uploads/product/' . $name,
                                     'ProductId' => $productCheck->id
                                 ]);
 
                             } catch (\Exception $ex) {
-
+                                return Response::json(['error' => [
+                                    'message' => $ex->getMessage(),
+                                    'line' => $ex->getLine()
+                                ]], 422);
                             }
                         }
-                    }
-
-//                    $productCheck->New = 0;
+//                    }
                     $productCheck->save();
                     $check = false;
 
@@ -910,7 +907,6 @@ class AdminController extends Controller
 
                             $productCheck->slug = Str::slug($productCheck->Name, '-') . '-' . time() . uniqid();
                             $check = $productCheck->save();
-
                         }
                     }
                     //                    return Response::json(['message'=>'Product Details Updated'],200);
@@ -1056,8 +1052,10 @@ class AdminController extends Controller
                                 $extension = explode('.', $image);
                                 $tempName = explode('/', $image);
                                 $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
-
+                                $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
+                                $image_resize->resize(200, 200);
                                 file_put_contents(public_path('uploads/product/' . $name), $img);
+                                $image_resize->save(public_path('uploads/thumbnail/' . $name));
                                 NextGenImage::create([
                                     'Name' => 'uploads/product/' . $name,
                                     'ProductId' => $p->id
@@ -1091,6 +1089,7 @@ class AdminController extends Controller
                     'line' => $ex->getLine()
                 ]], 422);
             }
+            break;
         }
         $relatedProducts = RelatedProductList::whereNull('RelatedProductId')->get();
         if ($relatedProducts) {

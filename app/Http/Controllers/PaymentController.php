@@ -8,8 +8,10 @@ use App\Models\CartItems;
 use App\Models\Coupon;
 use App\Models\ShippingAddress;
 use App\Models\WebsiteSettings;
+use App\Traits\PayPal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Stripe\Checkout\Session;
 use Stripe\Customer;
@@ -18,11 +20,19 @@ use Stripe\StripeClient;
 
 class PaymentController extends Controller
 {
+    use PayPal;
     private StripeClient $stripe;
+    private string $token;
     public function __construct()
     {
         $this->stripe=new StripeClient(env('STRIPE_SK'));
         Stripe::setApiKey(env('STRIPE_SK'));
+        $response = Http::withBasicAuth(env('PAYPAL_CLIENT_ID'), env('PAYPAL_SECRET'))->asForm()->
+        post(env('PAYPAL_MODE').'/v1/oauth2/token', [
+            'grant_type' => 'client_credentials',
+        ]);
+        $responseDecode=json_decode($response);
+        $this->token=$responseDecode->token_type.' '.$responseDecode->access_token;
 
     }
     public function checkOutWithStripe(Request $request){
@@ -222,4 +232,5 @@ class PaymentController extends Controller
         }
         return [];
     }
+
 }

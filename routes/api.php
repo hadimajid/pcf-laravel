@@ -232,3 +232,8 @@ Route::fallback(function(){
                     ['message' => 'Invalid Route.'], 404);
         });
 Route::stripeWebhooks('stripe');
+Route::get('test/{totalAmount}',[PaymentController::class,'payNow']);
+Route::get('success',[PaymentController::class,'newTest']);
+Route::get('cancel',[PaymentController::class,'cancel']);
+Route::get('order_details/{order_id}',[PaymentController::class,'getOrderDetails']);
+Route::get('newTest',[AdminController::class,'newTest']);
