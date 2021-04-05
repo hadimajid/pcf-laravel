@@ -1089,7 +1089,6 @@ class AdminController extends Controller
                     'line' => $ex->getLine()
                 ]], 422);
             }
-            break;
         }
         $relatedProducts = RelatedProductList::whereNull('RelatedProductId')->get();
         if ($relatedProducts) {
