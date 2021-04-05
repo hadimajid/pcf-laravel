@@ -635,6 +635,7 @@ class AdminController extends Controller
 
     }
 //    API CALLS from http://api.coasteramer.com/
+//Start from here
     public function storeProductApiData()
     {
         $this->storeCategoryApiData();
@@ -648,7 +649,7 @@ class AdminController extends Controller
             'Accept' => 'application/json'
         ])->get('http://api.coasteramer.com/api/product/GetProductList');
 
-//        $products=file_get_contents('C:\Users\Hadi\Desktop\PCF API DATA\productlist.json');
+//        $products=file_get_contents('C:\Users\DELL\Desktop\response.json');
         $productsDecode = json_decode($products);
         $i = 0;
         foreach ($productsDecode as $product) {
@@ -866,8 +867,11 @@ class AdminController extends Controller
                     }
 //                    if ($product->NumNextGenImages != $productCheck->NumNextGenImages) {
                         foreach ($productCheck->nextGenImages as $img) {
-                            if (file_exists(public_path($img))) {
-                                unlink(public_path($img));
+                            $tImg=explode('/',$img->name);
+                            $thumbnailImage=$tImg[0].'/thumbnail/'.$tImg[2];
+                            if (file_exists(public_path($img->name))) {
+                                unlink(public_path($img->name));
+                                unlink(public_path($thumbnailImage));
                             }
                             $img->delete();
                         }
@@ -877,7 +881,9 @@ class AdminController extends Controller
 
                                 $img = file_get_contents('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
                                 $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
-                                $image_resize->resize(200, 200);
+                                $image_resize->resize(300, null, function ($constraint) {
+                                    $constraint->aspectRatio();
+                                });
                                 $extension = explode('.', $image);
                                 $tempName = explode('/', $image);
                                 $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
@@ -1053,7 +1059,9 @@ class AdminController extends Controller
                                 $tempName = explode('/', $image);
                                 $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
                                 $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
-                                $image_resize->resize(200, 200);
+                                $image_resize->resize(300, null, function ($constraint) {
+                                    $constraint->aspectRatio();
+                                });
                                 file_put_contents(public_path('uploads/product/' . $name), $img);
                                 $image_resize->save(public_path('uploads/thumbnail/' . $name));
                                 NextGenImage::create([
