@@ -871,6 +871,8 @@ class AdminController extends Controller
                             $thumbnailImage=$tImg[0].'/thumbnail/'.$tImg[2];
                             if (file_exists(public_path($img->name))) {
                                 unlink(public_path($img->name));
+                            }
+                            if(file_exists(public_path($thumbnailImage)){
                                 unlink(public_path($thumbnailImage));
                             }
                             $img->delete();
