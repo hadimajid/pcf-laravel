@@ -638,18 +638,18 @@ class AdminController extends Controller
 //Start from here
     public function storeProductApiData()
     {
-//        $this->storeCategoryApiData();
-//        $this->storeStyleApiData();
-//        $this->storeCollectionApiData();
-//        $this->storeProductLineApiData();
-//        $this->storeGroupApiData();
-//        $this->storeProductInfoApiData();
-//        $products = Http::withHeaders([
-//            'keycode' => env('API_COASTERAMER_KEY'),
-//            'Accept' => 'application/json'
-//        ])->get('http://api.coasteramer.com/api/product/GetProductList');
+        $this->storeCategoryApiData();
+        $this->storeStyleApiData();
+        $this->storeCollectionApiData();
+        $this->storeProductLineApiData();
+        $this->storeGroupApiData();
+        $this->storeProductInfoApiData();
+        $products = Http::withHeaders([
+            'keycode' => env('API_COASTERAMER_KEY'),
+            'Accept' => 'application/json'
+        ])->get('http://api.coasteramer.com/api/product/GetProductList');
 
-        $products=file_get_contents('C:\Users\DELL\Desktop\response.json');
+//        $products=file_get_contents('C:\Users\DELL\Desktop\response.json');
         $productsDecode = json_decode($products);
         $i = 0;
         foreach ($productsDecode as $product) {
