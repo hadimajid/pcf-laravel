@@ -899,10 +899,10 @@ class AdminController extends Controller
 
 
                             } catch (\Exception $ex) {
-                                return Response::json(['error' => [
-                                    'message' => $ex->getMessage(),
-                                    'line' => $ex->getLine()
-                                ]], 422);
+//                                return Response::json(['error' => [
+//                                    'message' => $ex->getMessage(),
+//                                    'line' => $ex->getLine()
+//                                ]], 422);
                             }
                         }
 //                    }
