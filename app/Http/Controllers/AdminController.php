@@ -872,7 +872,7 @@ class AdminController extends Controller
                             if (file_exists(public_path($img->name))) {
                                 unlink(public_path($img->name));
                             }
-                            if(file_exists(public_path($thumbnailImage)){
+                            if(file_exists(public_path($thumbnailImage))){
                                 unlink(public_path($thumbnailImage));
                             }
                             $img->delete();
