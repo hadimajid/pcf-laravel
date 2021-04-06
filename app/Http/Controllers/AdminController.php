@@ -867,13 +867,13 @@ class AdminController extends Controller
                     }
 //                    if ($product->NumNextGenImages != $productCheck->NumNextGenImages) {
                         foreach ($productCheck->nextGenImages as $img) {
-                            $tImg=explode('/',$img->name);
-                            $thumbnailImage=$tImg[0].'/thumbnail/'.$tImg[2];
+//                            $tImg=explode('/',$img->name);
+//                            $thumbnailImage=$tImg[0].'/thumbnail/'.$tImg[2];
                             if (file_exists(public_path($img->name))) {
                                 unlink(public_path($img->name));
                             }
-                            if(file_exists(public_path($thumbnailImage))){
-                                unlink(public_path($thumbnailImage));
+                            if(file_exists(public_path('thumbnail/'.$img->name))){
+                                unlink(public_path('thumbnail/'.$img->name));
                             }
                             $img->delete();
                         }
@@ -890,7 +890,7 @@ class AdminController extends Controller
                                 $tempName = explode('/', $image);
                                 $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
                                 file_put_contents(public_path('uploads/product/' . $name), $img);
-                                $image_resize->save(public_path('uploads/thumbnail/' . $name));
+                                $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
                                 NextGenImage::create([
                                     'Name' => 'uploads/product/' . $name,
                                     'ProductId' => $productCheck->id
@@ -1065,7 +1065,8 @@ class AdminController extends Controller
                                     $constraint->aspectRatio();
                                 });
                                 file_put_contents(public_path('uploads/product/' . $name), $img);
-                                $image_resize->save(public_path('uploads/thumbnail/' . $name));
+                                $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
+
                                 NextGenImage::create([
                                     'Name' => 'uploads/product/' . $name,
                                     'ProductId' => $p->id
