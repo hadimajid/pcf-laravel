@@ -638,18 +638,18 @@ class AdminController extends Controller
 //Start from here
     public function storeProductApiData()
     {
-        $this->storeCategoryApiData();
-        $this->storeStyleApiData();
-        $this->storeCollectionApiData();
-        $this->storeProductLineApiData();
-        $this->storeGroupApiData();
-        $this->storeProductInfoApiData();
-        $products = Http::withHeaders([
-            'keycode' => env('API_COASTERAMER_KEY'),
-            'Accept' => 'application/json'
-        ])->get('http://api.coasteramer.com/api/product/GetProductList');
+//        $this->storeCategoryApiData();
+//        $this->storeStyleApiData();
+//        $this->storeCollectionApiData();
+//        $this->storeProductLineApiData();
+//        $this->storeGroupApiData();
+//        $this->storeProductInfoApiData();
+//        $products = Http::withHeaders([
+//            'keycode' => env('API_COASTERAMER_KEY'),
+//            'Accept' => 'application/json'
+//        ])->get('http://api.coasteramer.com/api/product/GetProductList');
 
-//        $products=file_get_contents('C:\Users\DELL\Desktop\response.json');
+        $products=file_get_contents('C:\Users\DELL\Desktop\response.json');
         $productsDecode = json_decode($products);
         $i = 0;
         foreach ($productsDecode as $product) {
@@ -880,21 +880,23 @@ class AdminController extends Controller
                         $listImage = explode(',', $product->ListNextGenImages);
                         foreach ($listImage as $image) {
                             try {
+                                if(!empty(str_replace(' ', '', $image))){
+                                    $img = file_get_contents('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
+                                    $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
+                                    $image_resize->resize(300, null, function ($constraint) {
+                                        $constraint->aspectRatio();
+                                    });
+                                    $extension = explode('.', $image);
+                                    $tempName = explode('/', $image);
+                                    $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
+                                    file_put_contents(public_path('uploads/product/' . $name), $img);
+                                    $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
+                                    NextGenImage::create([
+                                        'Name' => 'uploads/product/' . $name,
+                                        'ProductId' => $productCheck->id
+                                    ]);
+                                }
 
-                                $img = file_get_contents('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
-                                $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
-                                $image_resize->resize(300, null, function ($constraint) {
-                                    $constraint->aspectRatio();
-                                });
-                                $extension = explode('.', $image);
-                                $tempName = explode('/', $image);
-                                $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
-                                file_put_contents(public_path('uploads/product/' . $name), $img);
-                                $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
-                                NextGenImage::create([
-                                    'Name' => 'uploads/product/' . $name,
-                                    'ProductId' => $productCheck->id
-                                ]);
 
                             } catch (\Exception $ex) {
                                 return Response::json(['error' => [
@@ -1055,22 +1057,24 @@ class AdminController extends Controller
                         $listImage = explode(',', $product->ListNextGenImages);
                         foreach ($listImage as $image) {
                             try {
+                                if(!empty(str_replace(' ', '', $image))){
+                                    $img = file_get_contents('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
+                                    $extension = explode('.', $image);
+                                    $tempName = explode('/', $image);
+                                    $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
+                                    $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
+                                    $image_resize->resize(300, null, function ($constraint) {
+                                        $constraint->aspectRatio();
+                                    });
+                                    file_put_contents(public_path('uploads/product/' . $name), $img);
+                                    $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
 
-                                $img = file_get_contents('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
-                                $extension = explode('.', $image);
-                                $tempName = explode('/', $image);
-                                $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
-                                $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
-                                $image_resize->resize(300, null, function ($constraint) {
-                                    $constraint->aspectRatio();
-                                });
-                                file_put_contents(public_path('uploads/product/' . $name), $img);
-                                $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
+                                    NextGenImage::create([
+                                        'Name' => 'uploads/product/' . $name,
+                                        'ProductId' => $p->id
+                                    ]);
+                                }
 
-                                NextGenImage::create([
-                                    'Name' => 'uploads/product/' . $name,
-                                    'ProductId' => $p->id
-                                ]);
 
                             } catch (\Exception $ex) {
 
@@ -1079,10 +1083,7 @@ class AdminController extends Controller
                     }
                     $p->New = 1;
                     $p->save();
-
                     $check = false;
-
-
                     while ($check == false) {
                         try {
                             $p->slug = Str::slug($p->Name, '-');
