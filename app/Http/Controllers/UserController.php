@@ -828,60 +828,61 @@ class UserController extends Controller
            }
         return Response::json(['message'=>'Product Not In Cart.']);
     }
-    public function getCart($coupon=null){
+    public function applyCoupon(Request $request){
+        $request->validate([
+           'coupon'=>'required',
+        ]);
         $user= User::find(Auth::guard('user')->user()->id);
+        $coupon=$request->input('coupon');
         $applyCoupon=false;
         $discount=0;
-        $getCoupon=null;
         if($coupon){
-
+            $c=Coupon::where('code',$coupon)->first();
+            if(empty($c)){
+                $msg="Coupon does not exist.";
+            }
             $getCoupon=Coupon::where('code',$coupon)
                 ->where('max_usage','>','0')
                 ->where('to','>=',Carbon::now()->format('Y-m-d'))
                 ->where('from','<=',Carbon::now()->format('Y-m-d'))
                 ->first();
-//            $validUser=null;
             if($getCoupon){
                 $validUser=$getCoupon->users->where('id',$user->id)->first();
                 if(!empty($validUser)){
                     if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
                         $applyCoupon = true;
                         $discount = $getCoupon->discount;
+                    }else{
+                        $msg="Max usage limit reach.";
                     }
                 }else{
-                    $applyCoupon = true;
-                    $discount = $getCoupon->discount;
+                        $applyCoupon = true;
+                        $discount = $getCoupon->discount;
                 }
+            }else{
+                $msg="Coupon expired.";
             }
+        }
+        if($applyCoupon){
+            $user->cart->coupon=$coupon;
+            $user->cart->save();
+            return Response::json(['message'=>'Coupon Successfully Applied']);
+        }else{
+            return Response::json(['message'=>$msg],422);
 
         }
-        $cart=null;
-        $totalPrice=0;
-        if($user->cart){
-            $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber,slug','product.nextGenImages:ProductId,name','product.inventory.eta'])->get();
-//            $prices=$cart->map(function ($value){
-//                return $value->quantity*$value->product->PromotionPrice;
-//            });
-            $prices=$cart->pluck('price');
-            $totalPrice=round($prices->sum(),2);
-            $subTotal=$totalPrice;
-            if($discount){
-                $d=($totalPrice*$discount)/100;
-                $totalPrice=$totalPrice-$d;
-            }
-            $totalPrice=round($totalPrice,2);
-            return Response::json([
-            'cart'=>$cart,
-            'sub_total'=>$subTotal,
-            'tax'=>ConfigController::calculateTax($totalPrice),
-            'shipping'=>$subTotal?WebsiteSettings::first()->delivery_fees:0,
-            'apply_coupon'=>$applyCoupon,
-            'coupon_discount'=>$discount,
-            'total_price'=>ConfigController::calculateTaxPrice($totalPrice)
-            ]);
-        }else{
-            return Response::json(['cart'=>'empty']);
-        }
+
+    }
+    public function removeCoupon(){
+        $user= User::find(Auth::guard('user')->user()->id);
+        $user->cart->coupon=null;
+        $user->cart->save();
+        return Response::json(['message'=>'Coupon Successfully Removed.']);
+
+    }
+    public function getCart($coupon=null){
+        $user= User::find(Auth::guard('user')->user()->id);
+        return PaymentController::getCart($user);
     }
     public function cartEmpty(){
         $user= User::find(Auth::guard('user')->user()->id);

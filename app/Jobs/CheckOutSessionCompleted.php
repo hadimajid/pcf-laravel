@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\PaymentController;
 use App\Models\BillingAddress;
 use App\Models\CartItems;
 use App\Models\Coupon;
@@ -53,59 +54,21 @@ class CheckOutSessionCompleted implements ShouldQueue
 //                DB::beginTransaction();
                 $user= User::find($dataObject['metadata']['user_id']);
                 $items=CartItems::where('cart_id',$user->cart->id)->get();
-                $o=[];
-                foreach ($items as $item){
-//                    if($this->productQuantityCheck($item->product_id,$item->quantity)){
-                        $o[]=$item;
-//                    }
-                }
-                $o=collect($o);
-                $count=$o->count();
-                if(empty($count)){
-                    exit();
-//                    return Response::json(['message'=>'Cart Empty Cannot Place Order!']);
-                }
-                $prices=$o->pluck('price');
-                $totalPrice=round($prices->sum(),2);
-                $discount=0;
-            if($dataObject['metadata']['coupon']=="No Coupon"){
-                $coupon=null;
-            }else{
-                $coupon=$dataObject['metadata']['coupon'];
 
-            }
-            $getCoupon=null;
-            if($coupon){
-                $getCoupon=Coupon::where('code',$coupon)
-//                    ->where('max_usage','>','0')
-//                    ->where('to','>=',Carbon::now()->format('Y-m-d'))
-//                    ->where('from','<=',Carbon::now()->format('Y-m-d'))
-                    ->first();
-                $applyCoupon = true;
-                $discount = $getCoupon->discount;
-//                if($getCoupon){
-//                    $validUser=$getCoupon->users->where('id',$user->id)->first();
-//                    if(!empty($validUser)){
-//                        if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
-//                            $applyCoupon = true;
-//                            $discount = $getCoupon->discount;
-//                        }
-//                    }else{
-//                        $applyCoupon = true;
-//                        $discount = $getCoupon->discount;
-//                    }
-//                }
+                $coupon=$user->cart->coupon;
 
-            }
-                if($discount){
-                    $d=($totalPrice*$discount)/100;
-                    $totalPrice=$totalPrice-$d;
-                    $user->coupons()->attach($getCoupon->id);
+            $cart=PaymentController::getCart($user);
+            $discount=$cart['discount'];
+            $totalPrice=$cart['total_price'];
+            if($discount){
+                    $user->coupons()->attach($coupon);
+                    $getCoupon=Coupon::find($coupon);
+                    $getCoupon->max_usage=$getCoupon->max_usage-1;
+                    $getCoupon->max_usage->save();
                 }
-                $subTotal=$totalPrice;
-                $tax=ConfigController::calculateTax($totalPrice);
-                $delivery_fees=WebsiteSettings::first()->delivery_fees;
-                $totalPrice=ConfigController::calculateTaxPrice($totalPrice);
+                $subTotal=$cart['sub_total'];
+                $tax=$cart['tax'];
+                $delivery_fees=$cart['shipping'];
                 if($dataObject['metadata']['notes']=="No Notes"){
                     $notes=null;
                 }else{
@@ -125,7 +88,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $shipping_address=ShippingAddress::find($dataObject['metadata']['shipping_id']);
                 $shipping_address->order_id=$order->id;
                 $shipping_address->save();
-                foreach ($o as $key=>$product){
+                foreach ($items as $key=>$product){
                     $orderItem=OrderItem::create([
                         'order_id'=>$order->id,
                         'product_id'=>$product->product_id,
@@ -140,8 +103,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                     'total_price'=>$dataObject['amount_total']/100,
                 ]);
                 $payment->save();
-                $getCoupon->max_usage=$getCoupon->max_usage-1;
-                $getCoupon->max_usage->save();
+
                 CartItems::where('cart_id',$user->cart->id)->delete();
 //                DB::commit();
 

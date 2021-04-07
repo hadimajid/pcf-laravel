@@ -43,6 +43,8 @@ use Illuminate\Support\Facades\Route;
                 Route::prefix('cart')->group(function (){
                     Route::post('',[UserController::class,'cart']);
                     Route::get('{coupon?}',[UserController::class,'getCart']);
+                    Route::post('coupon',[UserController::class,'applyCoupon']);
+                    Route::post('coupon/remove',[UserController::class,'removeCoupon']);
                     Route::post('/delete',[UserController::class,'cartDelete']);
                     Route::post('/empty',[UserController::class,'cartEmpty']);
                 });

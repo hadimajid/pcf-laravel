@@ -114,15 +114,15 @@ class PaymentController extends Controller
                 return false;
             }
             $checkoutItem=[];
-            $tax_rate = \Stripe\TaxRate::create([
-                'display_name' => 'Sales Tax',
-                'inclusive' => false,
-                'percentage' => WebsiteSettings::first()->tax?WebsiteSettings::first()->tax:0,
-                'country' => 'US',
-                'state' => 'CA',
-                'jurisdiction' => 'US - CA',
-                'description' => 'CA Sales Tax',
-            ]);
+//            $tax_rate = \Stripe\TaxRate::create([
+//                'display_name' => 'Sales Tax',
+//                'inclusive' => false,
+//                'percentage' => WebsiteSettings::first()->tax?WebsiteSettings::first()->tax:0,
+//                'country' => 'US',
+//                'state' => 'CA',
+//                'jurisdiction' => 'US - CA',
+//                'description' => 'CA Sales Tax',
+//            ]);
 //            foreach ($items as $key=>$item){
 //                $checkoutItem[$key]['price_data']['currency']='usd';
 //                $checkoutItem[$key]['price_data']['unit_amount']=$item->product->PromotionPrice*100;
@@ -131,15 +131,15 @@ class PaymentController extends Controller
 //                $checkoutItem[$key]['tax_rates']=[$tax_rate->id];
 //                $checkoutItem[$key]['price_data']['product_data']['images']=[$_SERVER['APP_URL'].'/'.$item->product->nextGenImages->pluck('name')[0]];
 //            }
-            $coupon=$request->input('coupon');
-            $c=$this->getCart($user,$coupon)['apply_coupon'];
-            if($c){
-                $coupon=$request->input('coupon');
-            }else{
-                $coupon=null;
-            }
+            $coupon=$user->cart->coupon;;
+//            $c=$this->getCart($user,$coupon)['apply_coupon'];
+//            if($c){
+//                $coupon=$request->input('coupon');
+//            }else{
+//                $coupon=null;
+//            }
             $checkoutItem[0]['price_data']['currency']='usd';
-            $checkoutItem[0]['price_data']['unit_amount']=$this->getCart($user,$coupon)['total_price']*100;
+            $checkoutItem[0]['price_data']['unit_amount']=self::getCart($user,$coupon)['total_price']*100;
             $checkoutItem[0]['price_data']['product_data']['name']="Total Bill";
             $checkoutItem[0]['quantity']=1;
             $checkoutItem[0]['price_data']['product_data']['images']=[];
@@ -199,37 +199,34 @@ class PaymentController extends Controller
             return Response::json(['error'=>$ex->getMessage()],422);
         }
     }
-    public function getCart($user,$coupon=null){
+    public static function getCart($user,$coupon=null){
         $applyCoupon=false;
         $discount=0;
-        if($coupon){
-            $getCoupon=Coupon::where('code',$coupon)
-                ->where('max_usage','>','0')
-                ->where('to','>=',Carbon::now()->format('Y-m-d'))
-                ->where('from','<=',Carbon::now()->format('Y-m-d'))
-                ->first();
-//            $validUser=null;
-            if($getCoupon){
-                $validUser=$getCoupon->users->where('id',$user->id)->first();
-                if(!empty($validUser)){
-                    if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
-                        $applyCoupon = true;
-                        $discount = $getCoupon->discount;
-                    }
-                }else{
-                    $applyCoupon = true;
-                    $discount = $getCoupon->discount;
-                }
-            }
-
-        }
         $cart=null;
         $totalPrice=0;
         if($user->cart){
             $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber,slug','product.nextGenImages:ProductId,name','product.inventory.eta'])->get();
-//            $prices=$cart->map(function ($value){
-//                return $value->quantity*$value->product->PromotionPrice;
-//            });
+            $coupon=$user->cart->coupon;
+            if($coupon){
+                $getCoupon=Coupon::where('id',$coupon)
+                    ->where('max_usage','>','0')
+                    ->where('to','>=',Carbon::now()->format('Y-m-d'))
+                    ->where('from','<=',Carbon::now()->format('Y-m-d'))
+                    ->first();
+//            $validUser=null;
+                if($getCoupon){
+                    $validUser=$getCoupon->users->where('id',$user->id)->first();
+                    if(!empty($validUser)){
+                        if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
+                            $applyCoupon = true;
+                            $discount = $getCoupon->discount;
+                        }
+                    }else{
+                        $applyCoupon = true;
+                        $discount = $getCoupon->discount;
+                    }
+                }
+            }
             $prices=$cart->pluck('price');
             $totalPrice=round($prices->sum(),2);
             $subTotal=$totalPrice;
