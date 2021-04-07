@@ -840,28 +840,30 @@ class UserController extends Controller
             $c=Coupon::where('code',$coupon)->first();
             if(empty($c)){
                 $msg="Coupon does not exist.";
-            }
-            $getCoupon=Coupon::where('code',$coupon)
-                ->where('max_usage','>','0')
-                ->where('to','>=',Carbon::now()->format('Y-m-d'))
-                ->where('from','<=',Carbon::now()->format('Y-m-d'))
-                ->first();
-            if($getCoupon){
-                $validUser=$getCoupon->users->where('id',$user->id)->first();
-                if(!empty($validUser)){
-                    if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
+            }else{
+                $getCoupon=Coupon::where('code',$coupon)
+                    ->where('max_usage','>','0')
+                    ->where('to','>=',Carbon::now()->format('Y-m-d'))
+                    ->where('from','<=',Carbon::now()->format('Y-m-d'))
+                    ->first();
+                if($getCoupon){
+                    $validUser=$getCoupon->users->where('id',$user->id)->first();
+                    if(!empty($validUser)){
+                        if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
+                            $applyCoupon = true;
+                            $discount = $getCoupon->discount;
+                        }else{
+                            $msg="Max usage limit reach.";
+                        }
+                    }else{
                         $applyCoupon = true;
                         $discount = $getCoupon->discount;
-                    }else{
-                        $msg="Max usage limit reach.";
                     }
                 }else{
-                        $applyCoupon = true;
-                        $discount = $getCoupon->discount;
+                    $msg="Coupon expired.";
                 }
-            }else{
-                $msg="Coupon expired.";
             }
+
         }
         if($applyCoupon){
             $user->cart->coupon_id=$getCoupon->id;
