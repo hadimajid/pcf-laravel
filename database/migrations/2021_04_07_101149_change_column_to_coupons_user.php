@@ -13,7 +13,7 @@ class ChangeColumnToCouponsUser extends Migration
      */
     public function up()
     {
-        Schema::table('coupons_user', function (Blueprint $table) {
+        Schema::table('coupon_user', function (Blueprint $table) {
             $table->dropUnique('coupon_user_user_id_coupon_id_unique');
         });
     }
@@ -25,7 +25,7 @@ class ChangeColumnToCouponsUser extends Migration
      */
     public function down()
     {
-        Schema::table('coupons_user', function (Blueprint $table) {
+        Schema::table('coupon_user', function (Blueprint $table) {
             $table->unique(['user_id','coupon_id']);
         });
     }
