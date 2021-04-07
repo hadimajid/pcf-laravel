@@ -864,7 +864,7 @@ class UserController extends Controller
             }
         }
         if($applyCoupon){
-            $user->cart->coupon=$coupon;
+            $user->cart->coupon_id=$getCoupon->id;
             $user->cart->save();
             return Response::json(['message'=>'Coupon Successfully Applied']);
         }else{
@@ -875,7 +875,7 @@ class UserController extends Controller
     }
     public function removeCoupon(){
         $user= User::find(Auth::guard('user')->user()->id);
-        $user->cart->coupon=null;
+        $user->cart->coupon_id=null;
         $user->cart->save();
         return Response::json(['message'=>'Coupon Successfully Removed.']);
 

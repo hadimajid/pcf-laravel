@@ -206,7 +206,7 @@ class PaymentController extends Controller
         $totalPrice=0;
         if($user->cart){
             $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber,slug','product.nextGenImages:ProductId,name','product.inventory.eta'])->get();
-            $coupon=$user->cart->coupon;
+            $coupon=$user->cart->coupon_id;
             if($coupon){
                 $getCoupon=Coupon::where('id',$coupon)
                     ->where('max_usage','>','0')
