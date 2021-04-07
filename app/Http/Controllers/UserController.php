@@ -834,6 +834,7 @@ class UserController extends Controller
         $discount=0;
         $getCoupon=null;
         if($coupon){
+
             $getCoupon=Coupon::where('code',$coupon)
                 ->where('max_usage','>','0')
                 ->where('to','>=',Carbon::now()->format('Y-m-d'))
