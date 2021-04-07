@@ -638,18 +638,18 @@ class AdminController extends Controller
 //Start from here
     public function storeProductApiData()
     {
-//        $this->storeCategoryApiData();
-//        $this->storeStyleApiData();
-//        $this->storeCollectionApiData();
-//        $this->storeProductLineApiData();
-//        $this->storeGroupApiData();
-//        $this->storeProductInfoApiData();
-//        $products = Http::withHeaders([
-//            'keycode' => env('API_COASTERAMER_KEY'),
-//            'Accept' => 'application/json'
-//        ])->get('http://api.coasteramer.com/api/product/GetProductList');
+        $this->storeCategoryApiData();
+        $this->storeStyleApiData();
+        $this->storeCollectionApiData();
+        $this->storeProductLineApiData();
+        $this->storeGroupApiData();
+        $this->storeProductInfoApiData();
+        $products = Http::withHeaders([
+            'keycode' => env('API_COASTERAMER_KEY'),
+            'Accept' => 'application/json'
+        ])->get('http://api.coasteramer.com/api/product/GetProductList');
 
-        $products=file_get_contents(public_path('response.json'));
+//        $products=file_get_contents(public_path('response.json'));
         $productsDecode = json_decode($products);
         $i = 0;
         foreach ($productsDecode as $product) {
@@ -4166,7 +4166,8 @@ class AdminController extends Controller
             'from'=>'required|date',
             'to'=>'required|date|after_or_equal:from',
             'discount'=>'required|numeric|min:1|max:100',
-            'max_usage'=>'required|numeric|min:1'
+            'max_usage'=>'required|numeric|min:1',
+            'max_usage_per_user'=>'required|numeric|min:1'
         ]);
         $coupon=Coupon::create($validatedData);
 
@@ -4179,7 +4180,8 @@ class AdminController extends Controller
             'from'=>'required|date',
             'to'=>'required|date|after_or_equal:from',
             'discount'=>'required|numeric|min:1|max:100',
-            'max_usage'=>'required|numeric|min:1'
+            'max_usage'=>'required|numeric|min:1',
+            'max_usage_per_user'=>'required|numeric|min:1'
         ]);
 
         $coupon=Coupon::find($id)->update($validatedData);

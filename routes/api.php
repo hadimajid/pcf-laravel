@@ -196,7 +196,7 @@ use Illuminate\Support\Facades\Route;
             Route::get('',[AdminController::class,'getCoupons']);
             Route::post('',[AdminController::class,'addCoupon']);
             Route::post('update/{id}',[AdminController::class,'updateCoupon']);
-            Route::post('assign_user',[AdminController::class,'assignCoupon']);
+//            Route::post('assign_user',[AdminController::class,'assignCoupon']);
             Route::get('{id}',[AdminController::class,'getCouponById']);
             Route::delete('{id}',[AdminController::class,'deleteCoupon']);
         });
