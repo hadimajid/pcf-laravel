@@ -14,7 +14,7 @@ class ChangeColumnToCoupons extends Migration
     public function up()
     {
         Schema::table('coupons', function (Blueprint $table) {
-            $table->integer('max_usage_per_user')->nullable();
+            $table->integer('max_usage_per_user')->nullable()->default(1);
         });
     }
 

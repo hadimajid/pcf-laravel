@@ -4167,9 +4167,10 @@ class AdminController extends Controller
             'to'=>'required|date|after_or_equal:now',
             'discount'=>'required|numeric|min:1|max:100',
             'max_usage'=>'required|numeric|min:1',
-            'max_usage_per_user'=>'required|numeric|min:1'
+            'max_usage_per_user'=>'nullable|numeric|min:1'
         ]);
-        $coupon=Coupon::create($validatedData);
+
+            $coupon=Coupon::create($validatedData);
 
        return Response::json(['message'=>'Coupon Added Successfully']);
     }
@@ -4181,9 +4182,8 @@ class AdminController extends Controller
             'to'=>'required|date|after_or_equal:now',
             'discount'=>'required|numeric|min:1|max:100',
             'max_usage'=>'required|numeric|min:1',
-            'max_usage_per_user'=>'required|numeric|min:1'
+            'max_usage_per_user'=>'nullable|numeric|min:1'
         ]);
-
         $coupon=Coupon::find($id)->update($validatedData);
 
        return Response::json(['message'=>'Coupon Updated Successfully']);
