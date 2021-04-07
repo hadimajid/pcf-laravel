@@ -832,15 +832,27 @@ class UserController extends Controller
         $user= User::find(Auth::guard('user')->user()->id);
         $applyCoupon=false;
         $discount=0;
+        $getCoupon=null;
         if($coupon){
-            $getCoupon=Coupon::where('code',$coupon)->first();
+            $getCoupon=Coupon::where('code',$coupon)
+                ->where('max_usage','>','0')
+                ->where('to','>=',Carbon::now()->format('Y-m-d'))
+                ->where('from','<=',Carbon::now()->format('Y-m-d'))
+                ->first();
+//            $validUser=null;
             if($getCoupon){
-                $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
+                $validUser=$getCoupon->users->where('id',$user->id)->first();
+                if(!empty($validUser)){
+                    if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
+                        $applyCoupon = true;
+                        $discount = $getCoupon->discount;
+                    }
+                }else{
+                    $applyCoupon = true;
+                    $discount = $getCoupon->discount;
+                }
             }
-            if(!empty($validUser)){
-                $applyCoupon=true;
-                $discount=$getCoupon->discount;
-            }
+
         }
         $cart=null;
         $totalPrice=0;

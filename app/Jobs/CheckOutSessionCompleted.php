@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Models\ShippingAddress;
 use App\Models\User;
 use App\Models\WebsiteSettings;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -73,20 +74,33 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $coupon=$dataObject['metadata']['coupon'];
 
             }
-                if($coupon){
-                    $getCoupon=Coupon::where('code',$coupon)->first();
-                    if($getCoupon){
-                        $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
-                    }
-                    if(!empty($validUser)){
-                        $discount=$getCoupon->discount;
-                    }
-                }
+            $getCoupon=null;
+            if($coupon){
+                $getCoupon=Coupon::where('code',$coupon)
+//                    ->where('max_usage','>','0')
+//                    ->where('to','>=',Carbon::now()->format('Y-m-d'))
+//                    ->where('from','<=',Carbon::now()->format('Y-m-d'))
+                    ->first();
+                $applyCoupon = true;
+                $discount = $getCoupon->discount;
+//                if($getCoupon){
+//                    $validUser=$getCoupon->users->where('id',$user->id)->first();
+//                    if(!empty($validUser)){
+//                        if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
+//                            $applyCoupon = true;
+//                            $discount = $getCoupon->discount;
+//                        }
+//                    }else{
+//                        $applyCoupon = true;
+//                        $discount = $getCoupon->discount;
+//                    }
+//                }
+
+            }
                 if($discount){
                     $d=($totalPrice*$discount)/100;
                     $totalPrice=$totalPrice-$d;
-                    $validUser->pivot->status="expired";
-                    $validUser->pivot->save();
+                    $user->coupons()->attach($getCoupon->id);
                 }
                 $subTotal=$totalPrice;
                 $tax=ConfigController::calculateTax($totalPrice);
@@ -126,6 +140,8 @@ class CheckOutSessionCompleted implements ShouldQueue
                     'total_price'=>$dataObject['amount_total']/100,
                 ]);
                 $payment->save();
+                $getCoupon->max_usage=$getCoupon->max_usage-1;
+                $getCoupon->max_usage->save();
                 CartItems::where('cart_id',$user->cart->id)->delete();
 //                DB::commit();
 

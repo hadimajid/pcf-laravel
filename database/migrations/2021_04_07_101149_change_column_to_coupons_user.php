@@ -18,6 +18,9 @@ class ChangeColumnToCouponsUser extends Migration
             $table->dropForeign('coupon_user_coupon_id_foreign');
             $table->dropUnique('coupon_user_user_id_coupon_id_unique');
             $table->dropColumn('status');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
+            $table->foreign('coupon_id')->references('id')->on('coupons')->onDelete('restrict');
+
         });
     }
 
@@ -29,8 +32,6 @@ class ChangeColumnToCouponsUser extends Migration
     public function down()
     {
         Schema::table('coupon_user', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
-            $table->foreign('coupon_id')->references('id')->on('coupons')->onDelete('restrict');
             $table->enum('status',['active','expired']);
             $table->unique(['user_id','coupon_id']);
 

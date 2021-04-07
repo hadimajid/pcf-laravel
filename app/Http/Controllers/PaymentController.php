@@ -9,6 +9,7 @@ use App\Models\Coupon;
 use App\Models\ShippingAddress;
 use App\Models\WebsiteSettings;
 use App\Traits\PayPal;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -130,7 +131,13 @@ class PaymentController extends Controller
 //                $checkoutItem[$key]['tax_rates']=[$tax_rate->id];
 //                $checkoutItem[$key]['price_data']['product_data']['images']=[$_SERVER['APP_URL'].'/'.$item->product->nextGenImages->pluck('name')[0]];
 //            }
-            $coupon=null;
+            $coupon=$request->input('coupon');
+            $c=$this->getCart($user,$coupon)['apply_coupon'];
+            if($c){
+                $coupon=$request->input('coupon');
+            }else{
+                $coupon=null;
+            }
             $checkoutItem[0]['price_data']['currency']='usd';
             $checkoutItem[0]['price_data']['unit_amount']=$this->getCart($user,$coupon)['total_price']*100;
             $checkoutItem[0]['price_data']['product_data']['name']="Total Bill";
@@ -138,34 +145,34 @@ class PaymentController extends Controller
             $checkoutItem[0]['price_data']['product_data']['images']=[];
 
 
-            $customer=Customer::create([
-                'email'=>$user->email,
-                'name'=>$user->first_name.' '.$user->last_name,
-                'shipping'=>[
-                    'name'=>$add['name'],
-                    'phone'=>$add['phone'],
-                    'address'=>[
-                        'city'=>$add['city'],
-                        'country'=>$add['country'],
-                        'line1'=>$add['street_address'],
-                        'line2'=>$add['street_address'],
-                        'postal_code'=>$add['zip'],
-                        'state'=>$add['state'],
-                    ]
-                ],
-                    'address'=>[
-                        'city'=>$add['city'],
-                        'country'=>$add['country'],
-                        'line1'=>$add['street_address'],
-                        'line2'=>$add['street_address'],
-                        'postal_code'=>$add['zip'],
-                        'state'=>$add['state'],
-
-                ],
-
-            ]);
+//            $customer=Customer::create([
+//                'email'=>$user->email,
+//                'name'=>$user->first_name.' '.$user->last_name,
+//                'shipping'=>[
+//                    'name'=>$add['name'],
+//                    'phone'=>$add['phone'],
+//                    'address'=>[
+//                        'city'=>$add['city'],
+//                        'country'=>$add['country'],
+//                        'line1'=>$add['street_address'],
+//                        'line2'=>$add['street_address'],
+//                        'postal_code'=>$add['zip'],
+//                        'state'=>$add['state'],
+//                    ]
+//                ],
+//                    'address'=>[
+//                        'city'=>$add['city'],
+//                        'country'=>$add['country'],
+//                        'line1'=>$add['street_address'],
+//                        'line2'=>$add['street_address'],
+//                        'postal_code'=>$add['zip'],
+//                        'state'=>$add['state'],
+//
+//                ],
+//
+//            ]);
             $checkout_session = Session::create([
-                'customer'=>$customer->id,
+//                'customer'=>$customer->id,
                 'payment_method_types' => ['card'],
 //                'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
 //                'shipping_address_collection' => [
@@ -179,7 +186,7 @@ class PaymentController extends Controller
                     'cart_id'=>$cart->id,
                     'shipping_id'=>$shippingTemp->id,
                     'ship'=>$ship?$ship:0,
-                    'coupon'=>$request->input('coupon')?$request->input('coupon'):"No Coupon",
+                    'coupon'=>$coupon?$coupon:"No Coupon",
                     'notes'=>$request->input('notes')?$request->input('notes'):"No Notes",
                 ],
                 'success_url' => $request->input('success_url'),
@@ -196,14 +203,25 @@ class PaymentController extends Controller
         $applyCoupon=false;
         $discount=0;
         if($coupon){
-            $getCoupon=Coupon::where('code',$coupon)->first();
+            $getCoupon=Coupon::where('code',$coupon)
+                ->where('max_usage','>','0')
+                ->where('to','>=',Carbon::now()->format('Y-m-d'))
+                ->where('from','<=',Carbon::now()->format('Y-m-d'))
+                ->first();
+//            $validUser=null;
             if($getCoupon){
-                $validUser=$getCoupon->users->where('id',$user->id)->where('pivot.status','not_used')->first();
+                $validUser=$getCoupon->users->where('id',$user->id)->first();
+                if(!empty($validUser)){
+                    if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
+                        $applyCoupon = true;
+                        $discount = $getCoupon->discount;
+                    }
+                }else{
+                    $applyCoupon = true;
+                    $discount = $getCoupon->discount;
+                }
             }
-            if(!empty($validUser)){
-                $applyCoupon=true;
-                $discount=$getCoupon->discount;
-            }
+
         }
         $cart=null;
         $totalPrice=0;

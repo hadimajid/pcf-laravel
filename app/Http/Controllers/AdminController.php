@@ -4164,7 +4164,7 @@ class AdminController extends Controller
             'name'=>'required',
             'code'=>'required|unique:coupons,code',
             'from'=>'required|date',
-            'to'=>'required|date|after_or_equal:from',
+            'to'=>'required|date|after_or_equal:now',
             'discount'=>'required|numeric|min:1|max:100',
             'max_usage'=>'required|numeric|min:1',
             'max_usage_per_user'=>'required|numeric|min:1'
@@ -4178,7 +4178,7 @@ class AdminController extends Controller
             'name'=>'required',
             'code'=>['required',new Unique('coupons','code',$id)],
             'from'=>'required|date',
-            'to'=>'required|date|after_or_equal:from',
+            'to'=>'required|date|after_or_equal:now',
             'discount'=>'required|numeric|min:1|max:100',
             'max_usage'=>'required|numeric|min:1',
             'max_usage_per_user'=>'required|numeric|min:1'
