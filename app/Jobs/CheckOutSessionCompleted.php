@@ -58,7 +58,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $coupon=$user->cart->coupon_id;
 
             $cart=PaymentController::getCart($user);
-            $discount=$cart['discount'];
+            $discount=$cart['coupon_discount'];
             $totalPrice=$cart['total_price'];
             if($discount){
                     $user->coupons()->attach($coupon);
