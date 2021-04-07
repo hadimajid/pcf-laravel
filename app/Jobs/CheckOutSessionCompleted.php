@@ -63,7 +63,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                     $user->coupons()->attach($coupon);
                     $getCoupon=Coupon::find($coupon);
                     $getCoupon->max_usage=$getCoupon->max_usage-1;
-                    $getCoupon->max_usage->save();
+                    $getCoupon->save();
                 }
                 $subTotal=$cart['sub_total'];
                 $tax=$cart['tax'];
