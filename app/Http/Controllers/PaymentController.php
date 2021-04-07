@@ -238,6 +238,7 @@ class PaymentController extends Controller
             return [
                 'cart'=>$cart,
                 'sub_total'=>$subTotal,
+                'sub_total_discount'=>$totalPrice,
                 'tax'=>ConfigController::calculateTax($totalPrice),
                 'shipping'=>$subTotal?WebsiteSettings::first()->delivery_fees:0,
                 'apply_coupon'=>$applyCoupon,

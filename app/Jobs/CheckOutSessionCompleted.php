@@ -65,7 +65,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                     $getCoupon->max_usage=$getCoupon->max_usage-1;
                     $getCoupon->save();
                 }
-                $subTotal=$cart['sub_total'];
+                $subTotal=$cart['sub_total_discount'];
                 $tax=$cart['tax'];
                 $delivery_fees=$cart['shipping'];
                 if($dataObject['metadata']['notes']=="No Notes"){
