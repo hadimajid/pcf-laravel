@@ -840,6 +840,7 @@ class UserController extends Controller
             $c=Coupon::where('code',$coupon)->first();
             if(empty($c)){
                 $msg="Coupon does not exist.";
+
             }else{
                 $getCoupon=Coupon::where('code',$coupon)
                     ->where('max_usage','>','0')
@@ -854,6 +855,7 @@ class UserController extends Controller
                             $discount = $getCoupon->discount;
                         }else{
                             $msg="Max usage limit reach.";
+                            $msg="Given Coupon is already Availed ";
                         }
                     }else{
                         $applyCoupon = true;
@@ -861,6 +863,7 @@ class UserController extends Controller
                     }
                 }else{
                     $msg="Coupon expired.";
+                    $msg="Given Coupon is expired.";
                 }
             }
 
