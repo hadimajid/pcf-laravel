@@ -199,7 +199,7 @@ class PaymentController extends Controller
             return Response::json(['error'=>$ex->getMessage()],422);
         }
     }
-    public static function getCart($user,$coupon=null){
+    public static function getCart($user,$coupon=null,$couponExpire=true){
         $applyCoupon=false;
         $discount=0;
         $msg='';
@@ -212,31 +212,40 @@ class PaymentController extends Controller
                 $couponCount=DB::table('coupon_user')
                     ->where('coupon_id','=',$coupon)
                     ->count();
-                $getCoupon=Coupon::where('id',$coupon)
-                    ->where('max_usage','>=',$couponCount)
-                    ->where('to','>=',Carbon::now()->format('Y-m-d'))
-                    ->where('from','<=',Carbon::now()->format('Y-m-d'))
-                    ->first();
-//            $validUser=null;
+                if($couponExpire){
+                    $getCoupon=Coupon::where('id',$coupon)
+                        ->where('max_usage','>=',$couponCount)
+                        ->where('to','>=',Carbon::now()->format('Y-m-d'))
+                        ->where('from','<=',Carbon::now()->format('Y-m-d'))
+                        ->first();
 
-                if($getCoupon){
+                    if($getCoupon){
 //                    return $user->coupons;
-                    $validUser=DB::table('coupon_user')
-                        ->where('coupon_id','=',$getCoupon->id)
-                        ->where('user_id','=',$user->id)
-                        ->count();
-                    if(!empty($validUser)){
-                        if($validUser<$getCoupon->max_usage_per_user){
+                        $validUser=DB::table('coupon_user')
+                            ->where('coupon_id','=',$getCoupon->id)
+                            ->where('user_id','=',$user->id)
+                            ->count();
+                        if(!empty($validUser)){
+                            if($validUser<$getCoupon->max_usage_per_user){
+                                $applyCoupon = true;
+                                $msg="Coupon applied.";
+                                $discount = $getCoupon->discount;
+                            }
+                        }else{
                             $applyCoupon = true;
                             $msg="Coupon applied.";
                             $discount = $getCoupon->discount;
                         }
-                    }else{
-                        $applyCoupon = true;
-                        $msg="Coupon applied.";
-                        $discount = $getCoupon->discount;
                     }
+                }else{
+                    $getCoupon=Coupon::where('id',$coupon)->first();
+                    $applyCoupon = true;
+                    $msg="Coupon applied.";
+                    $discount = $getCoupon->discount;
                 }
+
+//            $validUser=null;
+
             }
             $prices=$cart->pluck('price');
             $totalPrice=round($prices->sum(),2);
