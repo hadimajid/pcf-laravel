@@ -202,6 +202,7 @@ class PaymentController extends Controller
     public static function getCart($user,$coupon=null){
         $applyCoupon=false;
         $discount=0;
+        $msg='';
         $cart=null;
         $totalPrice=0;
         if($user->cart){
@@ -212,20 +213,27 @@ class PaymentController extends Controller
                     ->where('coupon_id','=',$coupon)
                     ->count();
                 $getCoupon=Coupon::where('id',$coupon)
-                    ->where('max_usage','<=',$couponCount)
+                    ->where('max_usage','>=',$couponCount)
                     ->where('to','>=',Carbon::now()->format('Y-m-d'))
                     ->where('from','<=',Carbon::now()->format('Y-m-d'))
                     ->first();
 //            $validUser=null;
+
                 if($getCoupon){
-                    $validUser=$getCoupon->users->where('id',$user->id)->first();
+//                    return $user->coupons;
+                    $validUser=DB::table('coupon_user')
+                        ->where('coupon_id','=',$getCoupon->id)
+                        ->where('user_id','=',$user->id)
+                        ->count();
                     if(!empty($validUser)){
-                        if($validUser->pivot->count()<$getCoupon->max_usage_per_user){
+                        if($validUser<$getCoupon->max_usage_per_user){
                             $applyCoupon = true;
+                            $msg="Coupon applied.";
                             $discount = $getCoupon->discount;
                         }
                     }else{
                         $applyCoupon = true;
+                        $msg="Coupon applied.";
                         $discount = $getCoupon->discount;
                     }
                 }
@@ -238,8 +246,11 @@ class PaymentController extends Controller
                 $totalPrice=$totalPrice-$d;
             }
             $totalPrice=round($totalPrice,2);
-            if(!$applyCoupon){
+            if($applyCoupon==false){
                 if($user->cart){
+                    if($user->cart->coupon_id){
+                        $msg="Coupon Removed.";
+                    }
                     $user->cart->coupon_id=null;
                     $user->cart->save();
                 }
@@ -251,6 +262,7 @@ class PaymentController extends Controller
                 'tax'=>ConfigController::calculateTax($totalPrice),
                 'shipping'=>$subTotal?WebsiteSettings::first()->delivery_fees:0,
                 'apply_coupon'=>$applyCoupon,
+                'coupon_msg'=>$msg,
                 'coupon_discount'=>$discount,
                 'total_price'=>ConfigController::calculateTaxPrice($totalPrice)
             ];
