@@ -3136,6 +3136,7 @@ class AdminController extends Controller
             , 'additionalFields'
             , 'relatedProducts'
             , 'relatedProducts.relatedProduct'
+            , 'relatedProducts.relatedProduct.inventory'
             , 'relatedProducts.relatedProduct.price'
             , 'relatedProducts.relatedProduct.nextGenImages'
             , 'components'
