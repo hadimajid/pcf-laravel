@@ -235,6 +235,12 @@ class PaymentController extends Controller
                 $totalPrice=$totalPrice-$d;
             }
             $totalPrice=round($totalPrice,2);
+            if(!$applyCoupon){
+                if($user->cart){
+                    $user->cart->coupon=null;
+                    $user->cart->save();
+                }
+            }
             return [
                 'cart'=>$cart,
                 'sub_total'=>$subTotal,
