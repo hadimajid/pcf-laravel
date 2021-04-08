@@ -2521,6 +2521,7 @@ class AdminController extends Controller
         $category_name = $request->input('category_id');
         $subcategory_name = $request->input('subcategory_id');
         $product_name = $request->input('product_name');
+        $product_number = $request->input('product_number');
         $style = $request->input('style_id');
         $material = $request->input('material');
         $color = $request->input('color');
@@ -2565,6 +2566,14 @@ class AdminController extends Controller
                 $where .= " CategoryId = $category_name ";
             } else {
                 $where .= " and CategoryId = $category_name ";
+            }
+            $b = 1;
+        }
+        if (!empty($product_number)) {
+            if ($where == '') {
+                $where .= " ProductNumber like '$category_name' ";
+            } else {
+                $where .= " and ProductNumber like '$category_name' ";
             }
             $b = 1;
         }
