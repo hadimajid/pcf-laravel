@@ -240,7 +240,7 @@ class PaymentController extends Controller
             $totalPrice=round($totalPrice,2);
             if(!$applyCoupon){
                 if($user->cart){
-                    $user->cart->coupon=null;
+                    $user->cart->coupon_id=null;
                     $user->cart->save();
                 }
             }
