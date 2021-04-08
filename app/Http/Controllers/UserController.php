@@ -73,7 +73,7 @@ class UserController extends Controller
         $rules=[
             'email'=>'required|email|unique:users,email',
             'username'=>'required|unique:users,display_name',
-            'password'=>'required',
+                        'password'=>['required',new PasswordValidate()],
             'url'=>'required',
             'order'=>'nullable'
         ];
@@ -337,7 +337,7 @@ class UserController extends Controller
     public function updateYourPassword(Request $request){
         $rules=[
             'password'=>'required',
-            'new_password'=>'required',
+            'new_password'=>['required',new PasswordValidate()],
             'confirm_new_password'=>'same:new_password',
         ];
         $validator=Validator::make($request->all(),$rules);

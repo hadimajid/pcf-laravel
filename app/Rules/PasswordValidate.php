@@ -25,7 +25,7 @@ class PasswordValidate implements Rule
      */
     public function passes($attribute, $value)
     {
-        return preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',$value);
+        return preg_match('/^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\d]){1,})(?=(.*[\W_]){1,})(?!.*\s).{8,}$/',$value);
     }
 
     /**
