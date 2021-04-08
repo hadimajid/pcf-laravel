@@ -208,8 +208,11 @@ class PaymentController extends Controller
             $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber,slug','product.nextGenImages:ProductId,name','product.inventory.eta'])->get();
             $coupon=$user->cart->coupon_id;
             if($coupon){
+                $couponCount=DB::table('coupon_user')
+                    ->where('coupon_id','=',$coupon)
+                    ->count();
                 $getCoupon=Coupon::where('id',$coupon)
-                    ->where('max_usage','>','0')
+                    ->where('max_usage','<=',$couponCount)
                     ->where('to','>=',Carbon::now()->format('Y-m-d'))
                     ->where('from','<=',Carbon::now()->format('Y-m-d'))
                     ->first();
