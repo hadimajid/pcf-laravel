@@ -2516,8 +2516,6 @@ class AdminController extends Controller
 
     public function productsProvidedByCoaster(Request $request)
     {
-
-
         $category_name = $request->input('category_id');
         $subcategory_name = $request->input('subcategory_id');
         $product_name = $request->input('product_name');
