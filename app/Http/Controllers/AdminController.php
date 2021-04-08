@@ -2569,9 +2569,9 @@ class AdminController extends Controller
         }
         if (!empty($product_number)) {
             if ($where == '') {
-                $where .= " ProductNumber like '$category_name' ";
+                $where .= " ProductNumber like '$product_number' ";
             } else {
-                $where .= " and ProductNumber like '$category_name' ";
+                $where .= " and ProductNumber like '$product_number' ";
             }
             $b = 1;
         }
