@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\CollectionModel;
 use App\Models\Component;
 use App\Models\Coupon;
+use App\Models\DeliveryFees;
 use App\Models\Feature;
 use App\Models\Footer;
 use App\Models\Group;
@@ -2093,12 +2094,49 @@ class AdminController extends Controller
         return Response::json(['message' => 'Logo Updated.'], 200);
 
     }
-
+    public function addNewDeliveryFees(Request $request)
+    {
+        $validatedDate=$request->validate([
+            'name' => 'required',
+            'price' => 'numeric|min:0',
+            'description' => 'required',
+        ]);
+        $df=new DeliveryFees();
+        $df->fill($validatedDate);
+        $df->save();
+        return Response::json(['message' => 'Delivery fees added.'], 200);
+    }
+    public function editDeliveryFees(Request $request,$id)
+    {
+        $validatedDate=$request->validate([
+            'name' => 'required',
+            'price' => 'numeric|min:0',
+            'description' => 'required',
+        ]);
+        $df=DeliveryFees::find($id);
+        $df->fill($validatedDate);
+        $df->save();
+        return Response::json(['message' => 'Delivery fees updated.'], 200);
+    }
+    public function deleteDeliveryFees(Request $request,$id)
+    {
+        $df=DeliveryFees::find($id);
+        $df->delete();
+        return Response::json(['message' => 'Delivery fees deleted.'], 200);
+    }
+    public function getAllDeliveryFees(){
+      $df=DeliveryFees::all();
+      return Response::json(['delivery_fees'=>$df]);
+    }
+    public function getDeliveryFeesById($id){
+      $df=DeliveryFees::find($id);
+      return Response::json(['delivery_fee'=>$df]);
+    }
     public function addDeliveryFees(Request $request)
     {
         $rules = [
             'fees' => 'nullable|numeric|min:0',
-            'tax' => 'nullable|numeric|min:0',
+            'tax' => 'required|numeric|min:0',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -2113,7 +2151,7 @@ class AdminController extends Controller
         $ws->delivery_fees = $request->input('fees');
         $ws->tax = $request->input('tax');
         $ws->save();
-        return Response::json(['message' => 'Delivery fees and Tax updated.'], 200);
+        return Response::json(['message' => 'Tax updated.'], 200);
     }
     public function addPrice(Request $request)
     {

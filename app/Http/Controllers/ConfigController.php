@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers;
+use App\Models\DeliveryFees;
 use App\Models\Product;
 use App\Models\WebsiteSettings;
 use Illuminate\Database\Eloquent\Collection;
@@ -54,12 +55,12 @@ class ConfigController extends Controller
     public static function calculateTax($price){
         return round(($price*WebsiteSettings::first()->tax)/100,2);
     }
-    public static function calculateTaxPrice($price,$discount=false){
+    public static function calculateTaxPrice($price,$delivery_id,$discount=false){
         if(empty($price) && $discount==false){
             return 0;
         }
         $price+=(($price*WebsiteSettings::first()->tax)/100);
-        $price+=WebsiteSettings::first()->delivery_fees;
+        $price+=DeliveryFees::find($delivery_id);
         return round($price,2);
     }
 

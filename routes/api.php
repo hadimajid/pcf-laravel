@@ -168,7 +168,14 @@ use Illuminate\Support\Facades\Route;
 //      Weekend Special
         Route::post('add-weekend-special',[AdminController::class,'addWeekendSpecial']);
 //      Delivery Fees
-        Route::post('delivery-fees',[AdminController::class,'addDeliveryFees']) ;
+        Route::post('delivery-fees',[AdminController::class,'addDeliveryFees']);
+        Route::prefix('delivery-fee')->group(function (){
+            Route::post('add',[AdminController::class,'addNewDeliveryFees']);
+            Route::post('update/{id}',[AdminController::class,'editDeliveryFees']);
+            Route::post('delete/{id}',[AdminController::class,'deleteDeliveryFees']);
+            Route::post('/all',[AdminController::class,'getAllDeliveryFees']);
+            Route::post('{id}',[AdminController::class,'getDeliveryFeesById']);
+        });
 //      Title
         Route::post('title',[AdminController::class,'addTitle']);
 //      Hours

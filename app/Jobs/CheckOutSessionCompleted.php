@@ -7,6 +7,7 @@ use App\Http\Controllers\PaymentController;
 use App\Models\BillingAddress;
 use App\Models\CartItems;
 use App\Models\Coupon;
+use App\Models\DeliveryFees;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -53,10 +54,11 @@ class CheckOutSessionCompleted implements ShouldQueue
 //                DB::beginTransaction();
                 $user= User::find($dataObject['metadata']['user_id']);
                 $items=CartItems::where('cart_id',$user->cart->id)->get();
+                $delivery_fees= DeliveryFees::find($dataObject['metadata']['delivery_id']);
 
                 $coupon=$user->cart->coupon_id;
 
-            $cart=PaymentController::getCart($user,null,false);
+            $cart=PaymentController::getCart($user,$delivery_fees->id,null,false);
             $discount=$cart['coupon_discount'];
             $totalPrice=$cart['total_price'];
             if($discount){

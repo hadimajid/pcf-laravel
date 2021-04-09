@@ -6,6 +6,7 @@ use App\Models\BillingAddress;
 use App\Models\Cart;
 use App\Models\CartItems;
 use App\Models\Coupon;
+use App\Models\DeliveryFees;
 use App\Models\ShippingAddress;
 use App\Models\WebsiteSettings;
 use App\Traits\PayPal;
@@ -41,6 +42,7 @@ class PaymentController extends Controller
            'success_url'=>'required|url',
            'cancel_url'=>'required|url',
             'notes'=>'nullable',
+            'delivery_fee'=>'required,exists:delivery_fees,id',
             'ship'=>'nullable',
             'update'=>'nullable',
             'shipping_address'=>'required_if:ship,1|array',
@@ -132,6 +134,7 @@ class PaymentController extends Controller
                     'user_id'=>  $user->id,
                     'cart_id'=>$cart->id,
                     'shipping_id'=>$shippingTemp->id,
+                    'delivery_id'=>$request->input('delivery_fee'),
                     'ship'=>$ship?$ship:0,
                     'coupon'=>$coupon?$coupon:"No Coupon",
                     'notes'=>$request->input('notes')?$request->input('notes'):"No Notes",
@@ -146,7 +149,7 @@ class PaymentController extends Controller
             return Response::json(['error'=>$ex->getMessage()],422);
         }
     }
-    public static function getCart($user,$coupon=null,$couponExpire=true){
+    public static function getCart($user,$delivery_id,$coupon=null,$couponExpire=true){
         $applyCoupon=false;
         $discount=0;
         $msg='';
@@ -216,11 +219,11 @@ class PaymentController extends Controller
                 'sub_total'=>$subTotal,
                 'sub_total_discount'=>$totalPrice,
                 'tax'=>ConfigController::calculateTax($totalPrice),
-                'shipping'=>$subTotal?WebsiteSettings::first()->delivery_fees:0,
+                'shipping'=>$subTotal?DeliveryFees::find($delivery_id):0,
                 'apply_coupon'=>$applyCoupon,
                 'coupon_msg'=>$msg,
                 'coupon_discount'=>$discount,
-                'total_price'=>ConfigController::calculateTaxPrice($totalPrice,$applyCoupon)
+                'total_price'=>ConfigController::calculateTaxPrice($totalPrice,$delivery_id,$applyCoupon)
             ];
         }
         return [
