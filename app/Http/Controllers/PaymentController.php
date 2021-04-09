@@ -276,7 +276,17 @@ class PaymentController extends Controller
                 'total_price'=>ConfigController::calculateTaxPrice($totalPrice,$applyCoupon)
             ];
         }
-        return [];
+        return [
+            'cart'=>[],
+            'sub_total'=>0,
+            'sub_total_discount'=>0,
+            'tax'=>0,
+            'shipping'=>0,
+            'apply_coupon'=>false,
+            'coupon_msg'=>"",
+            'coupon_discount'=>0,
+            'total_price'=>0
+        ];
     }
 
 }
