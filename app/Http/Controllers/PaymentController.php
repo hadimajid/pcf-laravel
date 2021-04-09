@@ -214,7 +214,7 @@ class PaymentController extends Controller
                     ->count();
                 if($couponExpire){
                     $getCoupon=Coupon::where('id',$coupon)
-                        ->where('max_usage','>=',$couponCount)
+                        ->where('max_usage','>',$couponCount)
                         ->where('to','>=',Carbon::now()->format('Y-m-d'))
                         ->where('from','<=',Carbon::now()->format('Y-m-d'))
                         ->first();

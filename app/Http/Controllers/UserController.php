@@ -846,7 +846,7 @@ class UserController extends Controller
                     ->where('coupon_id','=',$c->id)
                     ->count();
                 $getCoupon=Coupon::where('id',$c->id)
-                    ->where('max_usage','>=',$couponCount)
+                    ->where('max_usage','>',$couponCount)
                     ->where('to','>=',Carbon::now()->format('Y-m-d'))
                     ->where('from','<=',Carbon::now()->format('Y-m-d'))
                     ->first();
