@@ -55,15 +55,14 @@ class ConfigController extends Controller
     public static function calculateTax($price){
         return round(($price*WebsiteSettings::first()->tax)/100,2);
     }
-    public static function calculateTaxPrice($price,$delivery_id,$discount=false){
+    public static function calculateTaxPrice($price,$delivery_fees,$discount=false){
         if(empty($price) && $discount==false){
             return 0;
         }
         $price+=(($price*WebsiteSettings::first()->tax)/100);
-        $price+=DeliveryFees::find($delivery_id);
+        $price+=$delivery_fees;
         return round($price,2);
     }
-
     public static function calculateCartPrice($id){
         return Product::where('id',$id)->first()->PromotionPrice;
     }

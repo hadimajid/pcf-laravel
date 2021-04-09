@@ -904,7 +904,7 @@ class UserController extends Controller
     }
     public function getCart($coupon=null){
         $user= User::find(Auth::guard('user')->user()->id);
-        return PaymentController::getCart($user,DeliveryFees::first()->id);
+        return PaymentController::getCart($user);
     }
     public function cartEmpty(){
         $user= User::find(Auth::guard('user')->user()->id);
@@ -1223,5 +1223,16 @@ class UserController extends Controller
 
         MailController::sendContactUsEmail($request->contact_email,$request->email,$request->name,$request->subject,$request->message);
         return Response::json(['message'=>'Contact us email sent to admin.']);
+    }
+    public function applyDeliveryFees(Request $request){
+        $request->validate([
+           'delivery_fee'=>'required|exists:delivery_fees,id'
+        ]);
+        $user=User::find(\auth()->guard('user')->user()->id);
+        if($user->cart){
+            $user->cart->delivery_fee_id=$request->input('delivery_fee');
+            $user->cart->save();
+        }
+        return Response::json(['message'=>'Delivery Fees Applied.']);
     }
 }

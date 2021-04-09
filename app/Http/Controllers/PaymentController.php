@@ -42,7 +42,7 @@ class PaymentController extends Controller
            'success_url'=>'required|url',
            'cancel_url'=>'required|url',
             'notes'=>'nullable',
-            'delivery_fee'=>'required,exists:delivery_fees,id',
+//            'delivery_fee'=>'required,exists:delivery_fees,id',
             'ship'=>'nullable',
             'update'=>'nullable',
             'shipping_address'=>'required_if:ship,1|array',
@@ -134,7 +134,6 @@ class PaymentController extends Controller
                     'user_id'=>  $user->id,
                     'cart_id'=>$cart->id,
                     'shipping_id'=>$shippingTemp->id,
-                    'delivery_id'=>$request->input('delivery_fee'),
                     'ship'=>$ship?$ship:0,
                     'coupon'=>$coupon?$coupon:"No Coupon",
                     'notes'=>$request->input('notes')?$request->input('notes'):"No Notes",
@@ -149,15 +148,22 @@ class PaymentController extends Controller
             return Response::json(['error'=>$ex->getMessage()],422);
         }
     }
-    public static function getCart($user,$delivery_id,$coupon=null,$couponExpire=true){
+    public static function getCart($user,$coupon=null,$couponExpire=true){
         $applyCoupon=false;
         $discount=0;
         $msg='';
         $cart=null;
         $totalPrice=0;
         if($user->cart){
-            $cart=CartItems::where('cart_id',$user->cart->id)->with(['product:id,Name,SalePrice,PromotionCheck,ProductNumber,slug','product.nextGenImages:ProductId,name','product.inventory.eta'])->get();
+            $cart=CartItems::where('cart_id',$user->cart->id)->with(
+                [
+                'product:id,Name,SalePrice,PromotionCheck,ProductNumber,slug',
+                'product.nextGenImages:ProductId,name',
+                'product.inventory.eta'
+                ])->get();
             $coupon=$user->cart->coupon_id;
+            $delivery_id=$user->cart->delivery_fees_id;
+
             if($coupon){
                 $couponCount=DB::table('coupon_user')
                     ->where('coupon_id','=',$coupon)
@@ -214,16 +220,20 @@ class PaymentController extends Controller
                     $user->cart->save();
                 }
             }
+            $fees=0;
+            if($delivery_id){
+                $fees=DeliveryFees::find($delivery_id);
+            }
             return [
                 'cart'=>$cart,
                 'sub_total'=>$subTotal,
                 'sub_total_discount'=>$totalPrice,
                 'tax'=>ConfigController::calculateTax($totalPrice),
-                'shipping'=>$subTotal?DeliveryFees::find($delivery_id):0,
+                'shipping'=>$subTotal?$fees:0,
                 'apply_coupon'=>$applyCoupon,
                 'coupon_msg'=>$msg,
                 'coupon_discount'=>$discount,
-                'total_price'=>ConfigController::calculateTaxPrice($totalPrice,$delivery_id,$applyCoupon)
+                'total_price'=>ConfigController::calculateTaxPrice($totalPrice,$fees,$applyCoupon)
             ];
         }
         return [
