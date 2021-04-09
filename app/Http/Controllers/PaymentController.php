@@ -69,7 +69,7 @@ class PaymentController extends Controller
             $user=auth()->guard('user')->user();
             $update=$request->input('update');
             $ship=$request->input('ship');
-            if($update===1){
+            if(!empty($update) && $update===1){
                 $temp=$request->input('shipping_address');
                 if(empty($user->shippingAddress)){
                     $shipping=new ShippingAddress();
@@ -95,9 +95,8 @@ class PaymentController extends Controller
                 $billingAddress->save();
             }
 
-            if($ship===1){
+            if(!empty($ship) && $ship===1){
                 $add=$request->input('shipping_address');
-
             }else{
                 $add=$request->input('billing_address');
             }
@@ -114,30 +113,8 @@ class PaymentController extends Controller
                 return false;
             }
             $checkoutItem=[];
-//            $tax_rate = \Stripe\TaxRate::create([
-//                'display_name' => 'Sales Tax',
-//                'inclusive' => false,
-//                'percentage' => WebsiteSettings::first()->tax?WebsiteSettings::first()->tax:0,
-//                'country' => 'US',
-//                'state' => 'CA',
-//                'jurisdiction' => 'US - CA',
-//                'description' => 'CA Sales Tax',
-//            ]);
-//            foreach ($items as $key=>$item){
-//                $checkoutItem[$key]['price_data']['currency']='usd';
-//                $checkoutItem[$key]['price_data']['unit_amount']=$item->product->PromotionPrice*100;
-//                $checkoutItem[$key]['price_data']['product_data']['name']=$item->product->Name;
-//                $checkoutItem[$key]['quantity']=$item->quantity;
-//                $checkoutItem[$key]['tax_rates']=[$tax_rate->id];
-//                $checkoutItem[$key]['price_data']['product_data']['images']=[$_SERVER['APP_URL'].'/'.$item->product->nextGenImages->pluck('name')[0]];
-//            }
             $coupon=$user->cart->coupon;;
-//            $c=$this->getCart($user,$coupon)['apply_coupon'];
-//            if($c){
-//                $coupon=$request->input('coupon');
-//            }else{
-//                $coupon=null;
-//            }
+
             $checkoutItem[0]['price_data']['currency']='usd';
             $checkoutItem[0]['price_data']['unit_amount']=self::getCart($user,$coupon)['total_price']*100;
             $checkoutItem[0]['price_data']['product_data']['name']="Total Bill";
@@ -145,39 +122,9 @@ class PaymentController extends Controller
             $checkoutItem[0]['price_data']['product_data']['images']=[];
 
 
-//            $customer=Customer::create([
-//                'email'=>$user->email,
-//                'name'=>$user->first_name.' '.$user->last_name,
-//                'shipping'=>[
-//                    'name'=>$add['name'],
-//                    'phone'=>$add['phone'],
-//                    'address'=>[
-//                        'city'=>$add['city'],
-//                        'country'=>$add['country'],
-//                        'line1'=>$add['street_address'],
-//                        'line2'=>$add['street_address'],
-//                        'postal_code'=>$add['zip'],
-//                        'state'=>$add['state'],
-//                    ]
-//                ],
-//                    'address'=>[
-//                        'city'=>$add['city'],
-//                        'country'=>$add['country'],
-//                        'line1'=>$add['street_address'],
-//                        'line2'=>$add['street_address'],
-//                        'postal_code'=>$add['zip'],
-//                        'state'=>$add['state'],
-//
-//                ],
-//
-//            ]);
+
             $checkout_session = Session::create([
-//                'customer'=>$customer->id,
                 'payment_method_types' => ['card'],
-//                'shipping_rates' => ['shr_1IbjlWA0smjrwOKOJuGhAZBy'],
-//                'shipping_address_collection' => [
-//                    'allowed_countries' => ['US', 'CA'],
-//                ],
                 'client_reference_id'=>$user->id,
                 'line_items' => $checkoutItem,
                 'mode' => 'payment',
