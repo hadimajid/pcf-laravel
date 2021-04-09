@@ -79,7 +79,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                     'notes'=>$notes,
                     'ship'=>$dataObject['metadata']['ship'],
                     'tax'=>$tax,
-                    'sub_total'=>$subTotal,
+                    'sub_total'=>$cart['sub_total'],
                     'shipping'=>$delivery_fees,
                     'total'=>$totalPrice,
                     'discount'=>$discount,
