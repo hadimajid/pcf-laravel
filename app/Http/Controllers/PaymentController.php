@@ -69,7 +69,7 @@ class PaymentController extends Controller
             $user=auth()->guard('user')->user();
             $update=$request->input('update');
             $ship=$request->input('ship');
-            if(!empty($update) && $update===1){
+            if(!empty($update) && $update==1){
                 $temp=$request->input('shipping_address');
                 if(empty($user->shippingAddress)){
                     $shipping=new ShippingAddress();
@@ -95,7 +95,7 @@ class PaymentController extends Controller
                 $billingAddress->save();
             }
 
-            if(!empty($ship) && $ship===1){
+            if(!empty($ship) && $ship==1){
                 $add=$request->input('shipping_address');
             }else{
                 $add=$request->input('billing_address');
