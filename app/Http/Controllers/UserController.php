@@ -836,42 +836,52 @@ class UserController extends Controller
         $coupon=$request->input('coupon');
         $applyCoupon=false;
         $discount=0;
-        if($coupon){
-            $c=Coupon::where('code',$coupon)->first();
-            if(empty($c)){
-                $msg="Coupon does not exist.";
+        if($user->cart){
+            if($user->cart->items->count()){
+                if($coupon){
+                    $c=Coupon::where('code',$coupon)->first();
+                    if(empty($c)){
+                        $msg="Coupon does not exist.";
 
-            }else{
-                $couponCount=DB::table('coupon_user')
-                    ->where('coupon_id','=',$c->id)
-                    ->count();
-                $getCoupon=Coupon::where('id',$c->id)
-                    ->where('max_usage','>',$couponCount)
-                    ->where('to','>=',Carbon::now()->format('Y-m-d'))
-                    ->where('from','<=',Carbon::now()->format('Y-m-d'))
-                    ->first();
-                if($getCoupon){
-                    $validUser=DB::table('coupon_user')
-                        ->where('coupon_id','=',$getCoupon->id)
-                        ->where('user_id','=',$user->id)
-                        ->count();;
-                    if(!empty($validUser)){
-                        if($validUser<$getCoupon->max_usage_per_user){
-                            $applyCoupon = true;
-                            $discount = $getCoupon->discount;
-                        }else{
-                            $msg="Max usage limit reach.";
-                            $msg="Given Coupon is already Availed ";
-                        }
                     }else{
-                        $applyCoupon = true;
-                        $discount = $getCoupon->discount;
+                        $couponCount=DB::table('coupon_user')
+                            ->where('coupon_id','=',$c->id)
+                            ->count();
+                        $getCoupon=Coupon::where('id',$c->id)
+                            ->where('max_usage','>',$couponCount)
+                            ->where('to','>=',Carbon::now()->format('Y-m-d'))
+                            ->where('from','<=',Carbon::now()->format('Y-m-d'))
+                            ->first();
+                        if($getCoupon){
+                            $validUser=DB::table('coupon_user')
+                                ->where('coupon_id','=',$getCoupon->id)
+                                ->where('user_id','=',$user->id)
+                                ->count();;
+                            if(!empty($validUser)){
+                                if($validUser<$getCoupon->max_usage_per_user){
+                                    $applyCoupon = true;
+                                    $discount = $getCoupon->discount;
+                                }else{
+                                    $msg="Max usage limit reach.";
+                                    $msg="Given Coupon is already Availed ";
+                                }
+                            }else{
+                                $applyCoupon = true;
+                                $discount = $getCoupon->discount;
+                            }
+                        }else{
+                            $msg="Coupon expired.";
+                            $msg="Given Coupon is expired.";
+                        }
                     }
-                }else{
-                    $msg="Coupon expired.";
-                    $msg="Given Coupon is expired.";
+
                 }
+            }else{
+                $msg="Cart Empty.";
+
             }
+        }else{
+            $msg="Cart Empty.";
 
         }
         if($applyCoupon){
