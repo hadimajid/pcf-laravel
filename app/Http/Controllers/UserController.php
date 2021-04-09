@@ -904,6 +904,8 @@ class UserController extends Controller
                 $item->delete();
             }
             }
+            $cart->coupon_id=null;
+            $cart->save();
         }
         return Response::json(['message'=>'Products deleted from cart.']);
     }
