@@ -162,7 +162,7 @@ class PaymentController extends Controller
                 'product.inventory.eta'
                 ])->get();
             $coupon=$user->cart->coupon_id;
-            $delivery_id=$user->cart->delivery_fees_id;
+            $delivery_id=$user->cart->delivery_fee_id;
 
             if($coupon){
                 $couponCount=DB::table('coupon_user')
@@ -222,7 +222,7 @@ class PaymentController extends Controller
             }
             $fees=0;
             if($delivery_id){
-                $fees=DeliveryFees::find($delivery_id);
+                $fees=DeliveryFees::find($delivery_id)->price;
             }
             return [
                 'cart'=>$cart,

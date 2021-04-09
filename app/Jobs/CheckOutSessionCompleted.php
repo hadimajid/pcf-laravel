@@ -107,6 +107,7 @@ class CheckOutSessionCompleted implements ShouldQueue
 
                 CartItems::where('cart_id',$user->cart->id)->delete();
                 $user->cart->coupon_id=null;
+                $user->cart->delivery_fee_id=null;
                 $user->cart->save();
 //                DB::commit();
 

@@ -55,6 +55,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Intervention\Image\ImageManagerStatic as Image;
 class AdminController extends Controller
 {
@@ -2097,8 +2098,8 @@ class AdminController extends Controller
     public function addNewDeliveryFees(Request $request)
     {
         $validatedDate=$request->validate([
-            'name' => 'required',
-            'price' => 'numeric|min:0',
+            'name' => 'required|unique:delivery_fees,name',
+            'price' => 'numeric|min:1',
             'description' => 'required',
         ]);
         $df=new DeliveryFees();
@@ -2109,18 +2110,27 @@ class AdminController extends Controller
     public function editDeliveryFees(Request $request,$id)
     {
         $validatedDate=$request->validate([
-            'name' => 'required',
-            'price' => 'numeric|min:0',
+            'name' => ['required', Rule::unique('delivery_fees','name')->ignore($id)],
+            'price' => 'numeric|min:1',
             'description' => 'required',
         ]);
         $df=DeliveryFees::find($id);
+        if(empty($df)){
+            return Response::json(['message' => 'Delivery fees not found.'], 422);
+        }
         $df->fill($validatedDate);
-        $df->save();
-        return Response::json(['message' => 'Delivery fees updated.'], 200);
+        if($df->save()){
+            return Response::json(['message' => 'Delivery fees updated.'], 200);
+        }else{
+            return Response::json(['message' => 'Some error has occurred.'], 422);
+        }
     }
     public function deleteDeliveryFees(Request $request,$id)
     {
         $df=DeliveryFees::find($id);
+        if(empty($df)){
+            return Response::json(['message' => 'Delivery fees not found.'], 422);
+        }
         $df->delete();
         return Response::json(['message' => 'Delivery fees deleted.'], 200);
     }

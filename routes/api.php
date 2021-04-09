@@ -13,7 +13,10 @@ use Illuminate\Support\Facades\Route;
                 Route::post('send-forgot-password',[UserController::class,'sendForgotPasswordMail']);
                 Route::get('verify-forgot-password/{token}/{email}',[UserController::class,'verifyForgotEmail']);
                 Route::post('change-forgot-password',[UserController::class,'changeForgotPassword']);
-
+                Route::prefix('delivery-fee')->group(function () {
+                    Route::post('/all', [AdminController::class, 'getAllDeliveryFees']);
+                    Route::post('{id}', [AdminController::class, 'getDeliveryFeesById']);
+                });
          });
 //      Admin
         Route::prefix('admin')->group(function (){
@@ -61,7 +64,8 @@ use Illuminate\Support\Facades\Route;
                     Route::post('cancel/{id}',[UserController::class,'cancelOrder']);
                 });
             Route::post('rate',[UserController::class,'rateProduct']);
-        });
+                Route::post('apply-delivery-fee',[UserController::class,'applyDeliveryFees']);
+            });
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
             Route::get('count',[AdminController::class,'dashboardCount']);

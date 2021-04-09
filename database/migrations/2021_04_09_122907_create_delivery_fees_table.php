@@ -15,7 +15,7 @@ class CreateDeliveryFeesTable extends Migration
     {
         Schema::create('delivery_fees', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->float('price');
             $table->text('description');
             $table->timestamps();
