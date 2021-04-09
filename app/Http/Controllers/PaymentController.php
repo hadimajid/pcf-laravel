@@ -273,7 +273,7 @@ class PaymentController extends Controller
                 'apply_coupon'=>$applyCoupon,
                 'coupon_msg'=>$msg,
                 'coupon_discount'=>$discount,
-                'total_price'=>ConfigController::calculateTaxPrice($totalPrice)
+                'total_price'=>ConfigController::calculateTaxPrice($totalPrice,$applyCoupon)
             ];
         }
         return [];
