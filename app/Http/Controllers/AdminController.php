@@ -2155,8 +2155,10 @@ class AdminController extends Controller
                 if(!empty($name)){
                     $query->where('description','like',"%$description%");
                 }
-      })->limit($limit)->offset($offset)->get();
-      return Response::json(['delivery_fees'=>$df]);
+      });
+      $total=$df->count();
+      $df=$df->limit($limit)->offset($offset)->get();
+      return Response::json(['delivery_fees'=>$df,'total_number'=>$total]);
     }
     public function getDeliveryFeesById($id){
       $df=DeliveryFees::find($id);
