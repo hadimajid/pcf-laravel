@@ -2134,8 +2134,28 @@ class AdminController extends Controller
         $df->delete();
         return Response::json(['message' => 'Delivery fees deleted.'], 200);
     }
-    public function getAllDeliveryFees(){
-      $df=DeliveryFees::all();
+    public function getAllDeliveryFees(Request $request){
+      $total=DeliveryFees::all()->count();
+      $limit=$total;
+      $offset=0;
+      if($request->input('page') && $request->input('limit')){
+          $limit=$request->input('limit');
+          $page=($request->input('page')-1)*$limit;
+      }
+      $name=$request->input('name');
+      $price=$request->input('price');
+      $description=$request->input('description');
+      $df=DeliveryFees::where(function ($query) use ($name,$price,$description){
+                if(!empty($name)){
+                    $query->where('name','like',"%$name%");
+                }
+                if(!empty($price)){
+                    $query->where('price','=',$price);
+                }
+                if(!empty($name)){
+                    $query->where('description','like',"%$description%");
+                }
+      })->limit($limit)->offset($offset)->get();
       return Response::json(['delivery_fees'=>$df]);
     }
     public function getDeliveryFeesById($id){
