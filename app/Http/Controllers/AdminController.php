@@ -2140,7 +2140,7 @@ class AdminController extends Controller
       $offset=0;
       if($request->input('page') && $request->input('limit')){
           $limit=$request->input('limit');
-          $page=($request->input('page')-1)*$limit;
+          $offset=($request->input('page')-1)*$limit;
       }
       $name=$request->input('name');
       $price=$request->input('price');
