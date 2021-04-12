@@ -54,7 +54,7 @@ class CheckOutSessionCompleted implements ShouldQueue
 //                DB::beginTransaction();
                 $user= User::find($dataObject['metadata']['user_id']);
                 $items=CartItems::where('cart_id',$user->cart->id)->get();
-                $delivery_fees= DeliveryFees::find($dataObject['metadata']['delivery_id']);
+//                $delivery_fees= DeliveryFees::find($dataObject['metadata']['delivery_id']);
 
                 $coupon=$user->cart->coupon_id;
 
