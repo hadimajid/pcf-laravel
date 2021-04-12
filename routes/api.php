@@ -29,9 +29,14 @@ use Illuminate\Support\Facades\Route;
             });
 //        });
 //      User routes
+Route::get('paypal/success',[PaymentController::class,'success']);
+Route::get('paypal/cancel',[PaymentController::class,'cancel']);
+//Route::get('order_details/{order_id}',[PaymentController::class,'getOrderDetails']);
+//Route::get('newTest',[AdminController::class,'newTest']);
         Route::middleware('auth:user')->prefix('user')->group(function (){
             Route::prefix('checkout')->group(function () {
                 Route::post('stripe',[PaymentController::class,'checkOutWithStripe']);
+                Route::post('paypal',[PaymentController::class,'payNow']);
             });
                 Route::post('is-logged-in',[UserController::class,'checkLoggedIn']);
                 Route::post('logout',[UserController::class,'logout']);
@@ -245,8 +250,5 @@ Route::fallback(function(){
                     ['message' => 'Invalid Route.'], 404);
         });
 Route::stripeWebhooks('stripe');
-Route::get('test/{totalAmount}',[PaymentController::class,'payNow']);
-Route::get('success',[PaymentController::class,'newTest']);
-Route::get('cancel',[PaymentController::class,'cancel']);
-Route::get('order_details/{order_id}',[PaymentController::class,'getOrderDetails']);
-Route::get('newTest',[AdminController::class,'newTest']);
+Route::post('paypal');
+
