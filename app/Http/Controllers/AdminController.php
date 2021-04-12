@@ -2099,7 +2099,7 @@ class AdminController extends Controller
     {
         $validatedDate=$request->validate([
             'name' => 'required|unique:delivery_fees,name',
-            'price' => 'numeric|min:1',
+            'price' => 'numeric|min:0',
             'description' => 'required',
         ]);
         $df=new DeliveryFees();
@@ -2111,7 +2111,7 @@ class AdminController extends Controller
     {
         $validatedDate=$request->validate([
             'name' => ['required', Rule::unique('delivery_fees','name')->ignore($id)],
-            'price' => 'numeric|min:1',
+            'price' => 'numeric|min:0',
             'description' => 'required',
         ]);
         $df=DeliveryFees::find($id);
