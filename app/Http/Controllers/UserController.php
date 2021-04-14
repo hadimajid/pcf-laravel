@@ -989,7 +989,7 @@ class UserController extends Controller
             if($wishlist->items){
             foreach ($wishlist->items as $item){
                 $item->delete();
-            }
+                }
             }
         }
         return Response::json(['message'=>'Products deleted from wishlist.']);

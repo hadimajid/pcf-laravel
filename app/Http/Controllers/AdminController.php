@@ -756,7 +756,7 @@ class AdminController extends Controller
                     $productCheck->BoxWidth = $product->BoxSize->Width;
                     $productCheck->BoxHeight = $product->BoxSize->Height;
 
-                    Measurement::where('ProductId',$productCheck)->delete();
+                    Measurement::where('ProductId',$productCheck->id)->delete();
                     foreach ($product->MeasurementList as $measurementList) {
                         $Length = null;
                         $Width = null;
@@ -817,7 +817,7 @@ class AdminController extends Controller
 
 
 
-                    Material::where('ProductId',$productCheck)->delete();
+                    Material::where('ProductId',$productCheck->id)->delete();
 
                     foreach ($product->MaterialList as $materialList) {
                         Material::create([
@@ -828,7 +828,7 @@ class AdminController extends Controller
                     }
 
 
-                    AdditionalField::where('ProductId',$productCheck)->delete();
+                    AdditionalField::where('ProductId',$productCheck->id)->delete();
 
                     foreach ($product->AdditionalFieldList as $additionalFieldList) {
                         AdditionalField::create([
@@ -839,7 +839,7 @@ class AdminController extends Controller
                     }
 
 
-                    RelatedProductList::where('ProductId',$productCheck)->delete();
+                    RelatedProductList::where('ProductId',$productCheck->id)->delete();
 
                     foreach ($product->RelatedProductList as $relatedProductList) {
                         RelatedProductList::create([
@@ -849,7 +849,7 @@ class AdminController extends Controller
                     }
 
 
-                    Component::where('ProductId',$productCheck)->delete();
+                    Component::where('ProductId',$productCheck->id)->delete();
 
                     if (property_exists($product, 'Components')) {
                         foreach ($product->Components as $component) {

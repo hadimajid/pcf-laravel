@@ -246,10 +246,10 @@ Route::get('paypal/cancel',[PaymentController::class,'cancel']);
         Route::post('category/new',[UserController::class,'getCategoriesNew']);
         Route::post('contact-us',[UserController::class,'contactUs']);
 
-Route::fallback(function(){
+        Route::fallback(function(){
                 return response()->json(
                     ['message' => 'Invalid Route.'], 404);
         });
-Route::stripeWebhooks('stripe');
-Route::post('paypal');
+        Route::stripeWebhooks('stripe');
+        Route::post('paypal');
 
