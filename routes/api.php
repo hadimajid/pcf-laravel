@@ -140,6 +140,7 @@ Route::get('paypal/cancel',[PaymentController::class,'cancel']);
             Route::post('price-code',[AdminController::class,'getPriceCodeList']);
 //      Style
         Route::post('style',[AdminController::class,'getStyle']);
+        Route::post('style/distinct',[AdminController::class,'getDistinctStyle']);
         Route::post('add-price',[AdminController::class,'addPrice']);
         Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
 //      Collection

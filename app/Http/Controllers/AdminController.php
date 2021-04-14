@@ -3945,7 +3945,11 @@ class AdminController extends Controller
         $styles = Style::all();
         return Response::json(['styles' => $styles]);
     }
-
+    public function getDistinctStyle(Request $request)
+    {
+        $styles = Style::select('StyleName')->groupBy('StyleName')->get();
+        return Response::json(['styles' => $styles]);
+    }
     public function getStyleByCoaster(Request $request)
     {
         $count = Style::whereNotNull('StyleCode')->count();;
