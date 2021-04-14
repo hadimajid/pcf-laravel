@@ -867,7 +867,8 @@ class AdminController extends Controller
                             ]);
                         }
                     }
-//                    if ($product->NumNextGenImages != $productCheck->NumNextGenImages) {
+                    $runImageCheck=false;
+                    if ($runImageCheck) {
                         foreach ($productCheck->nextGenImages as $img) {
 //                            $tImg=explode('/',$img->name);
 //                            $thumbnailImage=$tImg[0].'/thumbnail/'.$tImg[2];
@@ -907,7 +908,7 @@ class AdminController extends Controller
 //                                ]], 422);
                             }
                         }
-//                    }
+                    }
                     $productCheck->save();
                     $check = false;
 
