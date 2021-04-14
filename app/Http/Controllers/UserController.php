@@ -980,7 +980,6 @@ class UserController extends Controller
         if($user->wishlist){
             $wishlist=$user->wishlist->with('items','items.product.inventory','items.product.nextGenImages')->get();
         }
-
         return Response::json(['wishlist'=>$wishlist]);
     }
     public function wishlistEmpty(Request $request){
