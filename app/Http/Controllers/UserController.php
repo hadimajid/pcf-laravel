@@ -550,7 +550,7 @@ class UserController extends Controller
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
             ->with(
-                self::getRelationProduct())
+                AdminController::getRelationProduct())
             ->get();
         $count=$productsQuery
             ->count();
