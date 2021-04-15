@@ -383,7 +383,6 @@ class UserController extends Controller
 
             $categories=Category::
                 whereRaw($where)
-
                 ->withCount(['subCategories', 'products'=>function($query){
                     $query->where('Hide',0);
                 }])
