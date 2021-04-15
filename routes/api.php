@@ -247,6 +247,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('material',[AdminController::class,'getMaterial']);
         Route::post('category/new',[UserController::class,'getCategoriesNew']);
         Route::post('contact-us',[UserController::class,'contactUs']);
+        Route::post('color',[AdminController::class,'getColor']);
 
         Route::fallback(function(){
                 return response()->json(
