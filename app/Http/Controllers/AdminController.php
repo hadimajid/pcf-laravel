@@ -2710,8 +2710,8 @@ class AdminController extends Controller
         $warehouse = $request->input('warehouse');
         $type = $request->input('type');
         $page = 0;
-        $limit = Product::whereNotNull('ProductNumber')->get()->count();
-        $count = Product::whereNotNull('ProductNumber')->get()->count();
+        $limit = Product::whereNull('ProductNumber')->get()->count();
+        $count = Product::whereNull('ProductNumber')->get()->count();
         $sort = ['id', 'asc'];
         if ($request->input('sort')) {
             $s = $request->input('sort');
