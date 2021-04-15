@@ -479,7 +479,6 @@ class AdminController extends Controller
 
     public function updateSubCategory(Request $request, $id)
     {
-
         $rules = [
             'category_id' => 'required|exists:categories,id',
             'name' => ['required', new AlphaSpace()],
