@@ -8,6 +8,7 @@ use App\Models\CartItems;
 use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\DeliveryFees;
+use App\Models\Material;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PasswordReset;
@@ -1048,5 +1049,9 @@ class UserController extends Controller
     public function getStyles(){
         $styles = Style::select('StyleName')->groupBy('StyleName')->get();
         return Response::json(['styles' => $styles]);
+    }
+    public function getMaterials(){
+        $materials = Material::select('Value')->groupBy('Value')->get();
+        return Response::json(['materials' => $materials]);
     }
 }
