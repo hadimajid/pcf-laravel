@@ -14,6 +14,7 @@ use App\Models\PasswordReset;
 use App\Models\Product;
 use App\Models\Rating;
 use App\Models\ShippingAddress;
+use App\Models\Style;
 use App\Models\SubCategory;
 use App\Models\User;
 use App\Models\WebsiteSettings;
@@ -470,11 +471,7 @@ class UserController extends Controller
                 $page=($request->input('page')-1)*$limit;
             }
         }
-        $where='';
-// If category id
-        $b=0;
         $cat=null;
-
         if(!empty($category_slug)){
             $category_name=  Category::where('Slug','like',$category_slug)->first();
             if($category_name){
@@ -486,17 +483,7 @@ class UserController extends Controller
             }
         }
 
-        if(!empty($category_name)){
-            if($where==''){
-                $where.=" CategoryId = $category_name ";
-            }else{
-                $where.=" and CategoryId = $category_name ";
-            }
-            $b=1;
-        }
-//        if sub category
         $sub=null;
-
         if(!empty($subcategory_slug)){
             $subcategory_name=  SubCategory::where('Slug','like',$subcategory_slug)->first();
             if($subcategory_name){
@@ -508,240 +495,64 @@ class UserController extends Controller
 
             }
         }
-        if(!empty($subcategory_name)){
-            if($where=='') {
-                $where .= " SubCategoryId = $subcategory_name ";
-            }else{
-                $where .= " and SubCategoryId = $subcategory_name ";
-            }
-            $b=1;
-
-        }
-//        if hide
-        $a=0;
-        if($type=="1"){
-
-            if($where=='') {
-                $where .= " Hide = 1 ";
-            }else{
-                $where .= " and Hide = 1  ";
-            }
-            $a=1;
-        }
-        if($type=="2"){
-
-            if($where=='') {
-                $where .= " Hide = 0 ";
-            }else{
-                $where .= " and Hide = 0 ";
-            }
-            $a=1;
-        }
-        if($type=="3"){
-
-            if($where=='') {
-                $where .= " New = 1 ";
-            }else{
-                $where .= " and New =  1 ";
-            }
-            $a=1;
-        }
-        if($type=="4"){
-
-            if($where=='') {
-                $where .= " Featured = 1 ";
-            }else{
-                $where .= " and Featured =  1 ";
-            }
-            $a=1;
-        }
-//          if  product
-        if(!empty($product_name)){
-//            $product_name=str_replace('"','\"',$product_name);
-            if($where=='') {
-                $where.=" Name like '%$product_name%' ";
-            }else{
-                $where.=" and Name like '%$product_name%' ";
-            }
-            $b=1;
-        }
-//          if  product
-        if(!empty($slug)){
-
-            if($where=='') {
-                $where.=" slug like '$slug' ";
-            }else{
-                $where.=" and slug like '$slug' ";
-            }
-            $b=1;
-        }
-//          if style
-        if(!empty($style)){
-            if($where=='') {
-                $where.=" StyleId = $style ";
-            }
-            else{
-                $where.=" and StyleId = $style ";
-            }
-            $b=1;
-        }
-        if(!empty($color)){
-            if($where=='') {
-                $where.=" (FabricColor like '%$color%' or FinishColor like '%$color%')";
-            }else{
-                $where.=" and (FabricColor like '%$color%' or FinishColor like '%$color%')";
-            }
-            $b=1;
-
-        }
-        if(!empty($material)  && empty($warehouse)){
-            if($where==''){
-                $products=Product::
-                    whereHas('materials',function ($query) use ($material){
-                        $query->where('Value','like',"%$material%");
-                    })->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with(AdminController::getRelationProduct())
-                    ->withCount('ratings')
-                    ->get();
-                $count=Product::
-                    whereHas('materials',function ($query) use ($material){
-                        $query->where('Value','like',"%$material%");
-                    })->count();
-            }
-            else{
-                $products = Product::
-                    whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
+        $productsQuery = Product::whereNull('ProductNumber')
+            ->where(function ($query) use ($category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+                if($category_name){
+                    $query->where('CategoryId',$category_name);
+                }
+                if($subcategory_name){
+                    $query->where('SubcategoryId',$subcategory_name);
+                }
+                if($slug){
+                    $query->where('slug',$slug);
+                }
+                if($product_name){
+                    $query->where('Name','like',"%$product_name%");
+                }
+                if($style){
+                    $query->whereHas('style',function ($query) use ($style){
+                        $query->where('StyleName',$style);
+                    });
+                }
+                if($color){
+                    $query->where(function ($query) use ($color){
+                        $query->where('FabricColor','like',"%$color%")->orWhere('FinishColor','like',"%$color%");
+                    });
+                }
+                if($material){
+                    $query->whereHas('materials', function ($query) use ($material) {
                         $query->where('Value', 'like', "%$material%");
-                    })->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with(AdminController::getRelationProduct())
-                    ->withCount('ratings')
-                    ->get();
-                $count=Product::
-                    whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->count();
-            }
+                    });
+                }
+                if($warehouse){
+                    $query->whereHas('inventory', function ($query) use ($warehouse) {
+                        $query->where('WarehouseId', '=', $warehouse);
+                    });
+                }
+                if($type){
+                    if ($type == "1") {
+                        $query->where('Hide',1);
+                    }
+                    if ($type == "2") {
+                        $query->where('Hide',0);
+                    }
+                    if ($type == "3") {
+                        $query->where('New',1);
+                    }
+                    if ($type == "4") {
+                        $query->where('Featured',1);
 
+                    }
 
-        }
-        if(empty($material) && !empty($warehouse)){
-            if($where!=''){
-
-                $products=Product::
-                    whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','=',$warehouse);
-                    })
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with(AdminController::getRelationProduct())
-                    ->withCount('ratings')
-                    ->get();
-                $count=Product::
-                    whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
-                    })
-                    ->whereRaw($where)->count();
-            }
-            else{
-                $products=Product::
-                    whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
-                    })
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0],$sort[1])
-                    ->with(AdminController::getRelationProduct())
-                    ->withCount('ratings')
-                    ->get();
-                $count=Product::
-                    whereHas('inventory',function ($query) use ($warehouse){
-                        $query->where('WarehouseId','like',$warehouse);
-                    })->count();
-            }
-
-        }if(!empty($material) && !empty($warehouse)){
-        if($where!=''){
-
-            $products=Product::
-                whereHas('inventory',function ($query) use ($warehouse){
-                    $query->where('WarehouseId','like',$warehouse);
-                })
-                ->whereHas('materials', function ($query) use ($material) {
-                    $query->where('Value', 'like', "%$material%");
-                })
-                ->whereRaw($where)
-                ->offset($page)->limit($limit)
-                ->orderBy($sort[0],$sort[1])
-                ->with(AdminController::getRelationProduct())
-                ->withCount('ratings')
-                ->get();
-            $count=Product::
-                whereHas('inventory',function ($query) use ($warehouse){
-                    $query->where('WarehouseId','like',$warehouse);
-                })
-                ->whereHas('materials', function ($query) use ($material) {
-                    $query->where('Value', 'like', "%$material%");
-                })
-                ->whereRaw($where)->count();
-        }
-        else{
-            $products=Product::
-                whereHas('inventory',function ($query) use ($warehouse){
-                    $query->where('WarehouseId','like',$warehouse);
-                })
-                ->whereHas('materials', function ($query) use ($material) {
-                    $query->where('Value', 'like', "%$material%");
-                })
-                ->offset($page)->limit($limit)
-                ->orderBy($sort[0],$sort[1])
-                ->with(AdminController::getRelationProduct())
-                ->withCount('ratings')
-                ->get();
-
-            $count=Product::
-                whereHas('inventory',function ($query) use ($warehouse){
-                    $query->where('WarehouseId','like',$warehouse);
-                })
-                ->whereHas('materials', function ($query) use ($material) {
-                    $query->where('Value', 'like', "%$material%");
-                })->count();
-        }
-
-    }if(empty($material) && empty($warehouse)){
-        if($where!=''){
-            $products=Product::
-                    whereRaw($where)
-                ->offset($page)->limit($limit)
-                ->orderBy($sort[0],$sort[1])
-                ->with(AdminController::getRelationProduct())
-                ->withCount('ratings')
-                ->get();
-            $count=Product::
-                whereRaw($where)->count();
-        }
-        else{
-            $products=Product::
-                offset($page)->limit($limit)
-                ->orderBy($sort[0],$sort[1])
-                ->with(AdminController::getRelationProduct())
-                ->withCount('ratings')
-                ->get();
-            $count=Product::all()->count();
-        }
-//            if($a==1 && $b==0){
-//                $count=Product::
-//                    whereRaw($where)
-//                    ->count();
-//            }
-//            if($a==1 && $b==1){
-//                $count=$products->count();
-//            }
-    }
-//        $products=ConfigController::price($products);
+                }
+            });
+        $products=$productsQuery->offset($page)->limit($limit)
+            ->orderBy($sort[0], $sort[1])
+            ->with(
+                self::getRelationProduct())
+            ->get();
+        $count=$productsQuery
+            ->count();
 
         return Response::json([
             'products'=>$products,
@@ -1233,5 +1044,9 @@ class UserController extends Controller
             $user->cart->save();
         }
         return Response::json(['message'=>'Delivery Fees Applied.']);
+    }
+    public function getStyles(){
+        $styles = Style::select('StyleName')->groupBy('StyleName')->get();
+        return Response::json(['styles' => $styles]);
     }
 }

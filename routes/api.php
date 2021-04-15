@@ -243,6 +243,7 @@ use Illuminate\Support\Facades\Route;
         Route::get('contact-information',[AdminController::class,'getContactInformation']) ;
 //      Route::get('sub-category',[AdminController::class,'getSubCategories']);
         Route::post('category',[UserController::class,'getCategories']);
+        Route::post('style',[UserController::class,'getStyles']);
         Route::post('category/new',[UserController::class,'getCategoriesNew']);
         Route::post('contact-us',[UserController::class,'contactUs']);
 

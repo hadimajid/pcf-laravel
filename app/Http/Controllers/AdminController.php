@@ -3547,12 +3547,12 @@ class AdminController extends Controller
 
     public function getStyle(Request $request)
     {
-        $styles = Style::all();
+        $styles = Style::whereNull('StyleCode')->get();
         return Response::json(['styles' => $styles]);
     }
     public function getDistinctStyle(Request $request)
     {
-        $styles = Style::select('StyleName')->groupBy('StyleName')->get();
+        $styles = Style::whereNull('StyleCode')->select('StyleName')->groupBy('StyleName')->get();
         return Response::json(['styles' => $styles]);
     }
     public function getStyleByCoaster(Request $request)
