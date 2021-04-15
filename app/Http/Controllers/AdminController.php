@@ -2597,13 +2597,14 @@ class AdminController extends Controller
                     }
                 }
             });
+        $count=$productsQuery
+            ->count();
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
             ->with(
                 self::getRelationProduct())
             ->get();
-        $count=$productsQuery
-            ->count();
+
         return Response::json([
             'products' => $products,
             'total_number' => $count,
@@ -2710,13 +2711,13 @@ class AdminController extends Controller
                     }
                 }
             });
+        $count=$productsQuery
+            ->count();
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
             ->with(
                 self::getRelationProduct())
             ->get();
-        $count=$productsQuery
-            ->count();
         return Response::json([
             'products' => $products,
             'total_number' => $count,

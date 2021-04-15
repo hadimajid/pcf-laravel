@@ -494,8 +494,7 @@ class UserController extends Controller
 
             }
         }
-        $productsQuery = Product::
-            where(function ($query) use ($category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+        $productsQuery = Product::where(function ($query) use ($category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
                 if($category_name){
                     $query->where('CategoryId',$category_name);
                 }
@@ -545,13 +544,14 @@ class UserController extends Controller
 
                 }
             });
+        $count=$productsQuery
+            ->count();
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
             ->with(
                 AdminController::getRelationProduct())
             ->get();
-        $count=$productsQuery
-            ->count();
+
 
         return Response::json([
             'products'=>$products,
