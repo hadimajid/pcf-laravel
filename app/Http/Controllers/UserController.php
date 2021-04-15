@@ -496,8 +496,8 @@ class UserController extends Controller
 
             }
         }
-        $productsQuery = Product::whereNull('ProductNumber')
-            ->where(function ($query) use ($category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+        $productsQuery = Product::
+            where(function ($query) use ($category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
                 if($category_name){
                     $query->where('CategoryId',$category_name);
                 }
