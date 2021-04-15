@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 //        Guest routes
 //        Route::middleware(['guest:user','guest:admin'])->group(function (){
@@ -29,8 +28,8 @@ use Illuminate\Support\Facades\Route;
             });
 //        });
 //      User routes
-Route::get('paypal/success',[PaymentController::class,'success']);
-Route::get('paypal/cancel',[PaymentController::class,'cancel']);
+                Route::get('paypal/success',[PaymentController::class,'success']);
+                Route::get('paypal/cancel',[PaymentController::class,'cancel']);
 //Route::get('order_details/{order_id}',[PaymentController::class,'getOrderDetails']);
 //Route::get('newTest',[AdminController::class,'newTest']);
         Route::middleware('auth:user')->prefix('user')->group(function (){
@@ -142,7 +141,8 @@ Route::get('paypal/cancel',[PaymentController::class,'cancel']);
         Route::post('style',[AdminController::class,'getStyle']);
         Route::post('style/distinct',[AdminController::class,'getDistinctStyle']);
         Route::post('add-price',[AdminController::class,'addPrice']);
-        Route::post('style/coaster',[AdminController::class,'getStyleByCoaster']);
+        Route::post('style/coaster/',[AdminController::class,'getStyleByCoaster']);
+        Route::post('style/coaster/distinct',[AdminController::class,'getStyleByCoasterDistinct']);
 //      Collection
         Route::post('collection/coaster',[AdminController::class,'getCollectionByCoaster']);
 //      Group

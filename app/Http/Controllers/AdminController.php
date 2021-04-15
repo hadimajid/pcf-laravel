@@ -2625,282 +2625,74 @@ class AdminController extends Controller
                 $page = ($request->input('page') - 1) * $limit;
             }
         }
-
-
-        $where = '';
-// If category id
-        $b = 0;
-        if (!empty($category_name)) {
-            if ($where == '') {
-                $where .= " CategoryId = $category_name ";
-            } else {
-                $where .= " and CategoryId = $category_name ";
-            }
-            $b = 1;
-        }
-        if (!empty($product_number)) {
-            if ($where == '') {
-                $where .= " ProductNumber like '$product_number' ";
-            } else {
-                $where .= " and ProductNumber like '$product_number' ";
-            }
-            $b = 1;
-        }
-//        if sub category
-        if (!empty($subcategory_name)) {
-            if ($where == '') {
-                $where .= " SubCategoryId = $subcategory_name ";
-            } else {
-                $where .= " and SubCategoryId = $subcategory_name ";
-            }
-            $b = 1;
-
-        }
-//        if hide
-        $a = 0;
-        if ($type == "1") {
-
-            if ($where == '') {
-                $where .= " Hide = 1 ";
-            } else {
-                $where .= " and Hide = 1  ";
-            }
-            $a = 1;
-        }
-        if ($type == "2") {
-
-            if ($where == '') {
-                $where .= " Hide = 0 ";
-            } else {
-                $where .= " and Hide = 0 ";
-            }
-            $a = 1;
-        }
-        if ($type == "3") {
-
-            if ($where == '') {
-                $where .= " New = 1 ";
-            } else {
-                $where .= " and New =  1 ";
-            }
-            $a = 1;
-        }
-        if ($type == "4") {
-
-            if ($where == '') {
-                $where .= " Hot = 1 ";
-            } else {
-                $where .= " and Hot =  1 ";
-            }
-            $a = 1;
-        }
-        if ($type == "5") {
-
-            if ($where == '') {
-                $where .= " Hot = 0 ";
-            } else {
-                $where .= " and Hot =  0 ";
-            }
-            $a = 1;
-        }
-        if ($type == "6") {
-
-            if ($where == '') {
-                $where .= " PromotionCheck = 0 ";
-            } else {
-                $where .= " and PromotionCheck =  0 ";
-            }
-            $a = 1;
-        }
-        if ($type == "7") {
-
-            if ($where == '') {
-                $where .= " PromotionCheck = 1 ";
-            } else {
-                $where .= " and PromotionCheck =  1 ";
-            }
-            $a = 1;
-        }
-        if ($type == "8") {
-
-            if ($where == '') {
-                $where .= " Featured = 1 ";
-            } else {
-                $where .= " and Featured =  1 ";
-            }
-            $a = 1;
-        }
-//          if  product
-        if (!empty($product_name)) {
-
-            if ($where == '') {
-                $where .= " Name like '%$product_name%' ";
-            } else {
-                $where .= " and Name like '%$product_name%' ";
-            }
-            $b = 1;
-        }
-//          if style
-        if (!empty($style)) {
-            if ($where == '') {
-                $where .= " StyleId = $style ";
-            } else {
-                $where .= " and StyleId = $style ";
-            }
-            $b = 1;
-        }
-        if (!empty($color)) {
-            if ($where == '') {
-                $where .= " (FabricColor like '%$color%' or FinishColor like '%$color%')";
-            } else {
-                $where .= " and (FabricColor like '%$color%' or FinishColor like '%$color%')";
-            }
-            $b = 1;
-
-        }
-        if (!empty($material) && empty($warehouse)) {
-            if ($where == '') {
-                $products = Product::whereNotNull('ProductNumber')
-                    ->whereHas('materials', function ($query) use ($material) {
+        $productsQuery = Product::whereNotNull('ProductNumber')
+            ->where(function ($query) use ($category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type){
+                if($category_name){
+                    $query->where('CategoryId',$category_name);
+                }
+                if($subcategory_name){
+                    $query->where('SubcategoryId',$subcategory_name);
+                }
+                if($product_number){
+                    $query->where('ProductNumber',$product_number);
+                }
+                if($product_name){
+                    $query->where('Name','like',"%$product_name%");
+                }
+                if($style){
+                    $query->whereHas('style',function ($query) use ($style){
+                        $query->where('StyleName',$style);
+                    });
+                }
+                if($color){
+                    $query->where(function ($query) use ($color){
+                        $query->where('FabricColor','like',"%$color%")->orWhere('FinishColor','like',"%$color%");
+                    });
+                }
+                if($material){
+                    $query->whereHas('materials', function ($query) use ($material) {
                         $query->where('Value', 'like', "%$material%");
-                    })->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNotNull('ProductNumber')
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->count();
-            } else {
-                $products = Product::whereNotNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNotNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->count();
-            }
-
-
-        }
-        if (empty($material) && !empty($warehouse)) {
-            if ($where != '') {
-
-                $products = Product::whereNotNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
+                    });
+                }
+                if($warehouse){
+                    $query->whereHas('inventory', function ($query) use ($warehouse) {
                         $query->where('WarehouseId', '=', $warehouse);
-                    })
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNotNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', '=', $warehouse);
-                    })
-                    ->whereRaw($where)->count();
-            } else {
-                $products = Product::whereNotNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNotNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })->count();
-            }
-
-        }
-        if (!empty($material) && !empty($warehouse)) {
-            if ($where != '') {
-
-                $products = Product::whereNotNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNotNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })
-                    ->whereRaw($where)->count();
-            } else {
-                $products = Product::whereNotNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-
-                $count = Product::whereNotNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->count();
-            }
-
-        }
-        if (empty($material) && empty($warehouse)) {
-            if ($where != '') {
-                $products = Product::whereNotNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(
-                        self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNotNull('ProductNumber')
-                    ->whereRaw($where)->count();
-
-            } else {
-                $products = Product::whereNotNull('ProductNumber')
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNotNull('ProductNumber')->count();
-            }
-//            if($a==1 && $b==0){
-//                $count=Product::whereNotNull('ProductNumber')
-//                    ->whereRaw($where)
-//                    ->count();
-//            }
-//            if($a==1 && $b==1){
-//                $count=$products->count();
-//            }
-
-
-        }
-//        $products=ConfigController::price($products);
-
+                    });
+                }
+                if($type){
+                    if ($type == "1") {
+                        $query->where('Hide',1);
+                    }
+                    if ($type == "2") {
+                        $query->where('Hide',0);
+                    }
+                    if ($type == "3") {
+                        $query->where('New',1);
+                    }
+                    if ($type == "4") {
+                        $query->where('Hot',1);
+                    }
+                    if ($type == "5") {
+                        $query->where('Hot',0);
+                    }
+                    if ($type == "6") {
+                        $query->where('PromotionCheck',0);
+                    }
+                    if ($type == "7") {
+                        $query->where('PromotionCheck',1);
+                    }
+                    if ($type == "8") {
+                        $query->where('Featured',1);
+                    }
+                }
+            });
+        $products=$productsQuery->offset($page)->limit($limit)
+            ->orderBy($sort[0], $sort[1])
+            ->with(
+                self::getRelationProduct())
+            ->get();
+        $count=$productsQuery
+            ->count();
         return Response::json([
             'products' => $products,
             'total_number' => $count,
@@ -2912,14 +2704,15 @@ class AdminController extends Controller
         $category_name = $request->input('category_id');
         $subcategory_name = $request->input('subcategory_id');
         $product_name = $request->input('product_name');
+        $product_number = $request->input('product_number');
         $style = $request->input('style_id');
         $material = $request->input('material');
         $color = $request->input('color');
         $warehouse = $request->input('warehouse');
         $type = $request->input('type');
         $page = 0;
-        $limit = Product::whereNull('ProductNumber')->get()->count();
-        $count = Product::whereNull('ProductNumber')->get()->count();
+        $limit = Product::whereNotNull('ProductNumber')->get()->count();
+        $count = Product::whereNotNull('ProductNumber')->get()->count();
         $sort = ['id', 'asc'];
         if ($request->input('sort')) {
             $s = $request->input('sort');
@@ -2946,263 +2739,74 @@ class AdminController extends Controller
                 $page = ($request->input('page') - 1) * $limit;
             }
         }
-
-
-        $where = '';
-// If category id
-        $b = 0;
-        if (!empty($category_name)) {
-            if ($where == '') {
-                $where .= " CategoryId = $category_name ";
-            } else {
-                $where .= " and CategoryId = $category_name ";
-            }
-            $b = 1;
-        }
-//        if sub category
-        if (!empty($subcategory_name)) {
-            if ($where == '') {
-                $where .= " SubCategoryId = $subcategory_name ";
-            } else {
-                $where .= " and SubCategoryId = $subcategory_name ";
-            }
-            $b = 1;
-
-        }
-//        if hide
-        $a = 0;
-        if ($type == "1") {
-
-            if ($where == '') {
-                $where .= " Hide = 1 ";
-            } else {
-                $where .= " and Hide = 1  ";
-            }
-            $a = 1;
-        }
-        if ($type == "2") {
-
-            if ($where == '') {
-                $where .= " Hide = 0 ";
-            } else {
-                $where .= " and Hide = 0 ";
-            }
-            $a = 1;
-        }
-        if ($type == "3") {
-
-            if ($where == '') {
-                $where .= " New = 1 ";
-            } else {
-                $where .= " and New =  1 ";
-            }
-            $a = 1;
-        }
-        if ($type == "4") {
-
-            if ($where == '') {
-                $where .= " Hot = 1 ";
-            } else {
-                $where .= " and Hot =  1 ";
-            }
-            $a = 1;
-        }
-        if ($type == "5") {
-
-            if ($where == '') {
-                $where .= " Hot = 0 ";
-            } else {
-                $where .= " and Hot =  0 ";
-            }
-            $a = 1;
-        }
-        if ($type == "6") {
-
-            if ($where == '') {
-                $where .= " PromotionCheck = 0 ";
-            } else {
-                $where .= " and PromotionCheck =  0 ";
-            }
-            $a = 1;
-        }
-        if ($type == "7") {
-
-            if ($where == '') {
-                $where .= " PromotionCheck = 1 ";
-            } else {
-                $where .= " and PromotionCheck =  1 ";
-            }
-            $a = 1;
-        }
-        if ($type == "8") {
-
-            if ($where == '') {
-                $where .= " Featured = 1 ";
-            } else {
-                $where .= " and Featured =  1 ";
-            }
-            $a = 1;
-        }
-//          if  product
-        if (!empty($product_name)) {
-//            $product_name=str_replace('"','\"',$product_name);
-            if ($where == '') {
-                $where .= " Name like '%$product_name%' ";
-            } else {
-                $where .= " and Name like '%$product_name%' ";
-            }
-            $b = 1;
-        }
-//          if style
-        if (!empty($style)) {
-            if ($where == '') {
-                $where .= " StyleId = $style ";
-            } else {
-                $where .= " and StyleId = $style ";
-            }
-            $b = 1;
-        }
-        if (!empty($color)) {
-            if ($where == '') {
-                $where .= " (FabricColor like '%$color%' or FinishColor like '%$color%')";
-            } else {
-                $where .= " and (FabricColor like '%$color%' or FinishColor like '%$color%')";
-            }
-            $b = 1;
-
-        }
-        if (!empty($material) && empty($warehouse)) {
-            if ($where == '') {
-                $products = Product::whereNull('ProductNumber')
-                    ->whereHas('materials', function ($query) use ($material) {
+        $productsQuery = Product::whereNull('ProductNumber')
+            ->where(function ($query) use ($category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type){
+                if($category_name){
+                    $query->where('CategoryId',$category_name);
+                }
+                if($subcategory_name){
+                    $query->where('SubcategoryId',$subcategory_name);
+                }
+                if($product_number){
+                    $query->where('ProductNumber',$product_number);
+                }
+                if($product_name){
+                    $query->where('Name','like',"%$product_name%");
+                }
+                if($style){
+                    $query->whereHas('style',function ($query) use ($style){
+                        $query->where('StyleName',$style);
+                    });
+                }
+                if($color){
+                    $query->where(function ($query) use ($color){
+                        $query->where('FabricColor','like',"%$color%")->orWhere('FinishColor','like',"%$color%");
+                    });
+                }
+                if($material){
+                    $query->whereHas('materials', function ($query) use ($material) {
                         $query->where('Value', 'like', "%$material%");
-                    })->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNull('ProductNumber')
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->count();
-            } else {
-                $products = Product::whereNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->count();
-            }
-
-
-        }
-        if (empty($material) && !empty($warehouse)) {
-            if ($where != '') {
-
-                $products = Product::whereNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
+                    });
+                }
+                if($warehouse){
+                    $query->whereHas('inventory', function ($query) use ($warehouse) {
                         $query->where('WarehouseId', '=', $warehouse);
-                    })
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereRaw($where)->count();
-            } else {
-                $products = Product::whereNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })->count();
-            }
-
-        }
-        if (!empty($material) && !empty($warehouse)) {
-            if ($where != '') {
-
-                $products = Product::whereNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })
-                    ->whereRaw($where)->count();
-            } else {
-                $products = Product::whereNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-
-                $count = Product::whereNull('ProductNumber')
-                    ->whereHas('inventory', function ($query) use ($warehouse) {
-                        $query->where('WarehouseId', 'like', $warehouse);
-                    })
-                    ->whereHas('materials', function ($query) use ($material) {
-                        $query->where('Value', 'like', "%$material%");
-                    })->count();
-            }
-
-        }
-        if (empty($material) && empty($warehouse)) {
-            if ($where != '') {
-                $products = Product::whereNull('ProductNumber')
-                    ->whereRaw($where)
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNull('ProductNumber')
-                    ->whereRaw($where)->count();
-            } else {
-                $products = Product::whereNull('ProductNumber')
-                    ->offset($page)->limit($limit)
-                    ->orderBy($sort[0], $sort[1])
-                    ->with(self::getRelationProduct())
-                    ->get();
-                $count = Product::whereNull('ProductNumber')->count();
-            }
-
-        }
-//        $products=ConfigController::price($products);
-
+                    });
+                }
+                if($type){
+                    if ($type == "1") {
+                        $query->where('Hide',1);
+                    }
+                    if ($type == "2") {
+                        $query->where('Hide',0);
+                    }
+                    if ($type == "3") {
+                        $query->where('New',1);
+                    }
+                    if ($type == "4") {
+                        $query->where('Hot',1);
+                    }
+                    if ($type == "5") {
+                        $query->where('Hot',0);
+                    }
+                    if ($type == "6") {
+                        $query->where('PromotionCheck',0);
+                    }
+                    if ($type == "7") {
+                        $query->where('PromotionCheck',1);
+                    }
+                    if ($type == "8") {
+                        $query->where('Featured',1);
+                    }
+                }
+            });
+        $products=$productsQuery->offset($page)->limit($limit)
+            ->orderBy($sort[0], $sort[1])
+            ->with(
+                self::getRelationProduct())
+            ->get();
+        $count=$productsQuery
+            ->count();
         return Response::json([
             'products' => $products,
             'total_number' => $count,
@@ -3966,7 +3570,21 @@ class AdminController extends Controller
 
         return Response::json(['styles' => $styles, 'total_number' => $count, 'filtered' => $styles->count()]);
     }
+    public function getStyleByCoasterDistinct(Request $request)
+    {
+        $count = Style::whereNotNull('StyleCode')->select('StyleName')->groupBy('StyleName')->count();;
+        $limit = Style::whereNotNull('StyleCode')->select('StyleName')->groupBy('StyleName')->count();
+        $offset = 0;
+        if (!empty($request->input('limit'))) {
+            $limit = $request->input('limit');
+        }
+        if (!empty($request->input('page'))) {
+            $offset = ($request->input('page') - 1) * $limit;
+        }
+        $styles = Style::whereNotNull('StyleCode')->select('StyleName')->groupBy('StyleName')->offset($offset)->limit($limit)->orderBy('id', 'asc')->get();
 
+        return Response::json(['styles' => $styles, 'total_number' => $count, 'filtered' => $styles->count()]);
+    }
     public function getCollectionByCoaster(Request $request)
     {
         $count = CollectionModel::whereNotNull('CollectionCode')->count();;
