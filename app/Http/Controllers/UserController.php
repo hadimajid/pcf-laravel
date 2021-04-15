@@ -454,7 +454,6 @@ class UserController extends Controller
             }
             if($s==2){
                 $sort=['id','asc'];
-
             }
             if($s==3){
                 $sort=['id','desc'];

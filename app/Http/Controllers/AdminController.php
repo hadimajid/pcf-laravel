@@ -105,7 +105,6 @@ class AdminController extends Controller
         }
         return Response::json(['message' => 'Username or password incorrect.'], 422);
     }
-
     public function resetPassword(Request $request)
     {
         $rules = [
@@ -145,7 +144,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'User does not exist.'], 422);
         }
     }
-
     public function verifyForgotPasswordToken(Request $request, $token = null)
     {
         $passwordReset = null;
@@ -172,7 +170,6 @@ class AdminController extends Controller
             }
         }
     }
-
     public function verifyCode(Request $request)
     {
         $rules = [
@@ -267,7 +264,6 @@ class AdminController extends Controller
             }
         }
     }
-
 //    Category
     public function storeCategory(Request $request)
     {
@@ -293,10 +289,8 @@ class AdminController extends Controller
             return Response::json(['message' => 'Category Added.'], 200);
         }
     }
-
     public function updateCategory(Request $request, $id)
     {
-
         $rules = [
             'name' => ['required', new AlphaSpace()],
             'image' => 'mimes:jpeg,jpg,png'
@@ -337,12 +331,10 @@ class AdminController extends Controller
         }
 
     }
-
     public function deleteCategory(Request $request, $id)
     {
         $category = Category::find($id);
         if ($category != null) {
-
             try {
                 if ($category->delete()) {
                     if (file_exists(public_path($category->Image))) {
@@ -357,7 +349,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Category Not Found.'], 404);
         }
     }
-
     public function getCategories(Request $request)
     {
         $page = 0;
@@ -369,14 +360,14 @@ class AdminController extends Controller
         if (!empty($request->input('page'))) {
             $page = ($request->input('page') - 1) * $limit;
         }
-        if (empty($request->input('category_name'))) {
-            $categories = Category::withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
-        } else {
-            $categories = Category::where('CategoryName', 'like', '%' . $request->input('category_name') . '%')->withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
-            $count = Category::where('CategoryName', 'like', '%' . $request->input('category_name') . '%')->count();
-        }
-
-
+        $category_name= $request->input('category_name');
+        $categoryQuery=Category::where(function ($query) use ($category_name) {
+            if($category_name){
+                $query->where('CategoryName', 'like', '%' .$category_name . '%');
+            }
+        });
+            $categories = $categoryQuery->withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
+            $count = $categoryQuery->count();
         return Response::json(['categories' => $categories, 'total_number' => $count, 'filtered' => $categories->count()], 200);
     }
 
@@ -429,20 +420,22 @@ class AdminController extends Controller
     {
 
         $page = 0;
-        $limit = Category::all()->count();
-        $count = Category::all()->count();
+        $limit = Category::whereNotNull('CategoryCode')->count();
+        $count = Category::whereNotNull('CategoryCode')->count();
         if (!empty($request->input('limit'))) {
             $limit = $request->input('limit');
         }
         if (!empty($request->input('page'))) {
             $page = ($request->input('page') - 1) * $limit;
         }
-        if (empty($request->input('category_name'))) {
-            $categories = Category::whereNotNull('CategoryCode')->with('subCategories', 'subCategories.pieces')->withCount('subCategories', 'products')->offset($page)->limit($limit)->orderBy('id', 'asc')->get();
-        } else {
-            $categories = Category::whereNotNull('CategoryCode')->where('CategoryName', 'like', '%' . $request->input('category_name') . '%')->with('subCategories', 'subCategories.pieces')->withCount('subCategories', 'products')->offset($page)->limit($limit)->orderBy('id', 'asc')->get();
-            $count = Category::where('CategoryName', 'like', '%' . $request->input('category_name') . '%')->count();
-        }
+        $category_name= $request->input('category_name');
+        $categoryQuery=Category::where(function ($query) use ($category_name) {
+            if($category_name){
+                $query->where('CategoryName', 'like', '%' .$category_name . '%');
+            }
+        });
+        $categories = $categoryQuery->whereNotNull('CategoryCode')->with('subCategories', 'subCategories.pieces')->withCount('subCategories', 'products')->offset($page)->limit($limit)->orderBy('id', 'asc')->get();
+        $count = $categoryQuery->count();
         return Response::json(['categories' => $categories, 'total_number' => $count, 'filtered' => $categories->count()], 200);
 
     }
@@ -558,33 +551,18 @@ class AdminController extends Controller
         if (!empty($request->input('page'))) {
             $page = ($request->input('page') - 1) * $request->input('limit');
         }
-
-
-        if (empty($sub) && empty($cat)) {
-            $subcategories = SubCategory::with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-        }
-        if (!empty($sub) && empty($cat)) {
-            $subcategories = SubCategory::where('SubCategoryName', 'like', "%$sub%")->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-            $count = SubCategory::where('SubCategoryName', 'like', "%$sub%")->count();
-        }
-        if (empty($sub) && !empty($cat)) {
-            $subcategories = SubCategory::whereHas('Category', function ($query) use ($cat) {
-                $query->where('id', 'like', $cat);
-            })->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-
-            $count = SubCategory::whereHas('Category', function ($query) use ($cat) {
-                $query->where('id', 'like', $cat);
-            })->with('Category')->withCount('products')->count();
-        }
-        if (!empty($sub) && !empty($cat)) {
-            $subcategories = SubCategory::where('SubCategoryName', 'like', "%$sub%")->whereHas('Category', function ($query) use ($cat) {
-                $query->where('id', 'like', $cat);
-            })->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-
-            $count = SubCategory::where('SubCategoryName', 'like', "%$sub%")->whereHas('Category', function ($query) use ($cat) {
-                $query->where('id', 'like', $cat);
-            })->with('Category')->withCount('products')->count();
-        }
+            $subcategoriesQuery = SubCategory::where(function ($query) use ($sub,$cat){
+                if($sub){
+                    $query->where('SubCategoryName', 'like', "%$sub%");
+                }
+                if($cat){
+                    $query->whereHas('Category', function ($query) use ($cat) {
+                        $query->where('id', 'like', $cat);
+                    });
+                }
+            });
+            $subcategories=$subcategoriesQuery->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
+            $count = $subcategoriesQuery->count();
 
         return Response::json(['sub_categories' => $subcategories, 'total_number' => $count, 'filtered' => $subcategories->count()], 200);
     }
@@ -604,31 +582,18 @@ class AdminController extends Controller
         }
 
 
-        if (empty($sub) && empty($cat)) {
-            $subcategories = SubCategory::whereNotNull('SubCategoryCode')->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-        }
-        if (!empty($sub) && empty($cat)) {
-            $subcategories = SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName', 'like', "%$sub%")->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-            $count = SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName', 'like', "%$sub%")->count();
-        }
-        if (empty($sub) && !empty($cat)) {
-            $subcategories = SubCategory::whereNotNull('SubCategoryCode')->whereHas('Category', function ($query) use ($cat) {
-                $query->where('id', 'like', $cat);
-            })->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-
-            $count = SubCategory::whereNotNull('SubCategoryCode')->whereHas('Category', function ($query) use ($cat) {
-                $query->where('id', 'like', $cat);
-            })->with('Category')->withCount('products')->count();
-        }
-        if (!empty($sub) && !empty($cat)) {
-            $subcategories = SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName', 'like', "%$sub%")->whereHas('Category', function ($query) use ($cat) {
-                $query->where('id', 'like', $cat);
-            })->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-
-            $count = SubCategory::whereNotNull('SubCategoryCode')->where('SubCategoryName', 'like', "%$sub%")->whereHas('Category', function ($query) use ($cat) {
-                $query->where('id', 'like', $cat);
-            })->with('Category')->withCount('products')->count();
-        }
+        $subcategoriesQuery = SubCategory::whereNotNull('SubCategoryCode')->where(function ($query) use ($sub,$cat){
+            if($sub){
+                $query->where('SubCategoryName', 'like', "%$sub%");
+            }
+            if($cat){
+                $query->whereHas('Category', function ($query) use ($cat) {
+                    $query->where('id', 'like', $cat);
+                });
+            }
+        });
+        $subcategories=$subcategoriesQuery->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
+        $count = $subcategoriesQuery->count();
 
         return Response::json(['sub_categories' => $subcategories, 'total_number' => $count, 'filtered' => $subcategories->count()], 200);
     }
@@ -1134,7 +1099,6 @@ class AdminController extends Controller
         $this->storeProductPrice();
         return Response::json(['message' => "Product saved"], 200);
     }
-
     public function storeProductInfoApiData()
     {
         $productInfos = Http::withHeaders([
@@ -1329,7 +1293,6 @@ class AdminController extends Controller
         return Response::json(['message'=>'Price exception added.']);
 
     }
-
     public function storeCategoryApiData()
     {
         $categories = Http::withHeaders([
@@ -1388,7 +1351,6 @@ class AdminController extends Controller
         }
         return Response::json('Category Saved.', 200);
     }
-
     public function storeStyleApiData()
     {
         $styles = Http::withHeaders([
@@ -1414,7 +1376,6 @@ class AdminController extends Controller
         }
         return Response::json('Style Saved.');
     }
-
     public function storeCollectionApiData()
     {
         $collections = Http::withHeaders([
@@ -1445,7 +1406,6 @@ class AdminController extends Controller
         }
         return Response::json('Collection Saved.');
     }
-
     public function storeProductLineApiData()
     {
         $productLines = Http::withHeaders([
@@ -1467,7 +1427,6 @@ class AdminController extends Controller
         }
         return Response::json('Product Line Saved.');
     }
-
     public function storeGroupApiData()
     {
         $groups = Http::withHeaders([
@@ -1496,7 +1455,6 @@ class AdminController extends Controller
         }
         return Response::json('Group Saved.');
     }
-
     public function storeWareHouse()
     {
         $warehouses = Http::withHeaders([
@@ -1542,7 +1500,6 @@ class AdminController extends Controller
         }
         return Response::json('Warehouse Saved.');
     }
-
     public function storeWareHouseInventory()
     {
         $warehouseInventories = Http::withHeaders([
@@ -1596,7 +1553,6 @@ class AdminController extends Controller
         }
         return Response::json('Warehouse Inventory Saved.');
     }
-
 //API CALLS END
     public function changePassword(Request $request)
     {
@@ -1623,7 +1579,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Current password is incorrect.'], 422);
         }
     }
-
     public function addBanner(Request $request)
     {
         $rules = [
@@ -1648,7 +1603,6 @@ class AdminController extends Controller
 
         }
     }
-
     public function deleteBanner(Request $request, $id)
     {
         $banner = Banner::find($id);
@@ -1665,13 +1619,11 @@ class AdminController extends Controller
 
         }
     }
-
     public function getAllBanner()
     {
         $banners = Banner::all();
         return Response::json(['banners' => $banners], 200);
     }
-
     public function addTestimonial(Request $request)
     {
         $rules = [
@@ -1696,7 +1648,6 @@ class AdminController extends Controller
 
         }
     }
-
     public function deleteTestimonial(Request $request, $id)
     {
         $testimonial = Testimonial::find($id);
@@ -1712,13 +1663,11 @@ class AdminController extends Controller
             }
         }
     }
-
     public function getAllTestimonial()
     {
         $testimonials = Testimonial::all();
         return Response::json(['testimonials' => $testimonials], 200);
     }
-
     public function addFooterColumnOne(Request $request)
     {
         $rules = [
@@ -1750,7 +1699,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Footer Column One Added.'], 200);
         }
     }
-
     public function addFooterColumnTwo(Request $request)
     {
         $rules = [
@@ -1771,7 +1719,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Footer Column Two Added.'], 200);
         }
     }
-
     public function addFooterColumnThree(Request $request)
     {
         $rules = [
@@ -1793,7 +1740,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Footer Column Three Added.'], 200);
         }
     }
-
     public function deleteFooter(Request $request, $id)
     {
         $footer = Footer::find($id);
@@ -1811,25 +1757,21 @@ class AdminController extends Controller
             }
         }
     }
-
     public function getFirstFooter()
     {
         $footer = Footer::where('column', 1)->get();
         return Response::json(['footer' => $footer]);
     }
-
     public function getSecondFooter()
     {
         $footer = Footer::where('column', 2)->get();
         return Response::json(['footer' => $footer]);
     }
-
     public function getThirdFooter()
     {
         $footer = Footer::where('column', 3)->get();
         return Response::json(['footer' => $footer]);
     }
-
     public function addContactInformation(Request $request)
     {
         $rules = [
@@ -1861,13 +1803,11 @@ class AdminController extends Controller
             return Response::json(['message' => 'Contact information saved.'], 200);
         }
     }
-
     public function getContactInformation()
     {
         $ws = WebsiteSettings::select('address', 'phone_no', 'email', 'map_address')->first();
         return Response::json(['contact_information' => $ws]);
     }
-
     public function addHours(Request $request)
     {
         $rules = [
@@ -1922,12 +1862,10 @@ class AdminController extends Controller
             return Response::json(['message' => 'Hours information saved.'], 200);
         }
     }
-
     public function getHours()
     {
         return Response::json(['hours' => Hour::all()]);
     }
-
     public function addSocialNetworks(Request $request)
     {
         $rules = [
@@ -1945,12 +1883,10 @@ class AdminController extends Controller
         }
         return Response::json(['message' => 'Social Network Added.'], 200);
     }
-
     public function getAllSocial()
     {
         return Response::json(['social' => Social::all()], 200);
     }
-
     public function deleteSocialNetwork(Request $request, $id)
     {
         $social = Social::find($id);
@@ -1961,7 +1897,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Social Network Deleted.'], 200);
         }
     }
-
     public function addWeekendSpecial(Request $request)
     {
         $rules = [
@@ -1984,12 +1919,10 @@ class AdminController extends Controller
 
         }
     }
-
     public function getWeekendSpecial()
     {
         return Response::json(['weekend_special' => $ws = WebsiteSettings::first()->weekend_special]);
     }
-
     public function addTitle(Request $request)
     {
         $rules = [
@@ -2013,12 +1946,10 @@ class AdminController extends Controller
 
         }
     }
-
     public function getTitle()
     {
         return Response::json(['title' => $ws = WebsiteSettings::first()->title]);
     }
-
     public function addApiKey(Request $request)
     {
 
@@ -2058,12 +1989,10 @@ class AdminController extends Controller
         return Response::json(['message' => 'Api Keys Updated.'], 200);
 
     }
-
     public function getApi()
     {
         return Response::json(['api' => ApiKey::first()]);
     }
-
     public function addHeader(Request $request)
     {
         $rules = [
@@ -2218,24 +2147,20 @@ class AdminController extends Controller
         }
         return Response::json(['message' => 'Price details updated.'], 200);
     }
-
     public function getDeliveryFees()
     {
         return Response::json(['delivery_fee' => WebsiteSettings::first()->delivery_fees,'tax' => WebsiteSettings::first()->tax,'promotion' => WebsiteSettings::first()->promotion,'price' => WebsiteSettings::first()->price]);
 
     }
-
     public function getHeader()
     {
         return Response::json(['logo' => Header::first()->logo]);
 
     }
-
     public function getPermission()
     {
         return Response::json(['permissions' => Permission::all()]);
     }
-
     public function addSubAdmin(Request $request)
     {
         $rules = [
@@ -2261,7 +2186,6 @@ class AdminController extends Controller
         }
         return Response::json(['message' => 'Sub admin added.'], 200);
     }
-
     public function editSubAdmin(Request $request, $id)
     {
         $rules = [
@@ -2310,7 +2234,6 @@ class AdminController extends Controller
 
         return Response::json(['message' => 'Sub admin updated.']);
     }
-
     public function updateSubAdminPassword(Request $request, $id)
     {
         $rules = [
@@ -2337,7 +2260,6 @@ class AdminController extends Controller
 
         return Response::json(['message' => 'Sub admin password updated.'], 200);
     }
-
     public function getSubAdmin(Request $request)
     {
         $admin = Admin::find(Auth::guard('admin')->user()->id);
@@ -2370,7 +2292,6 @@ class AdminController extends Controller
 
         return Response::json(['sub_admin' => $subAdmin, 'total_number' => $count]);
     }
-
     public function getSubAdminById(Request $request, $id)
     {
 
@@ -2382,7 +2303,6 @@ class AdminController extends Controller
 
         }
     }
-
     public function deleteSubAdminById(Request $request, $id)
     {
 
@@ -2394,7 +2314,6 @@ class AdminController extends Controller
 
         }
     }
-
     public function blockUser(Request $request, $id)
     {
 //        $rules=[
@@ -2419,7 +2338,6 @@ class AdminController extends Controller
         }
 
     }
-
     public function checkSuperAdmin(Admin $admin)
     {
         if ($admin->super_admin == 1) {
@@ -2436,7 +2354,6 @@ class AdminController extends Controller
         }
         return Response::json(['message' => "Tokens revoked."], 200);
     }
-
     public function removeProduct(Request $request, $id)
     {
         $product = Product::find($id);
@@ -2491,7 +2408,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Product deleted.'], 200);
         }
     }
-
     public function logout(Request $request)
     {
         $token = $request->user()->token();
@@ -2499,7 +2415,6 @@ class AdminController extends Controller
         $response = ['message' => 'You have been successfully logged out!'];
         return Response::json($response, 200);
     }
-
     public function checkLoggedIn()
     {
         if (Auth::guard('admin')->check()) {
@@ -2533,7 +2448,6 @@ class AdminController extends Controller
         }
 
     }
-
     public function changePriceOfProductsWithCategory(Request $request)
     {
         $rules = [
@@ -2558,7 +2472,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Price updated for selected products.'], 200);
         }
     }
-
     public function changePriceOfProductsWithSubCategory(Request $request)
     {
         $rules = [
@@ -2583,7 +2496,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Price updated for selected products.'], 200);
         }
     }
-
     public function productsProvidedByCoaster(Request $request)
     {
         $category_name = $request->input('category_id');
@@ -2697,7 +2609,6 @@ class AdminController extends Controller
             'total_number' => $count,
             'filtered' => $products->count()]);
     }
-
     public function productsAddedByAdmin(Request $request)
     {
         $category_name = $request->input('category_id');
@@ -2930,7 +2841,6 @@ class AdminController extends Controller
             'promotion'=>'nullable'
         ];
     }
-
     public function storeProduct(Request $request)
     {
         $rules = $this->productRules();
@@ -3123,7 +3033,6 @@ class AdminController extends Controller
         }
 
     }
-
     public function editProduct(Request $request, $id)
     {
 
@@ -3398,7 +3307,6 @@ class AdminController extends Controller
             return Response::json(['message' => 'Product Details Updated'], 200);
         }
     }
-
     public function deleteImageById($id)
     {
         $img = NextGenImage::find($id);
@@ -3416,7 +3324,6 @@ class AdminController extends Controller
         return Response::json(['message' => 'Image not found.'], 422);
 
     }
-
     public function dashboardCount()
     {
         return Response::json([
@@ -3427,14 +3334,12 @@ class AdminController extends Controller
             'users' => User::all()->count(),
         ]);
     }
-
     public function subCategoryByCategory(Request $request)
     {
 
         $subcategory = SubCategory::where('CategoryId', $request->input('id'))->get();
         return Response::json(['subcategory' => $subcategory]);
     }
-
     public function submitWarehouse(Request $request)
     {
         $rules = [
@@ -3463,7 +3368,6 @@ class AdminController extends Controller
         ]);
         return Response::json(['message' => "Warehouse added."], 200);
     }
-
     public function updateWarehouse(Request $request, $id)
     {
         $rules = [
@@ -3493,7 +3397,6 @@ class AdminController extends Controller
         $warehouse->save();
         return Response::json(['message' => "Warehouse Detail Updated."], 200);
     }
-
     public function getWarehouses(Request $request)
     {
         $warehouses = Warehouse::all();
@@ -3519,7 +3422,6 @@ class AdminController extends Controller
         ]);
 
     }
-
     public function deleteWarehouse(Request $request, $id)
     {
 
@@ -3536,14 +3438,12 @@ class AdminController extends Controller
         }
 
     }
-
     public function getWarehouseById(Request $request, $id)
     {
         return Response::json([
             'warehouse' => Warehouse::find($id)
         ]);
     }
-
     public function getStyle(Request $request)
     {
         $styles = Style::whereNull('StyleCode')->get();
@@ -3599,7 +3499,6 @@ class AdminController extends Controller
 
         return Response::json(['collections' => $collections, 'total_number' => $count, 'filtered' => $collections->count()]);
     }
-
     public function getGroupByCoaster(Request $request)
     {
 
@@ -3616,7 +3515,6 @@ class AdminController extends Controller
 
         return Response::json(['groups' => $groups, 'total_number' => $count, 'filtered' => $groups->count()]);
     }
-
     public function getWarehouseByCoaster(Request $request)
     {
 
@@ -3676,7 +3574,6 @@ class AdminController extends Controller
 
         return Response::json(['inventories' => $warehouses, 'total_number' => $count, 'filtered' => $warehouses->count()]);
     }
-
     public function getProductName(Request $request)
     {
 
@@ -3688,7 +3585,6 @@ class AdminController extends Controller
         return Response::json(['products' => $products]);
 
     }
-
     public function getProductById($id)
     {
 
@@ -3701,14 +3597,12 @@ class AdminController extends Controller
             'product' => $product
         ]);
     }
-
     public function getMaterial(Request $request)
     {
         return Response::json([
             'material' => Material::select('Value')->groupBy('Value')->get()
         ]);
     }
-
     public function getColor(Request $request)
     {
         $color1 = Product::select('FabricColor as color')->whereNotNull('FabricColor')->groupBy('FabricColor')->get();
@@ -3718,14 +3612,12 @@ class AdminController extends Controller
             'color' => $color->unique()->flatten()
         ]);
     }
-
     public function getProductInfo(Request $request)
     {
         return Response::json([
             'product_info' => ProductInfo::whereNotNull('ProductNumber')->with('highlights', 'bullets', 'features')->get()
         ]);
     }
-
     public function statusProduct(Request $request)
     {
         $request->validate([
@@ -3755,7 +3647,6 @@ class AdminController extends Controller
         }
         return Response::json(['message' => 'Product Status Updated.']);
     }
-
 //    public function newProduct(Request $request)
 //    {
 //        $request->validate([
