@@ -1050,8 +1050,5 @@ class UserController extends Controller
         $styles = Style::select('StyleName')->groupBy('StyleName')->get();
         return Response::json(['styles' => $styles]);
     }
-    public function getMaterials(){
-        $materials = Material::select('Value')->groupBy('Value')->get();
-        return Response::json(['materials' => $materials]);
-    }
+
 }
