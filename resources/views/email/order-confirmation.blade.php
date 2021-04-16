@@ -443,7 +443,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Tax:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['order']->tax}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['order']->tax}}%</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -451,7 +451,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Shipping:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['order']->shipping}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">${{$data['order']->shipping}}</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -459,7 +459,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Discount:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['order']->discount}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['order']->discount}}%</p>
                                             </td>
                                         </tr>
                                         <tr>
