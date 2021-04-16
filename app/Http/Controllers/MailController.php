@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\AdminForgotPassword;
 use App\Mail\ContactUs;
+use App\Mail\OrderConfirmation;
 use App\Mail\Test;
 use App\Mail\UserForgotPassword;
 use App\Mail\VerifyEmail;
@@ -26,5 +27,8 @@ class MailController extends Controller
     }
     public static function sendContactUsEmail($contact_email,$email,$name,$subject,$message){
         Mail::to($contact_email)->send(new ContactUs(['email'=>$email,'name'=>$name,'subject'=>$subject,'message'=>$message]));
+    }
+    public static function sendOrderConfirmationEmail($email,$data){
+        Mail::to($email)->send(new OrderConfirmation(['email'=>$email,'data'=>$data]));
     }
 }

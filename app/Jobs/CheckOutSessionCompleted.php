@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\PaymentController;
 use App\Models\BillingAddress;
 use App\Models\CartItems;
@@ -109,6 +110,12 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $user->cart->coupon_id=null;
                 $user->cart->delivery_fee_id=null;
                 $user->cart->save();
+                MailController::sendOrderConfirmationEmail($user->email,[
+                    'order'=>$order,
+                    'cart'=>$cart,
+                    'user'=>$user,
+                    'payment'=>$payment,
+                ]);
 //                DB::commit();
 
 //                exit();
