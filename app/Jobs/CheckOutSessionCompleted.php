@@ -108,6 +108,7 @@ class CheckOutSessionCompleted implements ShouldQueue
 
                 CartItems::where('cart_id',$user->cart->id)->delete();
                 $user->cart->coupon_id=null;
+                $mailShipping=DeliveryFees::where('id',$user->cart->delivery_fee_id)->first();
                 $user->cart->delivery_fee_id=null;
                 $user->cart->save();
                 MailController::sendOrderConfirmationEmail($user->email,[
@@ -115,6 +116,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                     'cart'=>$cart,
                     'user'=>$user,
                     'payment'=>$payment,
+                    'shipping'=>$mailShipping?$mailShipping:null,
                 ]);
 //                DB::commit();
 

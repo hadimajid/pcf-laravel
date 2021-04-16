@@ -451,7 +451,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Shipping:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">${{$data['order']->shipping}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['shipping']?$data['shipping']->name:'Free Shipping'.'$'.$data['order']->shipping}}</p>
                                             </td>
                                         </tr>
                                         <tr>
