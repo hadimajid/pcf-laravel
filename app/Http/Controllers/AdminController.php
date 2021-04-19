@@ -3918,4 +3918,5 @@ class AdminController extends Controller
         },'orders.items.product.nextGenImages'])->first();
         return Response::json(['user'=>$user]);
     }
+
 }
