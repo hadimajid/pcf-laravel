@@ -3003,7 +3003,7 @@ class AdminController extends Controller
                     ]);
                 }
             }
-            if ($request->file('featured_image')) {
+            if ($request->hasFile('featured_image')) {
                 $f_image = $request->file('featured_image');
                 $f_name = time() . uniqid() . '.' . $f_image->getClientOriginalExtension();
                 $product->FeaturedImage = 'uploads/product/' . $f_name;
