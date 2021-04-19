@@ -50,11 +50,12 @@ class CheckOutSessionCompleted implements ShouldQueue
     public function handle()
     {
         $dataObject=$this->webhookCall->payload['data']['object'];
-        if($dataObject['payment_status']==='paid'){
+        $user= User::find($dataObject['metadata']['user_id']);
+        $items=CartItems::where('cart_id',$user->cart->id)->get();
+        if($items->count()>0 && $dataObject['payment_status']==='paid'){
 //            try {
 //                DB::beginTransaction();
-                $user= User::find($dataObject['metadata']['user_id']);
-                $items=CartItems::where('cart_id',$user->cart->id)->get();
+
 //                $delivery_fees= DeliveryFees::find($dataObject['metadata']['delivery_id']);
 
                 $coupon=$user->cart->coupon_id;
