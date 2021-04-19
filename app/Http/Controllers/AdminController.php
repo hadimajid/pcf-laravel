@@ -831,7 +831,7 @@ class AdminController extends Controller
                             ]);
                         }
                     }
-                    $runImageCheck=false;
+                    $runImageCheck=true;
                     if ($runImageCheck) {
                         foreach ($productCheck->nextGenImages as $img) {
 //                            $tImg=explode('/',$img->name);

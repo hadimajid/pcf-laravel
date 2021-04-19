@@ -99,9 +99,13 @@ class PaymentController extends Controller
 
             if(!empty($ship) && $ship==1){
                 $add=$request->input('shipping_address');
+//                return $add;
+
             }else{
                 $add=$request->input('billing_address');
+//                return $add;
             }
+
             $shippingTemp=new ShippingAddress();
             $shippingTemp->fill($add);
             $shippingTemp->save();
