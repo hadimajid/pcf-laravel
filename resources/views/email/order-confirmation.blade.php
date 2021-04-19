@@ -378,7 +378,7 @@
                                 <td height="40"></td>
                             </tr>
                             <tr>
-                                <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:22px; font-weight: bold;">Hello {{$data['data']['user']->first_name.' '.$data['data']['user']->last_name}}</td>
+                                <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:22px; font-weight: bold;">Hello {{$data ['order']->user->first_name.' '.$data['order']->user->last_name}}</td>
                             </tr>
                             <tr><td height="15"></td></tr>
                             <tr>
@@ -390,7 +390,7 @@
                             <tr><td height="15"></td></tr>
                             <tr>
                                 <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;letter-spacing: 1px;">
-                                    <strong style="font-size: 16px; line-height: 20px; color: #f7972b">[Order #{{$data['data']['order']->id}}] ({{date('M jS, Y', strtotime($data['data']['order']->created_at))}})
+                                    <strong style="font-size: 16px; line-height: 20px; color: #f7972b">[Order #{{$data ['order']->id}}] ({{date('M jS, Y', strtotime($data ['order']->created_at))}})
                                     </strong>
                                 </td>
                             </tr>
@@ -409,7 +409,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Price:</strong>
                                             </td>
                                         </tr>
-                                        @foreach($data['data']['cart']['cart'] as $item)
+                                        @foreach($data ['order']->items as $item)
                                         <tr>
                                             <td align="center">
                                                 <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size: 13px;">
@@ -435,7 +435,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Subtotal:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['data']['order']->sub_total}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data ['order']->sub_total}}</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -443,7 +443,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Tax:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['data']['order']->tax}}%</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data ['order']->tax}}%</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -451,8 +451,8 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Shipping:</strong>
                                             </th>
                                             <td align="center">
-{{--                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['data']['shipping']?$data['data']['shipping']->name:'$'.$data['data']['order']->shipping}}</p>--}}
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{'$'.$data['data']['order']->shipping}}</p>
+{{--                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data ['shipping']?$data ['shipping']->name:'$'.$data ['order']->shipping}}</p>--}}
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{'$'.$data ['order']->shipping}}</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -460,7 +460,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Discount:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data['data']['order']->discount}}%</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$data ['order']->discount}}%</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -468,7 +468,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Payment Method:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{ucwords($data['data']['payment']->payment_by)}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{ucwords($data ['order']->payment->payment_by)}}</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -476,7 +476,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Total:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">${{$data['data']['order']->total}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">${{$data ['order']->total}}</p>
                                             </td>
                                         </tr>
                                     </table>
@@ -496,13 +496,13 @@
                                         </tr>
                                         <tr>
                                             <td width="50%" align="left">
-                                                <?php $billing = $data['data']['user']->billingAddress  ?>
+                                                @php $billing = $data ['order']->user->billingAddress  @endphp
                                                 <p style="font-size: 14px; line-height: 20px; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$billing->name}} {{$billing->company_name}}</p>
                                                 <p style="font-size: 14px; line-height: 20px; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$billing->street_address}} {{$billing->city}} {{$billing->state}} {{$billing->country}}  {{$billing->zip}} </p>
                                                 <p style="font-size: 14px; line-height: 20px; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$billing->phone}} {{$billing->email}}</p>
                                             </td>
                                             <td width="50%" align="left">
-                                                <?php $shipping = $data['data']['order']->address  ?>
+                                                @php $shipping = $data ['order']->address  @endphp
                                                 <p style="font-size: 14px; line-height: 20px; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$shipping->name}} {{$shipping->company_name}}</p>
                                                 <p style="font-size: 14px; line-height: 20px; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$shipping->street_address}} {{$shipping->city}} {{$shipping->state}} {{$shipping->country}}  {{$shipping->zip}} </p>
                                                 <p style="font-size: 14px; line-height: 20px; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{$shipping->phone}} {{$shipping->email}}</p>

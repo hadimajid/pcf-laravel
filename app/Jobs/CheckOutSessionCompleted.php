@@ -90,11 +90,12 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $shipping_address=ShippingAddress::find($dataObject['metadata']['shipping_id']);
                 $shipping_address->order_id=$order->id;
                 $shipping_address->save();
-                foreach ($items as $key=>$product){
+                foreach ($cart['cart'] as $key=>$product){
                     $orderItem=OrderItem::create([
                         'order_id'=>$order->id,
                         'product_id'=>$product->product_id,
                         'quantity'=>$product->quantity,
+                        'price'=>$product->price,
                     ]);
                 }
                 $payment=new Payment([
@@ -112,11 +113,8 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $user->cart->delivery_fee_id=null;
                 $user->cart->save();
                 MailController::sendOrderConfirmationEmail($user->email,[
+                    'type'=>'Order Confirmation!',
                     'order'=>$order,
-                    'cart'=>$cart,
-                    'user'=>$user,
-                    'payment'=>$payment,
-                    'shipping'=>$mailShipping?$mailShipping:null,
                 ]);
 //                DB::commit();
 
