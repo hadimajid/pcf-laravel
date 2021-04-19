@@ -435,7 +435,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Subtotal:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{ $data['data'] ['order']->sub_total}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">${{ $data['data'] ['order']->sub_total}}</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -443,7 +443,7 @@
                                                 <strong style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">Tax:</strong>
                                             </th>
                                             <td align="center">
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{ $data['data'] ['order']->tax}}%</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">${{ $data['data'] ['order']->tax}}</p>
                                             </td>
                                         </tr>
                                         <tr>
@@ -452,7 +452,7 @@
                                             </th>
                                             <td align="center">
 {{--                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{ $data['data'] ['shipping']? $data['data'] ['shipping']->name:'$'. $data['data'] ['order']->shipping}}</p>--}}
-                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">{{'$'. $data['data'] ['order']->shipping}}</p>
+                                                <p style="font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;">${{$data['data'] ['order']->shipping}}</p>
                                             </td>
                                         </tr>
                                         <tr>
