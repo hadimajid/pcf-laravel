@@ -114,7 +114,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                 $user->cart->delivery_fee_id=null;
                 $user->cart->save();
                 MailController::sendOrderConfirmationEmail($user->email,[
-                    'type'=>'Order Confirmation!',
+                    'type'=>'Order Placed',
                     'order'=>$order,
                 ]);
 //                DB::commit();

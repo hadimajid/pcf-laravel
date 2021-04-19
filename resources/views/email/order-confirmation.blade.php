@@ -372,18 +372,44 @@
                                 <td height="20"></td>
                             </tr>
                             <tr>
-                                <td align="center" style="color: #000542; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:24px; font-weight: bold;"><strong>Thank you for shopping with us.</strong></td>
+                                @php
+                                $type=$data['data']['type'];
+                                $cancelled_by='';
+                                    if(isset($data['data']['cancelled_by'])){
+                                    $cancelled_by=$data['data']['cancelled_by'];
+                                    }
+                                    if($type=='Order Placed'){
+                                        $title="Thank you for your order.";
+                                        $paragraph="Thanks for your order it's on-hold until we confirm that payment has been received. In the meantime. here's a reminder of what you ordered";
+                                    }else if ($type=='Order Confirmed'){
+                                        $title="Thank you for shopping with us.";
+                                        $paragraph="We have finished processing your order.";
+                                    }else if($type=='Order Cancelled'){
+                                        if($cancelled_by=='admin'){
+                                        $title="Order cancelled.";
+                                        $paragraph="Sorry, Your order has been cancelled.";
+                                        }
+                                        if($cancelled_by=='user'){
+                                        $title="Order cancelled.";
+                                        $paragraph="You cancelled your order successfully.";
+                                        }
+                                    }else if ($type=='New Order'){
+                                         $title="New Order: #".$data['data']['order']->id;
+                                        $paragraph="You have received the following order from ".$data['data']['order']->user->first_name.' '.$data['data']['order']->user->last_name.'.';
+                                    }
+                                    @endphp
+                                <td align="center" style="color: #000542; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:24px; font-weight: bold;"><strong>{{$title}}</strong></td>
                             </tr>
                             <tr>
                                 <td height="40"></td>
                             </tr>
-                            <tr>
-                                <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:22px; font-weight: bold;">Hello {{ $data['data']['order']->user->first_name.' '. $data['data']['order']->user->last_name}}</td>
-                            </tr>
+{{--                            <tr>--}}
+{{--                                <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:22px; font-weight: bold;">Hello {{ $data['data']['order']->user->first_name.' '. $data['data']['order']->user->last_name}}</td>--}}
+{{--                            </tr>--}}
                             <tr><td height="15"></td></tr>
                             <tr>
                                 <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;letter-spacing: 1px;">
-                                    <p style="font-size: 14px; line-height: 20px;">Your Order has been Placed.
+                                    <p style="font-size: 14px; line-height: 20px;">{{$paragraph}}
                                     </p>
                                 </td>
                             </tr>
