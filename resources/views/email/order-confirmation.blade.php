@@ -391,7 +391,7 @@
                                         }
                                         if($cancelled_by=='user'){
                                         $title="Order cancelled.";
-                                        $paragraph="You cancelled your order successfully.";
+                                        $paragraph="You successfully cancelled your order.";
                                         }
                                     }else if ($type=='New Order'){
                                          $title="New Order: #".$data['data']['order']->id;
