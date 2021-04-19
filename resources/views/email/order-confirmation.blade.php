@@ -378,7 +378,7 @@
                                 <td height="40"></td>
                             </tr>
                             <tr>
-                                <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:22px; font-weight: bold;">Hello {{ $data['data']['data']['order']->user->first_name.' '. $data['data']['order']->user->last_name}}</td>
+                                <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato; font-size:22px; font-weight: bold;">Hello {{ $data['data']['order']->user->first_name.' '. $data['data']['order']->user->last_name}}</td>
                             </tr>
                             <tr><td height="15"></td></tr>
                             <tr>
@@ -390,7 +390,7 @@
                             <tr><td height="15"></td></tr>
                             <tr>
                                 <td align="left" style="color: #000; font-family:'Segoe UI', sans-serif, Arial, Helvetica, Lato;letter-spacing: 1px;">
-                                    <strong style="font-size: 16px; line-height: 20px; color: #f7972b">[Order #{{ $data['data'] ['order']->id}}] ({{date('M jS, Y', strtotime( $data['data'] ['order']->created_at))}})
+                                    <strong style="font-size: 16px; line-height: 20px; color: #f7972b">[Order #{{ $data['data']['order']->id}}] ({{date('M jS, Y', strtotime( $data['data'] ['order']->created_at))}})
                                     </strong>
                                 </td>
                             </tr>
