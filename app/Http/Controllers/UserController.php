@@ -1002,6 +1002,11 @@ class UserController extends Controller
             $order->status='cancelled';
             $order->cancelled_by='user';
             $message="Order Cancelled!";
+            MailController::sendOrderConfirmationEmail($order->email,[
+                'type'=>'Order Cancelled',
+                'order'=>$order,
+                'cancelled_by'=>'user'
+            ]);
             $order->save();
         }
         else if($status=='cancelled'){
