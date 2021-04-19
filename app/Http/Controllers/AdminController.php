@@ -3874,9 +3874,21 @@ class AdminController extends Controller
             if($request->status=='cancelled'){
                 $order->status=$request->status;
                 $order->cancelled_by='admin';
+                MailController::sendOrderConfirmationEmail($order->email,[
+                    'type'=>'Order Cancelled',
+                    'order'=>$order,
+                    'cancelled_by'=>'admin'
+                ]);
             }else{
                 $order->status=$request->status;
                 $order->cancelled_by=null;
+                if($request->status=='completed'){
+                    MailController::sendOrderConfirmationEmail($order->email,[
+                        'type'=>'Order Confirmed',
+                        'order'=>$order,
+                    ]);
+                }
+
             }
             $order->save();
         }

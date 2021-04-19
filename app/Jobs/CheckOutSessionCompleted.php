@@ -117,6 +117,10 @@ class CheckOutSessionCompleted implements ShouldQueue
                     'type'=>'Order Placed',
                     'order'=>$order,
                 ]);
+                MailController::sendOrderConfirmationEmail("zain.waheed.softenica@gmail.com",[
+                    'type'=>'New Order',
+                    'order'=>$order,
+                ]);
 //                DB::commit();
 
 //                exit();
