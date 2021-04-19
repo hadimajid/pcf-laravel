@@ -29,6 +29,6 @@ class OrderConfirmation extends Mailable
      */
     public function build()
     {
-        return $this->from(env('MAIL_FROM_ADDRESS'),env('APP_NAME'))->subject('Order Confirmation')->view('email.order-confirmation');
+        return $this->from(env('MAIL_FROM_ADDRESS'),env('APP_NAME'))->subject($this->data['data']['type'])->view('email.order-confirmation');
     }
 }
