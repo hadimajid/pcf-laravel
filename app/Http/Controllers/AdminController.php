@@ -2761,20 +2761,28 @@ class AdminController extends Controller
         return [
             'name' => 'required',
             'description' => 'required',
+//          'description' => 'nullable',
             'fabric_color' => 'nullable',
             'finish_color' => 'nullable',
             'box_weight' => 'required',
-            'cubes' => 'required',
-            'type_of_packing' => 'required',
-            'catalog_year' => 'required',
+//          'cubes' => 'required',
+            'cubes' => 'nullable',
+//          'type_of_packing' => 'required',
+            'type_of_packing' => 'nullable',
+//          'catalog_year' => 'required',
+            'catalog_year' => 'nullable',
             'sub_brand' => 'nullable',
-            'upc' => 'required',
-            'country_of_origin' => 'required',
+//          'upc' => 'required',
+            'upc' => 'nullable',
+//          'country_of_origin' => 'required',
+            'country_of_origin' => 'nullable',
             'designer_collection' => 'nullable',
-            'assembly_required' => 'required',
+//          'assembly_required' => 'required',
+            'assembly_required' => 'nullable',
             'is_discontinued' => 'nullable',
             'num_images' => 'nullable',
-            'num_boxes' => 'required',
+//          'num_boxes' => 'required',
+            'num_boxes' => 'nullable',
 //          'pack_qty'=>'required',
             'catalog_page' => 'nullable',
             'fabric_cleaning_code' => 'nullable',
@@ -2784,32 +2792,50 @@ class AdminController extends Controller
 //          'collection_id'=>'required|exists:collection_models,id',
 //          'product_line_id'=>'required|exists:product_lines,id',
             'product_line_id' => 'nullable',
-            'group_number' => 'required|unique:groups,GroupNumber',
+//          'group_number' => 'required|unique:groups,GroupNumber',
+            'group_number' => 'nullable|unique:groups,GroupNumber',
             'category_id' => 'required|exists:categories,id',
             'subcategory_id' => 'required|exists:sub_categories,id',
 //          'piece_id'=>'required|exists:pieces,id',
             'images' => 'required|array|min:1',
             'images.*' => 'image|mimes:jpeg,jpg,png',
-            'kit' => 'required',
+//          'kit' => 'required',
+            'kit' => 'nullable',
             'box_size_length' => 'required',
             'box_size_width' => 'required',
             'box_size_height' => 'required',
-            'measurements' => 'required|array|max:1',
-            'measurements.*' => 'required',
-            'measurements.*.piece_name' => 'required',
-            'measurements.*.length' => 'required',
-            'measurements.*.width' => 'required',
-            'measurements.*.depth' => 'required',
-            'measurements.*.height' => 'required',
-            'measurements.*.diameter' => 'required',
-            'measurements.*.depth_open' => 'required',
-            'measurements.*.height_open' => 'required',
-            'measurements.*.seat_width' => 'required',
-            'measurements.*.seat_depth' => 'required',
-            'measurements.*.seat_height' => 'required',
-            'measurements.*.arm_height' => 'required',
-            'measurements.*.desk_clearance' => 'required',
-            'measurements.*.shelf_distance' => 'required',
+//          'measurements' => 'required|array|max:1',
+//          'measurements.*' => 'required',
+//          'measurements.*.piece_name' => 'required',
+//          'measurements.*.length' => 'required',
+//          'measurements.*.width' => 'required',
+//          'measurements.*.depth' => 'required',
+//          'measurements.*.height' => 'required',
+//          'measurements.*.diameter' => 'required',
+//          'measurements.*.depth_open' => 'required',
+//          'measurements.*.height_open' => 'required',
+//          'measurements.*.seat_width' => 'required',
+//          'measurements.*.seat_depth' => 'required',
+//          'measurements.*.seat_height' => 'required',
+//          'measurements.*.arm_height' => 'required',
+//          'measurements.*.desk_clearance' => 'required',
+//          'measurements.*.shelf_distance' => 'required',
+            'measurements' => 'nullable|array|max:1',
+            'measurements.*' => 'nullable',
+            'measurements.*.piece_name' => 'nullable',
+            'measurements.*.length' => 'nullable',
+            'measurements.*.width' => 'nullable',
+            'measurements.*.depth' => 'nullable',
+            'measurements.*.height' => 'nullable',
+            'measurements.*.diameter' => 'nullable',
+            'measurements.*.depth_open' => 'nullable',
+            'measurements.*.height_open' => 'nullable',
+            'measurements.*.seat_width' => 'nullable',
+            'measurements.*.seat_depth' => 'nullable',
+            'measurements.*.seat_height' => 'nullable',
+            'measurements.*.arm_height' => 'nullable',
+            'measurements.*.desk_clearance' => 'nullable',
+            'measurements.*.shelf_distance' => 'nullable',
 //          'measurements.*.weight'=>'required',
             'materials' => 'nullable|array|min:1',
             'materials.*' => 'nullable',
@@ -2836,9 +2862,10 @@ class AdminController extends Controller
             'price' => 'required',
             'featured' => 'nullable',
             'featured_image' => 'nullable|mimes:jpeg,jpg,png',
-            'group_name' => 'required',
+            'group_name' => 'nullable',
             'piece' => 'required',
             'collection_name' => 'required',
+//          'collection_name' => 'nullable',
 //          'promotion'=>'nullable|min:0|max:100'
             'promotion'=>'nullable'
         ];
@@ -2851,10 +2878,13 @@ class AdminController extends Controller
             return Response::json(['errors' => $validator->errors()], 422);
         }
         try {
-            $group = Group::create([
-                'GroupNumber' => $request->input('group_number'),
-                'GroupName' => $request->input('group_name')
-            ]);
+            $group=null;
+            if($request->input('group_number') && $request->input('group_name')){
+                $group = Group::create([
+                    'GroupNumber' => $request->input('group_number'),
+                    'GroupName' => $request->input('group_name')
+                ]);
+            }
             $style = Style::create([
                 'StyleName' => $request->input('style_name')
             ]);
@@ -2930,25 +2960,28 @@ class AdminController extends Controller
                 'SalePrice' => $request->input('price'),
                 'CollectionId' => $collection->id
             ]);
-            foreach ($request->input('measurements') as $measurement) {
-                Measurement::create([
-                    'PieceName' => $measurement['piece_name'],
-                    'Length' => $measurement['length'],
-                    'Width' => $measurement['width'],
-                    'Depth' => $measurement['depth'],
-                    'Height' => $measurement['height'],
-                    'Diameter' => $measurement['diameter'],
-                    'DepthOpen' => $measurement['depth_open'],
-                    'HeightOpen' => $measurement['height_open'],
-                    'SeatWidth' => $measurement['seat_width'],
-                    'SeatDepth' => $measurement['seat_depth'],
-                    'SeatHeight' => $measurement['seat_height'],
-                    'ArmHeight' => $measurement['arm_height'],
+            if (!empty($request->input('measurements'))) {
+                foreach ($request->input('measurements') as $measurement) {
+                    Measurement::create([
+                        'PieceName' => $measurement['piece_name'],
+                        'Length' => $measurement['length'],
+                        'Width' => $measurement['width'],
+                        'Depth' => $measurement['depth'],
+                        'Height' => $measurement['height'],
+                        'Diameter' => $measurement['diameter'],
+                        'DepthOpen' => $measurement['depth_open'],
+                        'HeightOpen' => $measurement['height_open'],
+                        'SeatWidth' => $measurement['seat_width'],
+                        'SeatDepth' => $measurement['seat_depth'],
+                        'SeatHeight' => $measurement['seat_height'],
+                        'ArmHeight' => $measurement['arm_height'],
 //                    'Weight' => $measurement['weight'],
-                    'DeskClearance' => $measurement['desk_clearance'],
-                    'ShelfDistance' => $measurement['shelf_distance'],
-                    'ProductId' => $product['id']
-                ]);
+                        'DeskClearance' => $measurement['desk_clearance'],
+                        'ShelfDistance' => $measurement['shelf_distance'],
+                        'ProductId' => $product['id']
+                    ]);
+                }
+
             }
             if (!empty($request->input('materials'))) {
                 foreach ($request->input('materials') as $material) {
