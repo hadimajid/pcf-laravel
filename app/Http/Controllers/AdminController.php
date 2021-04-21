@@ -2983,7 +2983,7 @@ class AdminController extends Controller
 //              'NumNextGenImages' => $product->NumNextGenImages,
                 'StyleId' => $style->id,
                 'ProductLineId' => $request->input('product_line_id'),
-                'GroupId' => $group->id,
+                'GroupId' => $group?$group->id:null,
                 'CategoryId' => $request->input('category_id'),
                 'SubCategoryId' => $request->input('subcategory_id'),
                 'PieceId' => $piece->id,
@@ -3241,7 +3241,7 @@ class AdminController extends Controller
             $product->StyleId = $style->id;
             $product->CollectionId = $collection->id;
 //          $product->ProductLineId= $request->input('product_line_id');
-            $product->GroupId = $group->id;
+            $product->GroupId = $group?$group->id:null;
             $product->CategoryId = $request->input('category_id');
             $product->SubCategoryId = $request->input('subcategory_id');
             $product->PieceId = $piece->id;
