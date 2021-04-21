@@ -280,7 +280,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . uniqid() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/category/'), $imageName);
-            $image_resize = Image::make($image->getRealPath());
+            $image_resize = Image::make($image );
             $image_resize->resize(300, null, function ($constraint) {
                 $constraint->aspectRatio();
             });
@@ -320,7 +320,7 @@ class AdminController extends Controller
                     }
 
                     $image->move(public_path('uploads/category'), $imageName);
-                    $image_resize = Image::make($image->getRealPath());
+                    $image_resize = Image::make($image );
                     $image_resize->resize(300, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
@@ -475,7 +475,7 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . uniqid() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/subcategory'), $imageName);
-            $image_resize = Image::make($image->getRealPath());
+            $image_resize = Image::make($image );
             $image_resize->resize(300, null, function ($constraint) {
                 $constraint->aspectRatio();
             });
@@ -520,7 +520,7 @@ class AdminController extends Controller
                     }
 
                     $image->move(public_path('uploads/subcategory'), $imageName);
-                    $image_resize = Image::make($image->getRealPath());
+                    $image_resize = Image::make($image );
                     $image_resize->resize(300, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
@@ -3066,7 +3066,7 @@ class AdminController extends Controller
                 foreach ($request->file('images') as $image) {
                     $name = time() . uniqid() . '.' . $image->getClientOriginalExtension();
                     $image->move(public_path('uploads/product'), $name);
-                    $image_resize = Image::make($image->getRealPath());
+                    $image_resize = Image::make($image );
                     $image_resize->resize(300, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
@@ -3082,7 +3082,7 @@ class AdminController extends Controller
                 $f_name = time() . uniqid() . '.' . $f_image->getClientOriginalExtension();
                 $product->FeaturedImage = 'uploads/product/' . $f_name;
                 $f_image->move(public_path('uploads/product'), $f_name);
-                $f_image_resize = Image::make($f_image->getRealPath());
+                $f_image_resize = Image::make($f_image );
                 $f_image_resize->resize(300, null, function ($constraint) {
                     $constraint->aspectRatio();
                 });
@@ -3345,7 +3345,7 @@ class AdminController extends Controller
                 foreach ($request->file('images') as $image) {
                     $name = time() . uniqid() . '.' . $image->getClientOriginalExtension();
                     $image->move(public_path('uploads/product'), $name);
-                    $image_resize = Image::make($image->getRealPath());
+                    $image_resize = Image::make($image );
                     $image_resize->resize(300, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
@@ -3367,7 +3367,7 @@ class AdminController extends Controller
                 $product->FeaturedImage = 'uploads/product/' . $f_name;
                 $f_image->move(public_path('uploads/product'), $f_name);
                 $product->save();
-                $image_resize = Image::make($f_image->getRealPath());
+                $image_resize = Image::make($f_image );
                 $image_resize->resize(300, null, function ($constraint) {
                     $constraint->aspectRatio();
                 });
