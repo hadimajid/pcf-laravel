@@ -280,8 +280,13 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . uniqid() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/category/'), $imageName);
-            $slug = Str::slug($request->input('name'), '-');
+            $image_resize = Image::make($image->getRealPath());
+            $image_resize->resize(300, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            $image_resize->save(public_path('thumbnail/uploads/category/' . $imageName));
 
+            $slug = Str::slug($request->input('name'), '-');
             $category = Category::create([
                 'CategoryName' => $request->input('name'),
                 'Image' => 'uploads/category/' . $imageName,
@@ -309,9 +314,18 @@ class AdminController extends Controller
                         if (file_exists(public_path($category->Image))) {
                             unlink(public_path($category->Image));
                         }
+                        if (file_exists(public_path('thumbnail/'.$category->Image))) {
+                            unlink(public_path('thumbnail/'.$category->Image));
+                        }
                     }
 
                     $image->move(public_path('uploads/category'), $imageName);
+                    $image_resize = Image::make($image->getRealPath());
+                    $image_resize->resize(300, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $image_resize->save(public_path('thumbnail/uploads/category/' . $imageName));
+
                     $category->Image = 'uploads/category/' . $imageName;
                 }
                 $cat = Category::where('id', '!=', $category->id)->where('CategoryName', 'like', $request->name)->first();
@@ -340,6 +354,9 @@ class AdminController extends Controller
                 if ($category->delete()) {
                     if (file_exists(public_path($category->Image))) {
                         unlink(public_path($category->Image));
+                    }
+                    if (file_exists(public_path('thumbnail/'.$category->Image))) {
+                        unlink(public_path('thumbnail/'.$category->Image));
                     }
                 }
                 return Response::json(['message' => 'Category Deleted.'], 200);
@@ -458,6 +475,11 @@ class AdminController extends Controller
             $image = $request->file('image');
             $imageName = time() . uniqid() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/subcategory'), $imageName);
+            $image_resize = Image::make($image->getRealPath());
+            $image_resize->resize(300, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+            $image_resize->save(public_path('thumbnail/uploads/subcategory/' . $imageName));
             $slug = Str::slug($request->input('name'), '-');
 
             $category = SubCategory::create([
@@ -492,9 +514,17 @@ class AdminController extends Controller
                         if (file_exists(public_path($subcategory->Image))) {
                             unlink(public_path($subcategory->Image));
                         }
+                        if (file_exists(public_path('thumbnail/'.$subcategory->Image))) {
+                            unlink(public_path('thumbnail/'.$subcategory->Image));
+                        }
                     }
 
                     $image->move(public_path('uploads/subcategory'), $imageName);
+                    $image_resize = Image::make($image->getRealPath());
+                    $image_resize->resize(300, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $image_resize->save(public_path('thumbnail/uploads/subcategory/' . $imageName));
                     $subcategory->Image = 'uploads/subcategory/' . $imageName;
                 }
                 $subcat = SubCategory::where('id', '!=', $subcategory->id)->where('SubCategoryName', 'like', $request->name)->first();
@@ -528,6 +558,9 @@ class AdminController extends Controller
 
                     if (file_exists(public_path($subcategory->Image))) {
                         unlink(public_path($subcategory->Image));
+                    }
+                    if (file_exists(public_path('thumbnail/'.$subcategory->Image))) {
+                        unlink(public_path('thumbnail/'.$subcategory->Image));
                     }
                 }
                 return Response::json(['message' => 'Sub Category Deleted.'], 200);
@@ -3033,6 +3066,11 @@ class AdminController extends Controller
                 foreach ($request->file('images') as $image) {
                     $name = time() . uniqid() . '.' . $image->getClientOriginalExtension();
                     $image->move(public_path('uploads/product'), $name);
+                    $image_resize = Image::make($image->getRealPath());
+                    $image_resize->resize(300, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
                     NextGenImage::create([
                         'Name' => 'uploads/product/' . $name,
                         'ProductId' => $product->id
@@ -3044,6 +3082,11 @@ class AdminController extends Controller
                 $f_name = time() . uniqid() . '.' . $f_image->getClientOriginalExtension();
                 $product->FeaturedImage = 'uploads/product/' . $f_name;
                 $f_image->move(public_path('uploads/product'), $f_name);
+                $f_image_resize = Image::make($f_image->getRealPath());
+                $f_image_resize->resize(300, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+                $f_image_resize->save(public_path('thumbnail/uploads/product/' . $f_name));
                 $product->save();
             }
             $w = WarehouseInventory::create([
@@ -3302,6 +3345,11 @@ class AdminController extends Controller
                 foreach ($request->file('images') as $image) {
                     $name = time() . uniqid() . '.' . $image->getClientOriginalExtension();
                     $image->move(public_path('uploads/product'), $name);
+                    $image_resize = Image::make($image->getRealPath());
+                    $image_resize->resize(300, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                    });
+                    $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
                     NextGenImage::create([
                         'Name' => 'uploads/product/' . $name,
                         'ProductId' => $product->id
@@ -3319,6 +3367,11 @@ class AdminController extends Controller
                 $product->FeaturedImage = 'uploads/product/' . $f_name;
                 $f_image->move(public_path('uploads/product'), $f_name);
                 $product->save();
+                $image_resize = Image::make($f_image->getRealPath());
+                $image_resize->resize(300, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
+                $image_resize->save(public_path('thumbnail/uploads/product/' . $f_name));
             } else {
                 if (!empty($product->FeaturedImage)) {
                     if (file_exists(public_path($product->FeaturedImage))) {
@@ -3332,7 +3385,12 @@ class AdminController extends Controller
             $product->inventory->save();
             $check=false;
             while ($check == false) {
-
+//                $slg = Str::slug($product->Name, '-');
+//                $slgCheck=Product::where('slug',$slg)->first();
+//                if(!$slgCheck){
+//                    $product->slug=$slg;
+//                    $check = $product->save();
+//                }
                 try {
                     $product->slug = Str::slug($product->Name, '-');
                     $check = $product->save();
@@ -3353,6 +3411,9 @@ class AdminController extends Controller
         if (!empty($img)) {
             if (file_exists(public_path($img->name))) {
                 unlink(public_path($img->name));
+                if (file_exists(public_path('thumbnail/'.$img->name))) {
+                    unlink(public_path('thumbnail/'.$img->name));
+                }
                 $img->delete();
             }else{
                 $img->delete();
