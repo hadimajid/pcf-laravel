@@ -366,8 +366,9 @@ class AdminController extends Controller
                 $query->where('CategoryName', 'like', '%' .$category_name . '%');
             }
         });
-            $categories = $categoryQuery->withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
             $count = $categoryQuery->count();
+            $categories = $categoryQuery->withCount('subCategories', 'products')->offset($page)->limit($limit)->get();
+
         return Response::json(['categories' => $categories, 'total_number' => $count, 'filtered' => $categories->count()], 200);
     }
 
@@ -434,8 +435,8 @@ class AdminController extends Controller
                 $query->where('CategoryName', 'like', '%' .$category_name . '%');
             }
         });
-        $categories = $categoryQuery->whereNotNull('CategoryCode')->with('subCategories', 'subCategories.pieces')->withCount('subCategories', 'products')->offset($page)->limit($limit)->orderBy('id', 'asc')->get();
         $count = $categoryQuery->count();
+        $categories = $categoryQuery->whereNotNull('CategoryCode')->with('subCategories', 'subCategories.pieces')->withCount('subCategories', 'products')->offset($page)->limit($limit)->orderBy('id', 'asc')->get();
         return Response::json(['categories' => $categories, 'total_number' => $count, 'filtered' => $categories->count()], 200);
 
     }
@@ -561,8 +562,8 @@ class AdminController extends Controller
                     });
                 }
             });
-            $subcategories=$subcategoriesQuery->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
-            $count = $subcategoriesQuery->count();
+        $count = $subcategoriesQuery->count();
+        $subcategories=$subcategoriesQuery->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
 
         return Response::json(['sub_categories' => $subcategories, 'total_number' => $count, 'filtered' => $subcategories->count()], 200);
     }
@@ -592,8 +593,8 @@ class AdminController extends Controller
                 });
             }
         });
-        $subcategories=$subcategoriesQuery->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
         $count = $subcategoriesQuery->count();
+        $subcategories=$subcategoriesQuery->with('Category')->withCount('products')->offset($page)->limit($limit)->get();
 
         return Response::json(['sub_categories' => $subcategories, 'total_number' => $count, 'filtered' => $subcategories->count()], 200);
     }
@@ -3403,20 +3404,20 @@ class AdminController extends Controller
         $warehouses = Warehouse::all();
         $count = $warehouses->count();
         $page = 0;
-        $limit = 0;
+        $limit = $count;
         if ($request->input('limit')) {
             $limit = $request->input('limit');
             $page = ($request->input('page') - 1) * $limit;
-            $warehouses = Warehouse::offset($page)->limit($limit)->get();
-            if ($request->input('name')) {
-                $warehouses = Warehouse::where('Name', 'like', '%' . $request->input('name') . '%')->offset($page)->limit($limit)->get();
-                $count = $warehouses->count();
-            }
         }
-        if ($request->input('name')) {
-            $warehouses = Warehouse::where('Name', 'like', '%' . $request->input('name') . '%')->get();
-            $count = $warehouses->count();
-        }
+        $name=$request->input('name');
+            $warehousesQuery = Warehouse::where(function ($query) use ($name){
+                if($name){
+                    $query->where('Name', 'like', '%' . $name . '%');
+                }
+            });
+            $count = $warehousesQuery->count();
+            $warehouses=$warehousesQuery->offset($page)->limit($limit)->get();
+
         return Response::json([
             'warehouses' => $warehouses,
             'total_number' => $count
@@ -3910,6 +3911,7 @@ class AdminController extends Controller
         $users=User::whereRaw($where)->withCount('orders')->with(['orders'=>function($query){
             $query->withCount('items');
         },'orders.items.product.nextGenImages'])->limit($limit)->offset($page)->get();
+        $total=User::whereRaw($where)->count();
         return Response::json(['users'=>$users,'total_number'=>$total,'filtered'=>$users->count()]);
     }
     public function getUserById(Request $request,$id){
