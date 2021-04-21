@@ -50,6 +50,7 @@ use App\Rules\Zip;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
@@ -2878,6 +2879,7 @@ class AdminController extends Controller
             return Response::json(['errors' => $validator->errors()], 422);
         }
         try {
+            DB::beginTransaction();
             $group=null;
             if($request->input('group_number') && $request->input('group_name')){
                 $group = Group::create([
@@ -3062,8 +3064,10 @@ class AdminController extends Controller
                     $check = $product->save();
                 }
             }
+            DB::commit();
             return Response::json(['message' => 'Product Added Successfully', 'data' => $product], 200);
         } catch (\Exception $ex) {
+            DB::rollBack();
             return Response::json(['message' => 'Failed to add product.', 'error' => $ex], 422);
         }
 
