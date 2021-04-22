@@ -35,9 +35,6 @@ class Product extends Model
         }
         return 0;
     }
-//    public function boxSize(){
-//        return $this->belongsTo(BoxSize::class,'BoxSizeId');
-//    }
     public function measurements(){
         return $this->hasMany(Measurement::class,'ProductId');
     }
