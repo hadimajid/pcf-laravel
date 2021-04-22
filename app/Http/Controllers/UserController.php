@@ -442,6 +442,7 @@ class UserController extends Controller
         $color=$request->input('color');
         $warehouse=$request->input('warehouse');
         $type=$request->input('type');
+        $image=$request->input('image');
         $page=0;
         $limit=Product::all()->count();
         $count=Product::all()->count();
@@ -494,7 +495,11 @@ class UserController extends Controller
 
             }
         }
-        $productsQuery = Product::where(function ($query) use ($category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+        $productsQuery = Product::where(function ($query) use ($image,$category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+                if($image)
+                {
+                    $query->whereHas('nextGenImages');
+                }
                 if($category_name){
                     $query->where('CategoryId',$category_name);
                 }
