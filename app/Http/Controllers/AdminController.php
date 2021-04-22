@@ -3124,7 +3124,7 @@ class AdminController extends Controller
 
         $product = Product::find($id);
 
-        $rules = $this->productRules($product->style->id,$product->group->id);
+        $rules = $this->productRules($product->style?$product->style->id:0,$product->group?$product->group->id:0);
         if ($product != null) {
             if (!empty($product->nextGenImages)) {
                 unset($rules['images']);
