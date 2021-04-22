@@ -3121,7 +3121,7 @@ class AdminController extends Controller
     }
     public function editProduct(Request $request, $id)
     {
-        return array_filter($request,function ($v,$k){
+        return array_filter((array)$request,function ($v, $k){
                 return $v!="null";
         });
 
