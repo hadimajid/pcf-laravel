@@ -3140,7 +3140,7 @@ class AdminController extends Controller
         } else {
             $style = $product->style;
             $collection = $product->collection;
-//            $productLine=$product->productLine;
+//          $productLine=$product->productLine;
             $group = $product->group;
             $piece = $product->piece;
             if (!empty($style)) {
