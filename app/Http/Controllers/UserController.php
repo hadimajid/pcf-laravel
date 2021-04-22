@@ -550,12 +550,14 @@ class UserController extends Controller
 
                 }
             });
+//        =>function($query) {
+//        $query->whereHas('relatedProduct.nextGenImages');
+//    }
         $count=$productsQuery
             ->count();
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
-            ->with(
-                AdminController::getRelationProduct())
+            ->with(self::getRelationProduct())
             ->get();
 
 
@@ -566,6 +568,42 @@ class UserController extends Controller
             'total_number'=>$count,
             'filtered'=>$products->count()]);
     }
+    public static function getRelationProduct(){
+        return [
+            'measurements'
+            , 'materials'
+            , 'additionalFields'
+            , 'relatedProducts'=>function($query) {
+                $query->whereHas('relatedProduct.nextGenImages');
+            }
+            , 'relatedProducts.relatedProduct'
+            , 'relatedProducts.relatedProduct.inventory'
+            , 'relatedProducts.relatedProduct.price'
+            , 'relatedProducts.relatedProduct.nextGenImages'
+            , 'components'
+            , 'nextGenImages'
+            , 'category'
+            , 'subCategory'
+            , 'piece'
+            , 'collection'
+            , 'style'
+            , 'productLine'
+            , 'group'
+            , 'inventory.eta'
+            , 'productInfo'
+            , 'productInfo.highlights'
+            , 'productInfo.bullets'
+            , 'productInfo.features'
+            , 'price'
+            , 'ratings'=>function($query){
+                $query->selectRaw('product_id, AVG(rating) as rating')
+                    ->groupBy(['product_id']);
+            }
+            ,'ratingUser'
+            ,'ratingUser.user'
+        ];
+    }
+
     public function cart(Request $request){
         $request->validate([
             'product'=>'required|array|min:1',

@@ -2763,7 +2763,8 @@ class AdminController extends Controller
             'filtered' => $products->count()]);
     }
     public static function getRelationProduct(){
-        return ['measurements'
+        return [
+            'measurements'
             , 'materials'
             , 'additionalFields'
             , 'relatedProducts'
