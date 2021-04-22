@@ -3121,10 +3121,10 @@ class AdminController extends Controller
     }
     public function editProduct(Request $request, $id)
     {
-        return array_filter((array)$request,function ($v, $k){
-                return $v!="null";
+        $input = collect(request()->all())->filter(function($value) {
+            return 'null' !== $value;
         });
-
+        return $input;
         $product = Product::find($id);
 
         $rules = $this->productRules($product->style?$product->style->id:0,$product->group?$product->group->id:0);
