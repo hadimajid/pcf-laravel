@@ -3121,10 +3121,7 @@ class AdminController extends Controller
     }
     public function editProduct(Request $request, $id)
     {
-
-
         $product = Product::find($id);
-
         $rules = $this->productRules($product->style?$product->style->id:0,$product->group?$product->group->id:0);
         if ($product != null) {
             if (!empty($product->nextGenImages)) {
@@ -3138,7 +3135,8 @@ class AdminController extends Controller
         }
         if ($product == null) {
             return Response::json(['message' => 'Product not found'], 404);
-        } else {
+        }
+        else {
             $style = $product->style;
             $collection = $product->collection;
 //          $productLine=$product->productLine;
