@@ -2781,7 +2781,6 @@ class AdminController extends Controller
             , 'productLine'
             , 'group'
             , 'inventory.eta'
-            , 'inventory.warehouse'
             , 'productInfo'
             , 'productInfo.highlights'
             , 'productInfo.bullets'
