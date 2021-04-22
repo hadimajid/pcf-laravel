@@ -568,6 +568,7 @@ class UserController extends Controller
             'total_number'=>$count,
             'filtered'=>$products->count()]);
     }
+
     public static function getRelationProduct(){
         return [
             'measurements'
