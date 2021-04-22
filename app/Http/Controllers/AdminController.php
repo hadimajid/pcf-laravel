@@ -3121,7 +3121,7 @@ class AdminController extends Controller
     }
     public function editProduct(Request $request, $id)
     {
-
+        return $request;
         $product = Product::find($id);
 
         $rules = $this->productRules($product->style?$product->style->id:0,$product->group?$product->group->id:0);
