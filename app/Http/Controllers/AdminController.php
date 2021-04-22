@@ -2794,7 +2794,7 @@ class AdminController extends Controller
             ,'ratingUser.user'
         ];
     }
-    public function productRules()
+    public function productRules($style_id=0,$group_id=0)
     {
         return [
             'name' => 'required',
@@ -2826,7 +2826,7 @@ class AdminController extends Controller
             'fabric_cleaning_code' => 'nullable',
             'num_hd_images' => 'nullable',
             'num_next_gen_images' => 'nullable',
-            'style_name' => 'required|unique:styles,StyleName',
+            'style_name' => ['required',Rule::unique('styles','StyleName')->ignore($style_id)],
 //          'collection_id'=>'required|exists:collection_models,id',
 //          'product_line_id'=>'required|exists:product_lines,id',
             'product_line_id' => 'nullable',
@@ -2899,7 +2899,7 @@ class AdminController extends Controller
             'featured' => 'nullable',
             'featured_image' => 'nullable|mimes:jpeg,jpg,png',
             'group_name' => 'nullable',
-            'group_number' => 'nullable|unique:groups,GroupNumber',
+            'group_number' => ['nullable',Rule::unique('groups','GroupNumber')->ignore($group_id)],
 //          'group_number' => 'required|unique:groups,GroupNumber',
             'piece' => 'required',
             'collection_name' => 'required',
@@ -3122,11 +3122,9 @@ class AdminController extends Controller
     public function editProduct(Request $request, $id)
     {
 
-        $rules = $this->productRules();
-        unset($rules['group_number']);
-        unset($rules['style_name']);
-
         $product = Product::find($id);
+
+        $rules = $this->productRules($product->style->id,$product->group->id);
         if ($product != null) {
             if (!empty($product->nextGenImages)) {
                 unset($rules['images']);
@@ -3148,10 +3146,8 @@ class AdminController extends Controller
             if (!empty($style)) {
                 if(!Style::where('StyleName',$request->input('style_name'))){
                     $style->StyleName = $request->input('style_name');
-
                 }
                 $style->save();
-
             } else {
                 $style = Style::create([
                     'StyleName' => $request->input('style_name')
@@ -3169,18 +3165,17 @@ class AdminController extends Controller
 //                $productLine->delete();
 //            }
             if (!empty($group)) {
-                if(!Group::where('GroupNumber',$request->input('group_number'))) {
-                    $group->GroupNumber = $request->input('group_number');
-                }
+                $group->GroupNumber = $request->input('group_number');
                 $group->GroupName = $request->input('group_name');
                 $group->save();
             } else {
-                $group = Group::create([
-                    'GroupNumber' => $request->input('group_number'),
-                    'GroupName' => $request->input('group_name')
-                ]);
+                if($request->input('group_number') || $request->input('group_name')){
+                    $group = Group::create([
+                        'GroupNumber' => $request->input('group_number'),
+                        'GroupName' => $request->input('group_name')
+                    ]);
+                }
             }
-
             if (!empty($piece)) {
                 $piece->PieceName = $request->input('piece');
                 $piece->SubCategoryId = $request->input('subcategory_id');
@@ -3191,7 +3186,6 @@ class AdminController extends Controller
                     'SubCategoryId' => $request->input('subcategory_id')
                 ]);
             }
-
             $assembly_required = $request->input('assembly_required');
             if ($assembly_required == 'true') {
                 $assembly_required = 1;
@@ -3257,10 +3251,7 @@ class AdminController extends Controller
             $product->SalePrice = $request->input('price');
             $product->save();
             if (!empty($request->input('measurements'))) {
-
-                foreach ($product->measurements as $mes) {
-                    $mes->delete();
-                }
+                Measurement::where('ProductId',$product->id)->delete();
                 foreach ($request->input('measurements') as $measurement) {
                     Measurement::create([
                         'PieceName' => $measurement['piece_name'],
@@ -3281,12 +3272,9 @@ class AdminController extends Controller
                         'ProductId' => $product['id']
                     ]);
                 }
-
             }
             if (!empty($request->input('materials'))) {
-                foreach ($product->materials as $mat) {
-                    $mat->delete();
-                }
+                Material::where('ProductId',$product->id)->delete();
                 foreach ($request->input('materials') as $material) {
                     Material::create([
                         'Field' => "Material",
@@ -3296,9 +3284,7 @@ class AdminController extends Controller
                 }
             }
             if (!empty($request->input('additional_fields'))) {
-                foreach ($product->additionalFields as $additionalField) {
-                    $additionalField->delete();
-                }
+                AdditionalField::where('ProductId',$product->id)->delete();
                 foreach ($request->input('additional_fields') as $additionalField) {
                     AdditionalField::create([
                         'Field' => $additionalField['field'],
@@ -3308,12 +3294,7 @@ class AdminController extends Controller
                 }
             }
             if (!empty($request->input('related_product_list'))) {
-                if ($product->relatedProducts) {
-                    foreach ($product->relatedProducts as $relatedProduct) {
-                        $relatedProduct->delete();
-                    }
-                }
-
+                RelatedProductList::where('ProductId',$product->id)->delete();
                 foreach ($request->input('related_product_list') as $relatedProduct) {
                     RelatedProductList::create([
                         'RelatedProductId' => $relatedProduct['id'],
@@ -3322,9 +3303,7 @@ class AdminController extends Controller
                 }
             }
             if (!empty($request->input('components'))) {
-                foreach ($product->components as $component) {
-                    $component->delete();
-                }
+                Component::where('ProductId',$product->id)->delete();
                 foreach ($request->input('components') as $component) {
                     Component::create([
 //                    'ProductNumber' => $product->ProductNumber,
@@ -3340,12 +3319,6 @@ class AdminController extends Controller
                 }
             }
             if ($request->hasFile('images')) {
-//                foreach ($product->nextGenImages as $img){
-//                    if(file_exists(public_path($img))){
-//                        unlink(public_path($img));
-//                    }
-//                    $img->delete();
-//                }
                 foreach ($request->file('images') as $image) {
                     $name = time() . uniqid() . '.' . $image->getClientOriginalExtension();
                     $image->move(public_path('uploads/product'), $name);
@@ -3365,6 +3338,9 @@ class AdminController extends Controller
                     if (file_exists(public_path($product->FeaturedImage))) {
                         unlink(public_path($product->FeaturedImage));
                     }
+                    if (file_exists(public_path('thumbnail/'.$product->FeaturedImage))) {
+                        unlink(public_path('thumbnail/'.$product->FeaturedImage));
+                    }
                 }
                 $f_image = $request->file('featured_image');
                 $f_name = time() . uniqid() . '.' . $f_image->getClientOriginalExtension();
@@ -3380,6 +3356,9 @@ class AdminController extends Controller
                 if (!empty($product->FeaturedImage)) {
                     if (file_exists(public_path($product->FeaturedImage))) {
                         unlink(public_path($product->FeaturedImage));
+                    }
+                    if (file_exists(public_path('thumbnail/'.$product->FeaturedImage))) {
+                        unlink(public_path('thumbnail/'.$product->FeaturedImage));
                     }
                 }
                 $product->FeaturedImage = null;
