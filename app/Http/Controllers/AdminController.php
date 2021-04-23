@@ -1171,8 +1171,7 @@ class AdminController extends Controller
                     }
                 }
                 foreach ($productInfo->Features as $feature) {
-                    if (!empty($highlight)) {
-
+                    if (!empty($feature)) {
                         Feature::create([
                             'Name' => $feature,
                             'ProductInfoId' => $p->id
@@ -2968,10 +2967,8 @@ class AdminController extends Controller
                     'Description'=>$request->input('description')
                 ]);
                 foreach ($request->input('features') as $feature){
-                    Feature::create([
-                        'Name'=>$feature,
-                        'ProductInfoId '=>$pi->id
-                    ]);
+                    Feature::create(['Name'=>$feature, 'ProductInfoId'=>$pi->id]);
+//                    Feature::create(['Name'=>$feature, 'ProductInfoId'=>$pi->id]);
                 }
             }
             $product = Product::create([
