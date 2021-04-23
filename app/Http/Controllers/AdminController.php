@@ -3275,7 +3275,7 @@ class AdminController extends Controller
                 foreach ($request->input('features') as $feature){
                     Feature::create([
                         'Name'=>$feature,
-                        'ProductInfoId '=>$pi->id
+                        'ProductInfoId'=>$pi->id
                     ]);
                 }
                 $product->ProductInfoId=$pi->id;
