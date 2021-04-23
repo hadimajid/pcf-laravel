@@ -13,9 +13,6 @@ class RelatedProductList extends Model
     public function product(){
         return $this->belongsTo(Product::class,'ProductId');
     }
-//    public function relatedProductCoaster(){
-//        return $this->hasOne(Product::class,'ProductNumber','ProductNumber');
-//    }
     public function relatedProduct(){
         return $this->hasOne(Product::class,'id','RelatedProductId');
     }

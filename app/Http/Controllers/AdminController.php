@@ -3266,7 +3266,7 @@ class AdminController extends Controller
                         'SeatDepth' => $measurement['seat_depth'],
                         'SeatHeight' => $measurement['seat_height'],
                         'ArmHeight' => $measurement['arm_height'],
-//                    'Weight' => $measurement['weight'],
+//                      'Weight' => $measurement['weight'],
                         'DeskClearance' => $measurement['desk_clearance'],
                         'ShelfDistance' => $measurement['shelf_distance'],
                         'ProductId' => $product['id']
