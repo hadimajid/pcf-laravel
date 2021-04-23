@@ -2906,7 +2906,9 @@ class AdminController extends Controller
             'collection_name' => 'required',
 //          'collection_name' => 'nullable',
 //          'promotion'=>'nullable|min:0|max:100'
-            'promotion'=>'nullable'
+            'promotion'=>'nullable',
+            'features'=>'nullable|array|min:1',
+
         ];
     }
     public function storeProduct(Request $request)
@@ -2995,11 +2997,25 @@ class AdminController extends Controller
                 'RoomName' => $request->input('room_name'),
                 'WoodFinish' => $request->input('wood_finish'),
                 'ChemicalList' => $request->input('chemical_list'),
-//                'Promotion' => $request->input('promotion'),
+//              'Promotion' => $request->input('promotion'),
                 'PromotionCheck' => $promotion,
                 'SalePrice' => $request->input('price'),
                 'CollectionId' => $collection->id
             ]);
+            if(!empty($request->input('features'))){
+                $pi=ProductInfo::create([
+                    'ProductName'=>$product->Name,
+                    'Description'=>$product->Description
+                ]);
+                foreach ($request->input('features') as $feature){
+                    Feature::create([
+                        'Name'=>$feature,
+                        'ProductInfoId '=>$pi->id
+                    ]);
+                }
+                $product->ProductInfoId=$pi->id;
+                $product->save();
+            }
             if (!empty($request->input('measurements'))) {
                 foreach ($request->input('measurements') as $measurement) {
                     Measurement::create([
@@ -3249,7 +3265,24 @@ class AdminController extends Controller
 //            $product->Promotion = $request->input('promotion');
             $product->PromotionCheck = $promotion;
             $product->SalePrice = $request->input('price');
+            $piId=$product->ProductInfoId;
+            $product->ProductInfoId=null;
             $product->save();
+            ProductInfo::find($piId)->delete();
+            if(!empty($request->input('features'))){
+                $pi=ProductInfo::create([
+                    'ProductName'=>$product->Name,
+                    'Description'=>$product->Description
+                ]);
+                foreach ($request->input('features') as $feature){
+                    Feature::create([
+                        'Name'=>$feature,
+                        'ProductInfoId '=>$pi->id
+                    ]);
+                }
+                $product->ProductInfoId=$pi->id;
+                $product->save();
+            }
             if (!empty($request->input('measurements'))) {
                 Measurement::where('ProductId',$product->id)->delete();
                 foreach ($request->input('measurements') as $measurement) {
