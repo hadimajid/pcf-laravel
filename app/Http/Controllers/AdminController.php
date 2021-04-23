@@ -3132,7 +3132,7 @@ class AdminController extends Controller
             return Response::json(['message' => 'Product Added Successfully', 'data' => $product], 200);
         } catch (\Exception $ex) {
             DB::rollBack();
-            return Response::json(['message' => 'Failed to add product.', 'error' => $ex], 422);
+            return Response::json(['message' => 'Failed to add product.', 'error' => $ex,'line_number'=>$ex->getLine()], 422);
         }
 
     }
