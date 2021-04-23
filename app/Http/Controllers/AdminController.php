@@ -2961,6 +2961,19 @@ class AdminController extends Controller
             } else {
                 $promotion = 0;
             }
+            $pi=null;
+            if(!empty($request->input('features'))){
+                $pi=ProductInfo::create([
+                    'ProductName'=>$request->input('name'),
+                    'Description'=>$request->input('description')
+                ]);
+                foreach ($request->input('features') as $feature){
+                    Feature::create([
+                        'Name'=>$feature,
+                        'ProductInfoId '=>$pi->id
+                    ]);
+                }
+            }
             $product = Product::create([
                 'Name' => $request->input('name'),
                 'Description' => $request->input('description'),
@@ -3000,22 +3013,10 @@ class AdminController extends Controller
 //              'Promotion' => $request->input('promotion'),
                 'PromotionCheck' => $promotion,
                 'SalePrice' => $request->input('price'),
-                'CollectionId' => $collection->id
+                'CollectionId' => $collection->id,
+                'ProductInfoId'=>$pi?$pi->id:null,
             ]);
-            if(!empty($request->input('features'))){
-                $pi=ProductInfo::create([
-                    'ProductName'=>$product->Name,
-                    'Description'=>$product->Description
-                ]);
-                foreach ($request->input('features') as $feature){
-                    Feature::create([
-                        'Name'=>$feature,
-                        'ProductInfoId '=>$pi->id
-                    ]);
-                }
-                $product->ProductInfoId=$pi->id;
-                $product->save();
-            }
+
             if (!empty($request->input('measurements'))) {
                 foreach ($request->input('measurements') as $measurement) {
                     Measurement::create([

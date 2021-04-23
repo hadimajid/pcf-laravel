@@ -11,6 +11,6 @@ class Feature extends Model
     protected $guarded=[];
 
     public function productInfo(){
-        return $this->hasOne(ProductInfo::class,'ProductInfoId');
+        return $this->belongsTo(ProductInfo::class,'ProductInfoId');
     }
 }
