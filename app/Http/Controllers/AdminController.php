@@ -3293,15 +3293,16 @@ class AdminController extends Controller
                     ]);
                 }
             }
-//            if (!empty($request->input('related_product_list'))) {
                 RelatedProductList::where('ProductId',$product->id)->delete();
+            if (!empty($request->input('related_product_list'))) {
+
                 foreach ($request->input('related_product_list') as $relatedProduct) {
                     RelatedProductList::create([
                         'RelatedProductId' => $relatedProduct['id'],
                         'ProductId' => $product->id
                     ]);
                 }
-//            }
+            }
             if (!empty($request->input('components'))) {
                 Component::where('ProductId',$product->id)->delete();
                 foreach ($request->input('components') as $component) {
