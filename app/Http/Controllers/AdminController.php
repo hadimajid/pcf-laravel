@@ -3293,7 +3293,7 @@ class AdminController extends Controller
                     ]);
                 }
             }
-            if (!empty($request->input('related_product_list'))) {
+//            if (!empty($request->input('related_product_list'))) {
                 RelatedProductList::where('ProductId',$product->id)->delete();
                 foreach ($request->input('related_product_list') as $relatedProduct) {
                     RelatedProductList::create([
@@ -3301,7 +3301,7 @@ class AdminController extends Controller
                         'ProductId' => $product->id
                     ]);
                 }
-            }
+//            }
             if (!empty($request->input('components'))) {
                 Component::where('ProductId',$product->id)->delete();
                 foreach ($request->input('components') as $component) {
