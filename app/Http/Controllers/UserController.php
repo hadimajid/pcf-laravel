@@ -459,10 +459,10 @@ class UserController extends Controller
                 $sort=['id','desc'];
             }
             if($s==4){
-                $sort=['SalePrice','asc'];
+                $sort=['PromotionPrice','asc'];
             }
             if($s==5){
-                $sort=['SalePrice','desc'];
+                $sort=['PromotionPrice','desc'];
             }
         }
 //
@@ -559,13 +559,13 @@ class UserController extends Controller
             ->with(self::getRelationProduct())
             ->get();
         if($sort[1]=='desc'){
-            $products=$products->sortByDesc($sort[0]);
+            $sorted=$products->sortByDesc($sort[0]);
         }else{
-            $products=$products->sortBy($sort[0]);
+            $sorted=$products->sortBy($sort[0]);
         }
 
         return Response::json([
-            'products'=>$products,
+            'products'=>$sorted,
             'category'=>$cat,
             'subcategory'=>$sub,
             'total_number'=>$count,
