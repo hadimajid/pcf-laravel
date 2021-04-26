@@ -556,10 +556,13 @@ class UserController extends Controller
         $count=$productsQuery
             ->count();
         $products=$productsQuery->offset($page)->limit($limit)
-            ->orderBy($sort[0], $sort[1])
             ->with(self::getRelationProduct())
             ->get();
-
+        if($sort[1]=='desc'){
+            $products=$products->sortByDesc($sort[0]);
+        }else{
+            $products=$products->sortBy($sort[0]);
+        }
 
         return Response::json([
             'products'=>$products,
