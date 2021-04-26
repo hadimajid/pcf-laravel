@@ -3717,7 +3717,7 @@ class AdminController extends Controller
     public function getMaterial(Request $request)
     {
         return Response::json([
-            'material' => Material::select('Value')->groupBy('Value')->get()
+            'material' => Material::select('Value')->groupBy('Value')->havingRaw(" CAST(Value as UNSIGNED) <=0")->get()
         ]);
     }
     public function getColor(Request $request)
