@@ -565,7 +565,7 @@ class UserController extends Controller
         }
 
         return Response::json([
-            'products'=>$sorted,
+            'products'=>$sorted->values()->all(),
             'category'=>$cat,
             'subcategory'=>$sub,
             'total_number'=>$count,
