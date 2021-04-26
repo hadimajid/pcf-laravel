@@ -3266,7 +3266,9 @@ class AdminController extends Controller
             $piId=$product->ProductInfoId;
             $product->ProductInfoId=null;
             $product->save();
-            ProductInfo::find($piId)->delete();
+            if($piId){
+                ProductInfo::find($piId)->delete();
+            }
             if(!empty($request->input('features'))){
                 $pi=ProductInfo::create([
                     'ProductName'=>$product->Name,
