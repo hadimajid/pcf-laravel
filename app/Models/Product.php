@@ -80,6 +80,9 @@ class Product extends Model
     public function ratings(){
         return $this->hasMany(Rating::class);
     }
+    public function ratingsCount(){
+        return $this->hasMany(Rating::class);
+    }
     public function ratingUser(){
         return $this->hasMany(Rating::class);
     }

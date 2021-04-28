@@ -603,6 +603,10 @@ class UserController extends Controller
                 $query->selectRaw('product_id, AVG(rating) as rating')
                     ->groupBy(['product_id']);
             }
+            , 'ratingsCount'=>function($query){
+                $query->selectRaw('product_id,rating,count(rating) as rating_count')
+                    ->groupBy(['rating','product_id']);
+            }
             ,'ratingUser'
             ,'ratingUser.user'
         ];
