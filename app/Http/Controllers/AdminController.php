@@ -283,7 +283,7 @@ class AdminController extends Controller
             $imageName = time() . uniqid() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('uploads/category/'), $imageName);
             $image_resize = Image::make(public_path('uploads/category/'.$imageName));
-            $image_resize->resize(300, null, function ($constraint) {
+            $image_resize->resize(600, null, function ($constraint) {
                 $constraint->aspectRatio();
             });
             $image_resize->save(public_path('thumbnail/uploads/category/' . $imageName));
@@ -324,7 +324,7 @@ class AdminController extends Controller
                     $image->move(public_path('uploads/category'), $imageName);
                     $image_resize = Image::make(public_path('uploads/category/'.$imageName));
 
-                    $image_resize->resize(300, null, function ($constraint) {
+                    $image_resize->resize(600, null, function ($constraint) {
                         $constraint->aspectRatio();
                     });
                     $image_resize->save(public_path('thumbnail/uploads/category/' . $imageName));
