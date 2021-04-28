@@ -411,7 +411,7 @@ class UserController extends Controller
             $where.=" and CategoryName like '%$cat%'";
         }
 
-            $whereHas="  New = 1";
+            $whereHas="  New = 1 AND Hide = 0";
 
             $categories=Category::
                 whereRaw($where)
@@ -556,7 +556,7 @@ class UserController extends Controller
         $count=$productsQuery
             ->count();
         $products=$productsQuery->offset($page)->limit($limit)
-            ->with(self::getRelationProduct())
+            ->with(self::getRelationProduct())->where('Hide',0)
             ->get();
         if($sort[1]=='desc'){
             $sorted=$products->sortByDesc($sort[0]);
