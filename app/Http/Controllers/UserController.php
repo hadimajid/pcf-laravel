@@ -607,7 +607,17 @@ class UserController extends Controller
             ,'ratingUser.user'
         ];
     }
-
+    public function ProductRating(Request $request)
+    {
+        $request->validate([
+            'product_id'=>'required|exists:products,id',
+        ]);
+        $rating = Product::with(['ratings'=>function($query){
+            $query->selectRaw('product_id, AVG(rating) as rating')
+                ->groupBy(['product_id']);
+        },'ratingUser','ratingUser.user'])->where('id',$request->product_id)->first();
+        return Response::json(['ratings' => $rating]);
+    }
     public function cart(Request $request){
         $request->validate([
             'product'=>'required|array|min:1',

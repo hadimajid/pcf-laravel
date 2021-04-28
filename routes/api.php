@@ -68,8 +68,11 @@ use Illuminate\Support\Facades\Route;
                     Route::post('cancel/{id}',[UserController::class,'cancelOrder']);
                 });
             Route::post('rate',[UserController::class,'rateProduct']);
+            Route::post('product-rating',[UserController::class,'ProductRating']);
+
                 Route::post('apply-delivery-fee',[UserController::class,'applyDeliveryFees']);
             });
+
 //      Admin routes
         Route::middleware(['auth:admin','permission'])->prefix('admin')->group(function (){
             Route::get('count',[AdminController::class,'dashboardCount']);
