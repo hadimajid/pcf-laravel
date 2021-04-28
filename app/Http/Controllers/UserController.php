@@ -604,7 +604,7 @@ class UserController extends Controller
                     ->groupBy(['product_id']);
             }
             , 'ratingsCount'=>function($query){
-                $query->selectRaw('product_id,rating,count(rating) as rating_count')
+                $query->selectRaw('product_id,product_id as pid,rating,(count(rating)/(SELECT count(rating) as count from ratings where `product_id`=`pid` group by `product_id`))*100 as rating_count')
                     ->groupBy(['rating','product_id']);
             }
             ,'ratingUser'
