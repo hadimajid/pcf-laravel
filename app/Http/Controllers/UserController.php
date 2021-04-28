@@ -616,10 +616,16 @@ class UserController extends Controller
         $request->validate([
             'product_id'=>'required|exists:products,id',
         ]);
-        $rating = Product::with(['ratings'=>function($query){
+        $rating = Product::with([
+            'ratings'=>function($query){
             $query->selectRaw('product_id, AVG(rating) as rating')
                 ->groupBy(['product_id']);
-        },'ratingUser','ratingUser.user'])->where('id',$request->product_id)->first();
+        }
+        , 'ratingsCount'=>function($query){
+                $query->selectRaw('product_id,product_id as pid,rating,(count(rating)/(SELECT count(rating) as count from ratings where `product_id`=`pid` group by `product_id`))*100 as rating_count')
+                    ->groupBy(['rating','product_id']);
+            }
+        , 'ratingUser','ratingUser.user'])->where('id',$request->product_id)->first();
         return Response::json(['ratings' => $rating]);
     }
     public function cart(Request $request){
