@@ -163,7 +163,11 @@ class PaymentController extends Controller
                 [
                 'product:id,Name,SalePrice,PromotionCheck,ProductNumber,slug',
                 'product.nextGenImages:ProductId,name',
-                'product.inventory.eta'
+                'product.inventory.eta',
+                 'product.ratings'=>function($query){
+                    $query->selectRaw('product_id, AVG(rating) as rating')
+                        ->groupBy(['product_id']);
+                }
                 ])->get();
             $coupon=$user->cart->coupon_id;
             $delivery_id=$user->cart->delivery_fee_id;
