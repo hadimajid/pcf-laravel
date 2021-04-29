@@ -581,6 +581,10 @@ class UserController extends Controller
                 $query->whereHas('relatedProduct.nextGenImages');
             }
             , 'relatedProducts.relatedProduct'
+            , 'relatedProducts.relatedProduct.ratings'=>function($query){
+            $query->selectRaw('product_id, AVG(rating) as rating')
+                ->groupBy(['product_id']);
+        }
             , 'relatedProducts.relatedProduct.inventory'
             , 'relatedProducts.relatedProduct.price'
             , 'relatedProducts.relatedProduct.nextGenImages'
