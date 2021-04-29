@@ -878,7 +878,10 @@ class UserController extends Controller
         $user= User::find(Auth::guard('user')->user()->id);
         $wishlist=null;
         if($user->wishlist){
-            $wishlist=$user->wishlist->with('items','items.product.inventory','items.product.nextGenImages')->get();
+            $wishlist=$user->wishlist->with(['items','items.product.inventory','items.product.nextGenImages','items.product.ratings'=>function($query){
+                $query->selectRaw('product_id, AVG(rating) as rating')
+                    ->groupBy(['product_id']);
+            }])->get();
         }
         return Response::json(['wishlist'=>$wishlist]);
     }
