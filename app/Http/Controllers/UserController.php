@@ -76,7 +76,7 @@ class UserController extends Controller
         $rules=[
             'email'=>'required|email|unique:users,email',
             'username'=>'required|unique:users,display_name',
-                        'password'=>['required',new PasswordValidate()],
+            'password'=>['required',new PasswordValidate()],
             'url'=>'required',
             'order'=>'nullable'
         ];
@@ -619,18 +619,36 @@ class UserController extends Controller
     {
         $request->validate([
             'product_id'=>'required|exists:products,id',
+            'page'=>'nullable|numeric',
+            'limit'=>'nullable|numeric',
         ]);
-        $rating = Product::with([
-            'ratings'=>function($query){
-            $query->selectRaw('product_id, AVG(rating) as rating')
-                ->groupBy(['product_id']);
+//        $rating = Product::where('id',$request->product_id)->first();
+//        $rating=$rating->load([
+//            'ratings'=>function($query){
+//                $query->selectRaw('product_id, AVG(rating) as rating')
+//                    ->groupBy(['product_id']);
+//            }
+//            , 'ratingsCount'=>function($query){
+//                $query->selectRaw('product_id,product_id as pid,rating,(count(rating)/(SELECT count(rating) as count from ratings where `product_id`=`pid` group by `product_id`))*100 as rating_count')
+//                    ->groupBy(['rating','product_id']);
+//            }
+//            , 'ratingUser','ratingUser.user'
+//        ]);
+        $ratings=Rating::selectRaw('product_id, AVG(rating) as rating')->where('product_id',$request->input('product_id'))->groupBy(['product_id'])->first();
+        $ratingsCount=Rating::selectRaw('product_id,product_id as pid,rating,(count(rating)/(SELECT count(rating) as count from ratings where `product_id`=`pid` group by `product_id`))*100 as rating_count')
+            ->where('product_id',$request->input('product_id'))
+            ->groupBy(['rating','product_id'])->get();
+        $page=0;
+        $limit=Rating::where('product_id',$request->input('product_id'))->count();
+        if($request->input('limit')){
+            $limit=$request->input('limit');
         }
-        , 'ratingsCount'=>function($query){
-                $query->selectRaw('product_id,product_id as pid,rating,(count(rating)/(SELECT count(rating) as count from ratings where `product_id`=`pid` group by `product_id`))*100 as rating_count')
-                    ->groupBy(['rating','product_id']);
-            }
-        , 'ratingUser','ratingUser.user'])->where('id',$request->product_id)->first();
-        return Response::json(['ratings' => $rating]);
+        if($request->input('page')){
+            $page=($request->input('page')-1)*$limit;
+        }
+        $ratingUser=Rating::with('user')->offset($page)->limit($limit)->where('product_id',$request->input('product_id'))->get();
+        $total=Rating::where('product_id',$request->input('product_id'))->count();
+        return Response::json(['ratings' => $ratings,'ratings_count'=>$ratingsCount,'rating_user'=>$ratingUser,'total_number'=>$total]);
     }
     public function cart(Request $request){
         $request->validate([
