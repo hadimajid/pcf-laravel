@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Route;
                 Route::get('paypal/cancel',[PaymentController::class,'cancel']);
 //Route::get('order_details/{order_id}',[PaymentController::class,'getOrderDetails']);
 //Route::get('newTest',[AdminController::class,'newTest']);
+Route::post('product-rating',[UserController::class,'ProductRating']);
         Route::middleware('auth:user')->prefix('user')->group(function (){
             Route::prefix('checkout')->group(function () {
                 Route::post('stripe',[PaymentController::class,'checkOutWithStripe']);
@@ -68,7 +69,7 @@ use Illuminate\Support\Facades\Route;
                     Route::post('cancel/{id}',[UserController::class,'cancelOrder']);
                 });
             Route::post('rate',[UserController::class,'rateProduct']);
-            Route::post('product-rating',[UserController::class,'ProductRating']);
+
 
                 Route::post('apply-delivery-fee',[UserController::class,'applyDeliveryFees']);
             });
