@@ -2545,6 +2545,7 @@ class AdminController extends Controller
         $color = $request->input('color');
         $warehouse = $request->input('warehouse');
         $type = $request->input('type');
+        $rating = $request->input('rating');
         $page = 0;
         $limit = Product::whereNotNull('ProductNumber')->get()->count();
         $count = Product::whereNotNull('ProductNumber')->get()->count();
@@ -2575,9 +2576,14 @@ class AdminController extends Controller
             }
         }
         $productsQuery = Product::whereNotNull('ProductNumber')
-            ->where(function ($query) use ($category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type){
+            ->where(function ($query) use ($category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type,$rating){
                 if($category_name){
                     $query->where('CategoryId',$category_name);
+                }
+                if($rating){
+                    $query->whereHas('ratings',function ($query) use ($rating){
+                        $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
+                    });
                 }
                 if($subcategory_name){
                     $query->where('SubcategoryId',$subcategory_name);
@@ -2635,14 +2641,13 @@ class AdminController extends Controller
                     }
                 }
             });
-        $count=$productsQuery
-            ->count();
+
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
             ->with(
                 self::getRelationProduct())
             ->get();
-
+        $count=count($products);
         return Response::json([
             'products' => $products,
             'total_number' => $count,
@@ -2659,6 +2664,7 @@ class AdminController extends Controller
         $color = $request->input('color');
         $warehouse = $request->input('warehouse');
         $type = $request->input('type');
+        $rating = $request->input('rating');
         $page = 0;
         $limit = Product::whereNull('ProductNumber')->get()->count();
         $count = Product::whereNull('ProductNumber')->get()->count();
@@ -2689,9 +2695,14 @@ class AdminController extends Controller
             }
         }
         $productsQuery = Product::whereNull('ProductNumber')
-            ->where(function ($query) use ($category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type){
+            ->where(function ($query) use ($rating,$category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type){
                 if($category_name){
                     $query->where('CategoryId',$category_name);
+                }
+                if($rating){
+                    $query->whereHas('ratings',function ($query) use ($rating){
+                        $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
+                    });
                 }
                 if($subcategory_name){
                     $query->where('SubcategoryId',$subcategory_name);
@@ -2749,13 +2760,13 @@ class AdminController extends Controller
                     }
                 }
             });
-        $count=$productsQuery
-            ->count();
+
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
             ->with(
                 self::getRelationProduct())
             ->get();
+        $count=count($products);
         return Response::json([
             'products' => $products,
             'total_number' => $count,

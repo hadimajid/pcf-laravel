@@ -551,11 +551,11 @@ class UserController extends Controller
 
                 }
             });
-        $count=$productsQuery
-            ->count();
+
         $products=$productsQuery
             ->with(self::getRelationProduct($relation))->where('Hide',0)
             ->get();
+        $count=count($products);
         if($sort[0]!='ratings') {
             if ($sort[1] == 'desc') {
                 $sorted = $products->sortByDesc($sort[0]);
