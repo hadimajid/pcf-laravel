@@ -2580,7 +2580,7 @@ class AdminController extends Controller
                 if($category_name){
                     $query->where('CategoryId',$category_name);
                 }
-                if($rating){
+                if($rating>0){
                     $query->whereHas('ratings',function ($query) use ($rating){
                         $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
                     });
@@ -2701,7 +2701,7 @@ class AdminController extends Controller
                 if($category_name){
                     $query->where('CategoryId',$category_name);
                 }
-                if($rating){
+                if($rating>0){
                     $query->whereHas('ratings',function ($query) use ($rating){
                         $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
                     });
