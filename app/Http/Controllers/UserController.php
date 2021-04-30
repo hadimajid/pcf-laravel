@@ -450,11 +450,11 @@ class UserController extends Controller
         if($request->input('sort')){
             $s= $request->input('sort');
             if($s==1){
-                $sort=['id','asc'];
+                $sort=['ratings_count.rating_count','desc'];
             }
-            if($s==2){
-                $sort=['id','asc'];
-            }
+//            if($s==2){
+//                $sort=['ratings_count.rating_count','asc'];
+//            }
             if($s==3){
                 $sort=['id','desc'];
             }
@@ -496,7 +496,7 @@ class UserController extends Controller
 
             }
         }
-        $productsQuery = Product::where(function ($query) use ($image,$category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+        $productsQuery = Product::selectRaw('*')->where(function ($query) use ($image,$category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
                 if($image)
                 {
                     $query->whereHas('nextGenImages');
@@ -550,12 +550,9 @@ class UserController extends Controller
 
                 }
             });
-//        =>function($query) {
-//        $query->whereHas('relatedProduct.nextGenImages');
-//    }
         $count=$productsQuery
             ->count();
-        $products=$productsQuery->offset($page)->limit($limit)
+        $products=$productsQuery
             ->with(self::getRelationProduct())->where('Hide',0)
             ->get();
         if($sort[1]=='desc'){
@@ -563,6 +560,7 @@ class UserController extends Controller
         }else{
             $sorted=$products->sortBy($sort[0]);
         }
+        $sorted=$sorted->skip($page)->take($limit);
 
         return Response::json([
             'products'=>$sorted->values()->all(),

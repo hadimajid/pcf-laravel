@@ -30,9 +30,9 @@ use Illuminate\Support\Facades\Route;
 //      User routes
                 Route::get('paypal/success',[PaymentController::class,'success']);
                 Route::get('paypal/cancel',[PaymentController::class,'cancel']);
-//Route::get('order_details/{order_id}',[PaymentController::class,'getOrderDetails']);
-//Route::get('newTest',[AdminController::class,'newTest']);
-Route::post('product-rating',[UserController::class,'ProductRating']);
+//      Route::get('order_details/{order_id}',[PaymentController::class,'getOrderDetails']);
+//      Route::get('newTest',[AdminController::class,'newTest']);
+        Route::post('product-rating',[UserController::class,'ProductRating']);
         Route::middleware('auth:user')->prefix('user')->group(function (){
             Route::prefix('checkout')->group(function () {
                 Route::post('stripe',[PaymentController::class,'checkOutWithStripe']);
