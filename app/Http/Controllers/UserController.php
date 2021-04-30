@@ -567,7 +567,7 @@ class UserController extends Controller
             'category'=>$cat,
             'subcategory'=>$sub,
             'total_number'=>$count,
-            'filtered'=>$products->count()]);
+            'filtered'=>$sorted->count()]);
     }
 
     public static function getRelationProduct(){
