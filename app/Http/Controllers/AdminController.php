@@ -2584,6 +2584,8 @@ class AdminController extends Controller
                     $query->whereHas('ratings',function ($query) use ($rating){
                         $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
                     });
+                }else{
+                    $query->whereDoesnthave('ratings');
                 }
                 if($subcategory_name){
                     $query->where('SubcategoryId',$subcategory_name);
@@ -2703,6 +2705,8 @@ class AdminController extends Controller
                     $query->whereHas('ratings',function ($query) use ($rating){
                         $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
                     });
+                }else{
+                    $query->whereDoesnthave('ratings');
                 }
                 if($subcategory_name){
                     $query->where('SubcategoryId',$subcategory_name);
