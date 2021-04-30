@@ -450,10 +450,10 @@ class UserController extends Controller
         if($request->input('sort')){
             $s= $request->input('sort');
             if($s==1){
-                $sort=['ratings_count.rating_count','desc'];
+                $sort=['ratings','desc'];
             }
 //            if($s==2){
-//                $sort=['ratings_count.rating_count','asc'];
+//                        $sort=['ratings.rating','desc'];
 //            }
             if($s==3){
                 $sort=['id','desc'];
@@ -555,10 +555,26 @@ class UserController extends Controller
         $products=$productsQuery
             ->with(self::getRelationProduct())->where('Hide',0)
             ->get();
-        if($sort[1]=='desc'){
-            $sorted=$products->sortByDesc($sort[0]);
+        if($sort[0]!='ratings') {
+            if ($sort[1] == 'desc') {
+                $sorted = $products->sortByDesc($sort[0]);
+            } else {
+                $sorted = $products->sortBy($sort[0]);
+            }
         }else{
-            $sorted=$products->sortBy($sort[0]);
+            if ($sort[1] == 'desc') {
+                $sorted = $products->sortByDesc(function ($product) use ($sort){
+                    if($product->ratings->first()){
+                        return $product->ratings->first()->rating;
+                    }
+                });
+            } else {
+                $sorted = $products->sortBy(function ($product) use ($sort){
+                    if($product->ratings->first()){
+                        return $product->ratings->first()->rating;
+                    }
+                });
+            }
         }
         $sorted=$sorted->skip($page)->take($limit);
 
