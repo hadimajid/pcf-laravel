@@ -588,7 +588,7 @@ class UserController extends Controller
     }
 
     public static function getRelationProduct($check=0){
-        if($check===1){
+        if($check==1){
             return [
                 'measurements'
                 , 'nextGenImages'
