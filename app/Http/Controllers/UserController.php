@@ -443,6 +443,7 @@ class UserController extends Controller
         $warehouse=$request->input('warehouse');
         $type=$request->input('type');
         $image=$request->input('image');
+        $relation=$request->input('relation');
         $page=0;
         $limit=Product::all()->count();
         $count=Product::all()->count();
@@ -553,7 +554,7 @@ class UserController extends Controller
         $count=$productsQuery
             ->count();
         $products=$productsQuery
-            ->with(self::getRelationProduct())->where('Hide',0)
+            ->with(self::getRelationProduct($relation))->where('Hide',0)
             ->get();
         if($sort[0]!='ratings') {
             if ($sort[1] == 'desc') {
@@ -586,48 +587,68 @@ class UserController extends Controller
             'filtered'=>$sorted->count()]);
     }
 
-    public static function getRelationProduct(){
-        return [
-            'measurements'
-            , 'materials'
-            , 'additionalFields'
-            , 'relatedProducts'=>function($query) {
-                $query->whereHas('relatedProduct.nextGenImages');
-            }
-            , 'relatedProducts.relatedProduct'
-            , 'relatedProducts.relatedProduct.ratings'=>function($query){
-            $query->selectRaw('product_id, AVG(rating) as rating')
-                ->groupBy(['product_id']);
+    public static function getRelationProduct($check=0){
+        if($check===1){
+            return [
+                'measurements'
+                , 'nextGenImages'
+                , 'piece'
+                , 'inventory.eta'
+                , 'price'
+                , 'ratings' => function ($query) {
+                    $query->selectRaw('product_id, AVG(rating) as rating')
+                        ->groupBy(['product_id']);
+                }
+                , 'ratingsCount' => function ($query) {
+                    $query->selectRaw('product_id,product_id as pid,rating,(count(rating)/(SELECT count(rating) as count from ratings where `product_id`=`pid` group by `product_id`))*100 as rating_count')
+                        ->groupBy(['rating', 'product_id']);
+                }
+                , 'ratingUser'
+                , 'ratingUser.user'
+            ];
+        }else {
+            return [
+                'measurements'
+                , 'materials'
+                , 'additionalFields'
+                , 'relatedProducts' => function ($query) {
+                    $query->whereHas('relatedProduct.nextGenImages');
+                }
+                , 'relatedProducts.relatedProduct'
+                , 'relatedProducts.relatedProduct.ratings' => function ($query) {
+                    $query->selectRaw('product_id, AVG(rating) as rating')
+                        ->groupBy(['product_id']);
+                }
+                , 'relatedProducts.relatedProduct.inventory'
+                , 'relatedProducts.relatedProduct.price'
+                , 'relatedProducts.relatedProduct.nextGenImages'
+                , 'components'
+                , 'nextGenImages'
+                , 'category'
+                , 'subCategory'
+                , 'piece'
+                , 'collection'
+                , 'style'
+                , 'productLine'
+                , 'group'
+                , 'inventory.eta'
+                , 'productInfo'
+                , 'productInfo.highlights'
+                , 'productInfo.bullets'
+                , 'productInfo.features'
+                , 'price'
+                , 'ratings' => function ($query) {
+                    $query->selectRaw('product_id, AVG(rating) as rating')
+                        ->groupBy(['product_id']);
+                }
+                , 'ratingsCount' => function ($query) {
+                    $query->selectRaw('product_id,product_id as pid,rating,(count(rating)/(SELECT count(rating) as count from ratings where `product_id`=`pid` group by `product_id`))*100 as rating_count')
+                        ->groupBy(['rating', 'product_id']);
+                }
+                , 'ratingUser'
+                , 'ratingUser.user'
+            ];
         }
-            , 'relatedProducts.relatedProduct.inventory'
-            , 'relatedProducts.relatedProduct.price'
-            , 'relatedProducts.relatedProduct.nextGenImages'
-            , 'components'
-            , 'nextGenImages'
-            , 'category'
-            , 'subCategory'
-            , 'piece'
-            , 'collection'
-            , 'style'
-            , 'productLine'
-            , 'group'
-            , 'inventory.eta'
-            , 'productInfo'
-            , 'productInfo.highlights'
-            , 'productInfo.bullets'
-            , 'productInfo.features'
-            , 'price'
-            , 'ratings'=>function($query){
-                $query->selectRaw('product_id, AVG(rating) as rating')
-                    ->groupBy(['product_id']);
-            }
-            , 'ratingsCount'=>function($query){
-                $query->selectRaw('product_id,product_id as pid,rating,(count(rating)/(SELECT count(rating) as count from ratings where `product_id`=`pid` group by `product_id`))*100 as rating_count')
-                    ->groupBy(['rating','product_id']);
-            }
-            ,'ratingUser'
-            ,'ratingUser.user'
-        ];
     }
     public function ProductRating(Request $request)
     {
