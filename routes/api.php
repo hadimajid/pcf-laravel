@@ -129,7 +129,7 @@ use Illuminate\Support\Facades\Route;
                 Route::post('selected-product-subcategory-price',[AdminController::class,'changePriceOfProductsWithSubCategory'])->middleware('scope:edit-product');
                 Route::post('edit/{id}',[AdminController::class,'editProduct'])->middleware('scope:edit-product');
                 Route::post('/coaster',[AdminController::class,'productsProvidedByCoaster']);
-                Route::post('/',[AdminController::class,'productsAddedByAdmin']);
+                Route::post('/',[AdminController::class,'products']);
                 Route::post('name',[AdminController::class,'getProductName']);
                 Route::post('status',[AdminController::class,'statusProduct']);
 //              Route::post('new',[AdminController::class,'newProduct']);

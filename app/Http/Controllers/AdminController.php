@@ -2580,7 +2580,7 @@ class AdminController extends Controller
                 if($category_name){
                     $query->where('CategoryId',$category_name);
                 }
-                if($rating>0){
+                if($rating){
                     $query->whereHas('ratings',function ($query) use ($rating){
                         $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
                     });
@@ -2701,11 +2701,145 @@ class AdminController extends Controller
                 if($category_name){
                     $query->where('CategoryId',$category_name);
                 }
-                if($rating>0){
+                if($rating){
                     $query->whereHas('ratings',function ($query) use ($rating){
                         $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
                     });
                 }else{
+                    $query->whereDoesnthave('ratings');
+                }
+                if($subcategory_name){
+                    $query->where('SubcategoryId',$subcategory_name);
+                }
+                if($product_number){
+                    $query->where('ProductNumber',$product_number);
+                }
+                if($product_name){
+                    $query->where('Name','like',"%$product_name%");
+                }
+                if($style){
+                    $query->whereHas('style',function ($query) use ($style){
+                        $query->where('StyleName',$style);
+                    });
+                }
+                if($color){
+                    $query->where(function ($query) use ($color){
+                        $query->where('FabricColor','like',"%$color%")->orWhere('FinishColor','like',"%$color%");
+                    });
+                }
+                if($material){
+                    $query->whereHas('materials', function ($query) use ($material) {
+                        $query->where('Value', 'like', "%$material%");
+                    });
+                }
+                if($warehouse){
+                    $query->whereHas('inventory', function ($query) use ($warehouse) {
+                        $query->where('WarehouseId', '=', $warehouse);
+                    });
+                }
+                if($type){
+                    if ($type == "1") {
+                        $query->where('Hide',1);
+                    }
+                    if ($type == "2") {
+                        $query->where('Hide',0);
+                    }
+                    if ($type == "3") {
+                        $query->where('New',1);
+                    }
+                    if ($type == "4") {
+                        $query->where('Hot',1);
+                    }
+                    if ($type == "5") {
+                        $query->where('Hot',0);
+                    }
+                    if ($type == "6") {
+                        $query->where('PromotionCheck',0);
+                    }
+                    if ($type == "7") {
+                        $query->where('PromotionCheck',1);
+                    }
+                    if ($type == "8") {
+                        $query->where('Featured',1);
+                    }
+                }
+            });
+
+        $products=$productsQuery->offset($page)->limit($limit)
+            ->orderBy($sort[0], $sort[1])
+            ->with(
+                self::getRelationProduct())
+            ->get();
+        $count=count($products);
+        return Response::json([
+            'products' => $products,
+            'total_number' => $count,
+            'filtered' => $products->count()]);
+    }
+    public function products(Request $request)
+    {
+        $category_name = $request->input('category_id');
+        $subcategory_name = $request->input('subcategory_id');
+        $product_name = $request->input('product_name');
+        $product_number = $request->input('product_number');
+        $style = $request->input('style_id');
+        $material = $request->input('material');
+        $color = $request->input('color');
+        $warehouse = $request->input('warehouse');
+        $type = $request->input('type');
+        $rating = $request->input('rating');
+        $coaster = $request->input('coaster');
+        $page = 0;
+        $limit = Product::where(function ($query) use ($coaster){
+            if($coaster==1){
+                $query->whereNotNull('ProductNumber');
+            }
+            if($coaster==2){
+                $query->whereNull('ProductNumber');
+            }
+        })->count();
+        $count = $limit;
+        $sort = ['id', 'asc'];
+        if ($request->input('sort')) {
+            $s = $request->input('sort');
+            if ($s == 1) {
+                $sort = ['id', 'asc'];
+            }
+            if ($s == 2) {
+                $sort = ['id', 'asc'];
+
+            }
+            if ($s == 3) {
+                $sort = ['id', 'desc'];
+            }
+            if ($s == 4) {
+                $sort = ['SalePrice', 'asc'];
+            }
+            if ($s == 5) {
+                $sort = ['SalePrice', 'desc'];
+            }
+        }
+        if (!empty($request->input('limit'))) {
+            $limit = $request->input('limit');
+            if ($request->input('page')) {
+                $page = ($request->input('page') - 1) * $limit;
+            }
+        }
+        $productsQuery = Product::where(function ($query) use ($coaster,$rating,$category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type){
+                if($coaster==1){
+                    $query->whereNotNull('ProductNumber');
+                }
+                if($coaster==2){
+                    $query->whereNull('ProductNumber');
+                }
+                if($category_name){
+                    $query->where('CategoryId',$category_name);
+                }
+                if($rating>0){
+                    $query->whereHas('ratings',function ($query) use ($rating){
+                        $query->select('product_id',DB::raw('avg(rating)'))->havingRaw("ROUND(avg(rating),0)=$rating")->groupBy('product_id');
+                    });
+                }else if($rating==0){
                     $query->whereDoesnthave('ratings');
                 }
                 if($subcategory_name){
