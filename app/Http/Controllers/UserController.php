@@ -445,8 +445,6 @@ class UserController extends Controller
         $image=$request->input('image');
         $relation=$request->input('relation');
         $page=0;
-//        $limit=Product::all()->count();
-//        $count=Product::all()->count();
         $sort='featured desc';
         if($request->input('sort')){
             $s= $request->input('sort');
@@ -483,7 +481,6 @@ class UserController extends Controller
             }
         }
 //
-
         $cat=null;
         if(!empty($category_slug)){
             $categoryTemp=  Category::where('Slug','like',$category_slug)->first();
@@ -579,32 +576,6 @@ class UserController extends Controller
             ->orderByRaw($sort)
             ->get();
 
-
-//        if($sort[0]!='ratings') {
-//            if ($sort[1] == 'desc') {
-//                $sorted = $products->sortByDesc($sort[0]);
-//            } else {
-//                $sorted = $products->sortBy($sort[0]);
-//            }
-//        }else{
-//            if ($sort[1] == 'desc') {
-//                $sorted = $products->sortByDesc(function ($product) use ($sort){
-//                    if($product->ratings->first()){
-//                        return $product->ratings->first()->rating;
-//                    }
-//                });
-//            } else {
-//                $sorted = $products->sortBy(function ($product) use ($sort){
-//                    if($product->ratings->first()){
-//                        return $product->ratings->first()->rating;
-//                    }
-//                });
-//            }
-//        }
-//        $sorted=$sorted->skip($page)->take($limit);
-//        if($sorted){
-//            $sorted=$sorted->load(self::getRelationProduct($relation));
-//        }
         if($products){
             $products=$products->load(self::getRelationProduct($relation));
         }
