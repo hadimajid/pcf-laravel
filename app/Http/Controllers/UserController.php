@@ -431,11 +431,11 @@ class UserController extends Controller
     //    Get All Products Search Filter Paginate
     public function getProducts(Request $request)
     {
-        $category_name=$request->input('category_id');
+        $category_id=$request->input('category_id');
         $slug=$request->input('slug');
         $category_slug=$request->input('category_slug');
         $subcategory_slug=$request->input('subcategory_slug');
-        $subcategory_name=$request->input('subcategory_id');
+        $subcategory_id=$request->input('subcategory_id');
         $product_name=$request->input('product_name');
         $style=$request->input('style_id');
         $material=$request->input('material');
@@ -470,38 +470,39 @@ class UserController extends Controller
 
         $cat=null;
         if(!empty($category_slug)){
-            $category_name=  Category::where('Slug','like',$category_slug)->first();
-            if($category_name){
-                $cat=$category_name->CategoryName;
-                $category_name=$category_name->id;
-            }
-            else{
-                $category_name=Category::orderBy('id','desc')->first()->id+1;
+            $categoryTemp=  Category::where('Slug','like',$category_slug)->first();
+            if($categoryTemp){
+                $cat=$categoryTemp->CategoryName;
             }
         }
 
         $sub=null;
         if(!empty($subcategory_slug)){
-            $subcategory_name=  SubCategory::where('Slug','like',$subcategory_slug)->first();
-            if($subcategory_name){
-                $sub=$subcategory_name->SubCategoryName;
-                $subcategory_name=$subcategory_name->id;
-            }
-            else{
-                $subcategory_name=SubCategory::orderBy('id','desc')->first()->id+1;
-
+            $subcategoryTemp=  SubCategory::where('Slug','like',$subcategory_slug)->first();
+            if($subcategoryTemp){
+                $sub=$subcategoryTemp->SubCategoryName;
             }
         }
-        $productsQuery = Product::selectRaw('*')->where(function ($query) use ($image,$category_name,$subcategory_name,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+        $productsQuery = Product::selectRaw('*')->where(function ($query) use ($category_slug,$subcategory_slug,$image,$category_id,$subcategory_id,$slug,$product_name,$style,$color,$material,$warehouse,$type){
                 if($image)
                 {
                     $query->whereHas('nextGenImages');
                 }
-                if($category_name){
-                    $query->where('CategoryId',$category_name);
+                if($category_slug){
+                    $query->whereHas('category',function ($query) use ($category_slug){
+                        $query->where('slug',$category_slug);
+                    });
                 }
-                if($subcategory_name){
-                    $query->where('SubcategoryId',$subcategory_name);
+                if($subcategory_slug){
+                    $query->whereHas('subCategory',function ($query) use ($subcategory_slug){
+                        $query->where('slug',$subcategory_slug);
+                    });
+                }
+                if($category_id){
+                    $query->where('CategoryId',$category_id);
+                }
+                if($subcategory_id){
+                    $query->where('SubcategoryId',$subcategory_id);
                 }
                 if($slug){
                     $query->where('slug',$slug);
