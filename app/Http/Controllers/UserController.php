@@ -447,23 +447,25 @@ class UserController extends Controller
         $page=0;
 //        $limit=Product::all()->count();
 //        $count=Product::all()->count();
-        $sort=['featured','desc'];
+        $sort='featured desc';
         if($request->input('sort')){
             $s= $request->input('sort');
             if($s==1){
-                $sort=['ratings','desc'];
+                $sort='(select avg(rating) from ratings where product_id=products.id)  desc';
             }
             if($s==2){
-                $sort=['ratings','asc'];
+                $sort='(select avg(rating) from ratings where product_id=products.id) asc';
             }
             if($s==3){
-                $sort=['id','desc'];
+                $sort='id desc';
             }
             if($s==4){
-                $sort=['PromotionPrice','asc'];
+                $price=WebsiteSettings::first()->price?WebsiteSettings::first()->price:0;
+                $sort="(CASE when ProductNumber is not null then (SalePrice*$price) when ProductNumber is null then SalePrice end) asc";
             }
             if($s==5){
-                $sort=['PromotionPrice','desc'];
+                $price=WebsiteSettings::first()->price?WebsiteSettings::first()->price:0;
+                $sort="(CASE when ProductNumber is not null then (SalePrice*$price) when ProductNumber is null then SalePrice end) desc";
             }
         }
 //
@@ -549,10 +551,7 @@ class UserController extends Controller
 
                 }
             });
-
-        $products=$productsQuery->where('Hide',0)
-            ->get();
-        $count=count($products);
+        $count=$productsQuery->count();
         $limit=$count;
         if(!empty($request->input('limit'))){
             $limit=$request->input('limit');
@@ -560,37 +559,47 @@ class UserController extends Controller
                 $page=($request->input('page')-1)*$limit;
             }
         }
-        if($sort[0]!='ratings') {
-            if ($sort[1] == 'desc') {
-                $sorted = $products->sortByDesc($sort[0]);
-            } else {
-                $sorted = $products->sortBy($sort[0]);
-            }
-        }else{
-            if ($sort[1] == 'desc') {
-                $sorted = $products->sortByDesc(function ($product) use ($sort){
-                    if($product->ratings->first()){
-                        return $product->ratings->first()->rating;
-                    }
-                });
-            } else {
-                $sorted = $products->sortBy(function ($product) use ($sort){
-                    if($product->ratings->first()){
-                        return $product->ratings->first()->rating;
-                    }
-                });
-            }
-        }
-        $sorted=$sorted->skip($page)->take($limit);
-        if($sorted){
-            $sorted=$sorted->load(self::getRelationProduct($relation));
+        $products=$productsQuery->where('Hide',0)
+            ->offset($page)
+            ->limit($limit)
+            ->orderByRaw($sort)
+            ->get();
+
+
+//        if($sort[0]!='ratings') {
+//            if ($sort[1] == 'desc') {
+//                $sorted = $products->sortByDesc($sort[0]);
+//            } else {
+//                $sorted = $products->sortBy($sort[0]);
+//            }
+//        }else{
+//            if ($sort[1] == 'desc') {
+//                $sorted = $products->sortByDesc(function ($product) use ($sort){
+//                    if($product->ratings->first()){
+//                        return $product->ratings->first()->rating;
+//                    }
+//                });
+//            } else {
+//                $sorted = $products->sortBy(function ($product) use ($sort){
+//                    if($product->ratings->first()){
+//                        return $product->ratings->first()->rating;
+//                    }
+//                });
+//            }
+//        }
+//        $sorted=$sorted->skip($page)->take($limit);
+//        if($sorted){
+//            $sorted=$sorted->load(self::getRelationProduct($relation));
+//        }
+        if($products){
+            $products=$products->load(self::getRelationProduct($relation));
         }
         return Response::json([
-            'products'=>$sorted->values()->all(),
+            'products'=>$products,
             'category'=>$cat,
             'subcategory'=>$sub,
             'total_number'=>$count,
-            'filtered'=>$sorted->count()]);
+            'filtered'=>$products->count()]);
     }
 
     public static function getRelationProduct($check=0){
