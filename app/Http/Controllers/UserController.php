@@ -689,7 +689,8 @@ class UserController extends Controller
         $request->validate([
             'product'=>'required|array|min:1',
             'product.*.id'=>'required|exists:products,id',
-            'product.*.quantity'=>'required|numeric'
+            'product.*.quantity'=>'required|numeric',
+            'product.*.color'=>'nullable'
         ]);
            $user= User::find(Auth::guard('user')->user()->id);
            $cart=Cart::where('user_id',$user->id)->first();
@@ -702,12 +703,14 @@ class UserController extends Controller
                         $item=CartItems::where('cart_id','=',$cart->id)->where('product_id','=',$product['id'])->first();
                         if($item){
                             $item->quantity=$product['quantity'];
+                            $item->color=$product['color'];
                             $item->save();
                         }else{
                             CartItems::create([
                                 'cart_id'=>$cart->id,
                                 'product_id'=>$product['id'],
-                                'quantity'=>$product['quantity']
+                                'quantity'=>$product['quantity'],
+                                'color'=>$product['color']
                             ]);
                         }
                     }else{
@@ -730,7 +733,8 @@ class UserController extends Controller
                    CartItems::create([
                        'cart_id' => $cart->id,
                        'product_id' => $product['id'],
-                       'quantity' => $product['quantity']
+                       'quantity' => $product['quantity'],
+                       'color'=>$product['color']
                    ]);
                }
             }
