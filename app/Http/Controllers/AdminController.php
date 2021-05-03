@@ -3335,6 +3335,14 @@ class AdminController extends Controller
                     $check = $product->save();
                 }
             }
+            ProductColor::where('product_id',$product->id)->delete();
+            foreach ($request->input('colors') as $color){
+                $productColor=new ProductColor([
+                    'name'=>$color,
+                    'product_id'=>$product->id
+                ]);
+                $productColor->save();
+            }
             return Response::json(['message' => 'Product Details Updated'], 200);
         }
     }
