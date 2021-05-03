@@ -2838,6 +2838,12 @@ class AdminController extends Controller
             } else {
                 $promotion = 0;
             }
+            $multiImage = $request->input('multi_image');
+            if ($multiImage == 'true') {
+                $multiImage= 1;
+            } else {
+                $multiImage = 0;
+            }
             $pi=null;
             if(!empty($request->input('features'))){
                 $pi=ProductInfo::create([
@@ -2999,13 +3005,19 @@ class AdminController extends Controller
                     $check = $product->save();
                 }
             }
-            foreach ($request->input('colors') as $color){
-                $productColor=new ProductColor([
-                    'name'=>$color,
-                    'product_id'=>$product->id
-                ]);
-                $productColor->save();
+            if($multiImage){
+                foreach ($request->input('colors') as $color){
+                    $productColor=new ProductColor([
+                        'name'=>$color,
+                        'product_id'=>$product->id
+                    ]);
+                    $productColor->save();
+                }
+            }else{
+                $product->FabricColor=$request->input('colors')[0];
+                $product->save();
             }
+
             DB::commit();
             return Response::json(['message' => 'Product Added Successfully', 'data' => $product], 200);
         } catch (\Exception $ex) {
@@ -3103,6 +3115,12 @@ class AdminController extends Controller
                 $promotion= 1;
             } else {
                 $promotion = 0;
+            }
+            $multiImage = $request->input('multi_image');
+            if ($multiImage == 'true') {
+                $multiImage= 1;
+            } else {
+                $multiImage = 0;
             }
             $product->Name = $request->input('name');
             $product->Description = $request->input('description');
@@ -3299,12 +3317,18 @@ class AdminController extends Controller
                 }
             }
             ProductColor::where('product_id',$product->id)->delete();
-            foreach ($request->input('colors') as $color){
-                $productColor=new ProductColor([
-                    'name'=>$color,
-                    'product_id'=>$product->id
-                ]);
-                $productColor->save();
+            $product->FabricColor=null;
+            if($multiImage){
+                foreach ($request->input('colors') as $color){
+                    $productColor=new ProductColor([
+                        'name'=>$color,
+                        'product_id'=>$product->id
+                    ]);
+                    $productColor->save();
+                }
+            }else{
+                $product->FabricColor=$request->input('colors')[0];
+                $product->save();
             }
             return Response::json(['message' => 'Product Details Updated'], 200);
         }
