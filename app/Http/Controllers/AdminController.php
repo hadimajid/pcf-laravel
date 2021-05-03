@@ -2838,11 +2838,11 @@ class AdminController extends Controller
             } else {
                 $promotion = 0;
             }
-            $multiImage = $request->input('multi_image');
-            if ($multiImage == 'true') {
-                $multiImage= 1;
+            $multiColor = $request->input('multi_image');
+            if ($multiColor == 'true') {
+                $multiColor= 1;
             } else {
-                $multiImage = 0;
+                $multiColor = 0;
             }
             $pi=null;
             if(!empty($request->input('features'))){
@@ -3005,7 +3005,7 @@ class AdminController extends Controller
                     $check = $product->save();
                 }
             }
-            if($multiImage){
+            if($multiColor){
                 foreach ($request->input('colors') as $color){
                     $productColor=new ProductColor([
                         'name'=>$color,
@@ -3116,11 +3116,11 @@ class AdminController extends Controller
             } else {
                 $promotion = 0;
             }
-            $multiImage = $request->input('multi_image');
-            if ($multiImage == 'true') {
-                $multiImage= 1;
+            $multiColor = $request->input('multi_image');
+            if ($multiColor == 'true') {
+                $multiColor= 1;
             } else {
-                $multiImage = 0;
+                $multiColor = 0;
             }
             $product->Name = $request->input('name');
             $product->Description = $request->input('description');
@@ -3318,7 +3318,7 @@ class AdminController extends Controller
             }
             ProductColor::where('product_id',$product->id)->delete();
             $product->FabricColor=null;
-            if($multiImage){
+            if($multiColor){
                 foreach ($request->input('colors') as $color){
                     $productColor=new ProductColor([
                         'name'=>$color,
