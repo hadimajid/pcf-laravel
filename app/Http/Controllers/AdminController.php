@@ -2785,7 +2785,7 @@ class AdminController extends Controller
             'collection_name' => 'required',
             'promotion'=>'nullable',
             'features'=>'nullable|array|min:1',
-            'colors'=>'required|array|min:1'
+            'colors'=>'nullable|array|min:1'
         ];
     }
     public function storeProduct(Request $request)
@@ -2891,6 +2891,7 @@ class AdminController extends Controller
                 'SalePrice' => $request->input('price'),
                 'CollectionId' => $collection->id,
                 'ProductInfoId'=>$pi?$pi->id:null,
+                'multi_color'=>$multiColor,
             ]);
 
             if (!empty($request->input('measurements'))) {
@@ -3158,6 +3159,8 @@ class AdminController extends Controller
             $product->RoomName = $request->input('room_name');
             $product->WoodFinish = $request->input('wood_finish');
             $product->ChemicalList = $request->input('chemical_list');
+            $product->multi_color =$multiColor;
+;
 //            $product->Promotion = $request->input('promotion');
             $product->PromotionCheck = $promotion;
             $product->SalePrice = $request->input('price');
