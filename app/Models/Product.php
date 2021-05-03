@@ -92,4 +92,7 @@ class Product extends Model
     public function price(){
         return $this->hasOne(ProductPrice::class,'ProductId');
     }
+    public function colors(){
+        return $this->hasMany(ProductColor::class);
+    }
 }

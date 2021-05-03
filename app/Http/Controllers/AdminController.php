@@ -30,6 +30,7 @@ use App\Models\Pricing;
 use App\Models\PricingException;
 use App\Models\PricingExceptionList;
 use App\Models\Product;
+use App\Models\ProductColor;
 use App\Models\ProductInfo;
 use App\Models\ProductLine;
 use App\Models\ProductPrice;
@@ -2413,6 +2414,9 @@ class AdminController extends Controller
                 if (file_exists(public_path($image->name))) {
                     unlink(public_path($image->name));
                 }
+                if (file_exists(public_path('thumbnail/'.$image->name))) {
+                    unlink(public_path('thumbnail/'.$image->name));
+                }
                 $image->delete();
             }
             $featured = $product->FeaturedImage;
@@ -2655,13 +2659,13 @@ class AdminController extends Controller
                     }
                 }
             });
-
+        $count=$productsQuery->count();
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
             ->with(
                 self::getRelationProduct())
             ->get();
-        $count=count($products);
+
         return Response::json([
             'products' => $products,
             'total_number' => $count,
@@ -2813,7 +2817,7 @@ class AdminController extends Controller
 //          'promotion'=>'nullable|min:0|max:100'
             'promotion'=>'nullable',
             'features'=>'nullable|array|min:1',
-
+            'colors'=>'required|array|min:1'
         ];
     }
     public function storeProduct(Request $request)
@@ -3031,6 +3035,13 @@ class AdminController extends Controller
                     $product->slug = Str::slug($product->Name, '-') . '-' . time() . uniqid();
                     $check = $product->save();
                 }
+            }
+            foreach ($request->input('colors') as $color){
+                $productColor=new ProductColor([
+                    'name'=>$color,
+                    'product_id'=>$product->id
+                ]);
+                $productColor->save();
             }
             DB::commit();
             return Response::json(['message' => 'Product Added Successfully', 'data' => $product], 200);
