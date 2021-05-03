@@ -447,7 +447,7 @@ class UserController extends Controller
         $page=0;
         $limit=Product::all()->count();
         $count=Product::all()->count();
-        $sort=['id','asc'];
+        $sort=['featured','desc'];
         if($request->input('sort')){
             $s= $request->input('sort');
             if($s==1){
@@ -521,7 +521,9 @@ class UserController extends Controller
                 }
                 if($color){
                     $query->where(function ($query) use ($color){
-                        $query->where('FabricColor','like',"%$color%")->orWhere('FinishColor','like',"%$color%");
+                        $query->where('FabricColor','like',"%$color%")->orWhere('FinishColor','like',"%$color%")->orWhereHas('colors',function ($query) use ($color){
+                                $query->where('name','like',"%$color%");
+                        });
                     });
                 }
                 if($material){
