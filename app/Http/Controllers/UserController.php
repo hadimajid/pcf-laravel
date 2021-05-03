@@ -461,11 +461,25 @@ class UserController extends Controller
             }
             if($s==4){
                 $price=WebsiteSettings::first()->price?WebsiteSettings::first()->price:0;
-                $sort="(CASE when ProductNumber is not null then (SalePrice*$price) when ProductNumber is null then SalePrice end) asc";
+                $percentageDiscount=ConfigController::percentageCalculatorDecimal();
+
+                $sort="(CASE
+                when (ProductNumber is not null and PromotionCheck = 0) then (SalePrice*$price)
+                when (ProductNumber is not null and PromotionCheck = 1) then ((SalePrice*$price)-(SalePrice*$percentageDiscount))
+                when ProductNumber is null then SalePrice
+                end)
+                asc";
             }
             if($s==5){
                 $price=WebsiteSettings::first()->price?WebsiteSettings::first()->price:0;
-                $sort="(CASE when ProductNumber is not null then (SalePrice*$price) when ProductNumber is null then SalePrice end) desc";
+                $percentageDiscount=ConfigController::percentageCalculatorDecimal();
+
+                $sort="(CASE
+                when (ProductNumber is not null and PromotionCheck = 0) then (SalePrice*$price)
+                when (ProductNumber is not null and PromotionCheck = 1) then ((SalePrice*$price)-(SalePrice*$percentageDiscount))
+                when ProductNumber is null then SalePrice
+                end)
+                desc";
             }
         }
 //
