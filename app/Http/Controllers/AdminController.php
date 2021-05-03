@@ -2857,8 +2857,8 @@ class AdminController extends Controller
             $product = Product::create([
                 'Name' => $request->input('name'),
                 'Description' => $request->input('description'),
-                'FabricColor' => $request->input('fabric_color'),
-                'FinishColor' => $request->input('finish_color'),
+//                'FabricColor' => $request->input('fabric_color'),
+//                'FinishColor' => $request->input('finish_color'),
                 'BoxWeight' => $request->input('box_weight'),
                 'Cubes' => $request->input('cubes'),
                 'TypeOfPackaging' => $request->input('type_of_packing'),
@@ -3124,8 +3124,8 @@ class AdminController extends Controller
             }
             $product->Name = $request->input('name');
             $product->Description = $request->input('description');
-            $product->FabricColor = $request->input('fabric_color');
-            $product->FinishColor = $request->input('finish_color');
+//            $product->FabricColor = $request->input('fabric_color');
+//            $product->FinishColor = $request->input('finish_color');
             $product->BoxWeight = $request->input('box_weight');
             $product->Cubes = $request->input('cubes');
             $product->TypeOfPackaging = $request->input('type_of_packing');
