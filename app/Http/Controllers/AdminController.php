@@ -2838,8 +2838,8 @@ class AdminController extends Controller
             } else {
                 $promotion = 0;
             }
-            $multiColor = $request->input('multi_image');
-            if ($multiColor == 'true') {
+            $multiColor = 0;
+            if ($request->input('multi_color') == 'true') {
                 $multiColor= 1;
             } else {
                 $multiColor = 0;
@@ -3117,8 +3117,8 @@ class AdminController extends Controller
             } else {
                 $promotion = 0;
             }
-            $multiColor = $request->input('multi_image');
-            if ($multiColor == 'true') {
+            $multiColor = 0;
+            if ($request->input('multi_color') == 'true') {
                 $multiColor= 1;
             } else {
                 $multiColor = 0;
