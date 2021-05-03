@@ -2662,10 +2662,10 @@ class AdminController extends Controller
         $count=$productsQuery->count();
         $products=$productsQuery->offset($page)->limit($limit)
             ->orderBy($sort[0], $sort[1])
-            ->with(
-                self::getRelationProduct())
             ->get();
-
+        if($products){
+            $products=$products->load(self::getRelationProduct());
+        }
         return Response::json([
             'products' => $products,
             'total_number' => $count,

@@ -581,7 +581,9 @@ class UserController extends Controller
             }
         }
         $sorted=$sorted->skip($page)->take($limit);
-        $sorted=$sorted->load(self::getRelationProduct($relation));
+        if($sorted){
+            $sorted=$sorted->load(self::getRelationProduct($relation));
+        }
         return Response::json([
             'products'=>$sorted->values()->all(),
             'category'=>$cat,
