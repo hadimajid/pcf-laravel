@@ -445,8 +445,8 @@ class UserController extends Controller
         $image=$request->input('image');
         $relation=$request->input('relation');
         $page=0;
-        $limit=Product::all()->count();
-        $count=Product::all()->count();
+//        $limit=Product::all()->count();
+//        $count=Product::all()->count();
         $sort=['featured','desc'];
         if($request->input('sort')){
             $s= $request->input('sort');
@@ -467,12 +467,7 @@ class UserController extends Controller
             }
         }
 //
-        if(!empty($request->input('limit'))){
-            $limit=$request->input('limit');
-            if($request->input('page')){
-                $page=($request->input('page')-1)*$limit;
-            }
-        }
+
         $cat=null;
         if(!empty($category_slug)){
             $category_name=  Category::where('Slug','like',$category_slug)->first();
@@ -554,10 +549,16 @@ class UserController extends Controller
                 }
             });
 
-        $products=$productsQuery
-            ->with(self::getRelationProduct($relation))->where('Hide',0)
+        $products=$productsQuery->where('Hide',0)
             ->get();
         $count=count($products);
+        $limit=$count;
+        if(!empty($request->input('limit'))){
+            $limit=$request->input('limit');
+            if($request->input('page')){
+                $page=($request->input('page')-1)*$limit;
+            }
+        }
         if($sort[0]!='ratings') {
             if ($sort[1] == 'desc') {
                 $sorted = $products->sortByDesc($sort[0]);
@@ -580,7 +581,7 @@ class UserController extends Controller
             }
         }
         $sorted=$sorted->skip($page)->take($limit);
-
+        $sorted=$sorted->load(self::getRelationProduct($relation));
         return Response::json([
             'products'=>$sorted->values()->all(),
             'category'=>$cat,
