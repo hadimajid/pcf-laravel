@@ -2976,18 +2976,18 @@ class AdminController extends Controller
                     ]);
                 }
             }
-            if ($request->hasFile('featured_image')) {
-                $f_image = $request->file('featured_image');
-                $f_name = time() . uniqid() . '.' . $f_image->getClientOriginalExtension();
-                $product->FeaturedImage = 'uploads/product/' . $f_name;
-                $f_image->move(public_path('uploads/product'), $f_name);
-                $f_image_resize = Image::make(public_path('uploads/product/'.$f_name));
-                $f_image_resize->resize(300, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-                $f_image_resize->save(public_path('thumbnail/uploads/product/' . $f_name));
-                $product->save();
-            }
+//            if ($request->hasFile('featured_image')) {
+//                $f_image = $request->file('featured_image');
+//                $f_name = time() . uniqid() . '.' . $f_image->getClientOriginalExtension();
+//                $product->FeaturedImage = 'uploads/product/' . $f_name;
+//                $f_image->move(public_path('uploads/product'), $f_name);
+//                $f_image_resize = Image::make(public_path('uploads/product/'.$f_name));
+//                $f_image_resize->resize(300, null, function ($constraint) {
+//                    $constraint->aspectRatio();
+//                });
+//                $f_image_resize->save(public_path('thumbnail/uploads/product/' . $f_name));
+//                $product->save();
+//            }
             $w = WarehouseInventory::create([
                 'WarehouseId' => $request->input('warehouse_id'),
                 'QtyAvail' => $request->input('qty'),
@@ -3125,8 +3125,8 @@ class AdminController extends Controller
             }
             $product->Name = $request->input('name');
             $product->Description = $request->input('description');
-//            $product->FabricColor = $request->input('fabric_color');
-//            $product->FinishColor = $request->input('finish_color');
+//          $product->FabricColor = $request->input('fabric_color');
+//          $product->FinishColor = $request->input('finish_color');
             $product->BoxWeight = $request->input('box_weight');
             $product->Cubes = $request->input('cubes');
             $product->TypeOfPackaging = $request->input('type_of_packing');
@@ -3160,8 +3160,6 @@ class AdminController extends Controller
             $product->WoodFinish = $request->input('wood_finish');
             $product->ChemicalList = $request->input('chemical_list');
             $product->multi_color =$multiColor;
-;
-//            $product->Promotion = $request->input('promotion');
             $product->PromotionCheck = $promotion;
             $product->SalePrice = $request->input('price');
             $piId=$product->ProductInfoId;
@@ -3184,8 +3182,8 @@ class AdminController extends Controller
                 $product->ProductInfoId=$pi->id;
                 $product->save();
             }
+            Measurement::where('ProductId',$product->id)->delete();
             if (!empty($request->input('measurements'))) {
-                Measurement::where('ProductId',$product->id)->delete();
                 foreach ($request->input('measurements') as $measurement) {
                     Measurement::create([
                         'PieceName' => $measurement['piece_name'],
@@ -3207,8 +3205,8 @@ class AdminController extends Controller
                     ]);
                 }
             }
+            Material::where('ProductId',$product->id)->delete();
             if (!empty($request->input('materials'))) {
-                Material::where('ProductId',$product->id)->delete();
                 foreach ($request->input('materials') as $material) {
                     Material::create([
                         'Field' => "Material",
@@ -3217,8 +3215,8 @@ class AdminController extends Controller
                     ]);
                 }
             }
+            AdditionalField::where('ProductId',$product->id)->delete();
             if (!empty($request->input('additional_fields'))) {
-                AdditionalField::where('ProductId',$product->id)->delete();
                 foreach ($request->input('additional_fields') as $additionalField) {
                     AdditionalField::create([
                         'Field' => $additionalField['field'],
@@ -3227,7 +3225,7 @@ class AdminController extends Controller
                     ]);
                 }
             }
-                RelatedProductList::where('ProductId',$product->id)->delete();
+            RelatedProductList::where('ProductId',$product->id)->delete();
             if (!empty($request->input('related_product_list'))) {
 
                 foreach ($request->input('related_product_list') as $relatedProduct) {
@@ -3237,8 +3235,8 @@ class AdminController extends Controller
                     ]);
                 }
             }
+            Component::where('ProductId',$product->id)->delete();
             if (!empty($request->input('components'))) {
-                Component::where('ProductId',$product->id)->delete();
                 foreach ($request->input('components') as $component) {
                     Component::create([
 //                    'ProductNumber' => $product->ProductNumber,
@@ -3268,37 +3266,37 @@ class AdminController extends Controller
                     ]);
                 }
             }
-            if ($request->file('featured_image')) {
-                if ($product->FeaturedImage) {
-                    if (file_exists(public_path($product->FeaturedImage))) {
-                        unlink(public_path($product->FeaturedImage));
-                    }
-                    if (file_exists(public_path('thumbnail/'.$product->FeaturedImage))) {
-                        unlink(public_path('thumbnail/'.$product->FeaturedImage));
-                    }
-                }
-                $f_image = $request->file('featured_image');
-                $f_name = time() . uniqid() . '.' . $f_image->getClientOriginalExtension();
-                $product->FeaturedImage = 'uploads/product/' . $f_name;
-                $f_image->move(public_path('uploads/product'), $f_name);
-                $product->save();
-                $image_resize = Image::make(public_path('uploads/product/'.$f_name));
-                $image_resize->resize(300, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                });
-                $image_resize->save(public_path('thumbnail/uploads/product/' . $f_name));
-            } else {
-                if (!empty($product->FeaturedImage)) {
-                    if (file_exists(public_path($product->FeaturedImage))) {
-                        unlink(public_path($product->FeaturedImage));
-                    }
-                    if (file_exists(public_path('thumbnail/'.$product->FeaturedImage))) {
-                        unlink(public_path('thumbnail/'.$product->FeaturedImage));
-                    }
-                }
-                $product->FeaturedImage = null;
-                $product->save();
-            }
+//            if ($request->file('featured_image')) {
+//                if ($product->FeaturedImage) {
+//                    if (file_exists(public_path($product->FeaturedImage))) {
+//                        unlink(public_path($product->FeaturedImage));
+//                    }
+//                    if (file_exists(public_path('thumbnail/'.$product->FeaturedImage))) {
+//                        unlink(public_path('thumbnail/'.$product->FeaturedImage));
+//                    }
+//                }
+//                $f_image = $request->file('featured_image');
+//                $f_name = time() . uniqid() . '.' . $f_image->getClientOriginalExtension();
+//                $product->FeaturedImage = 'uploads/product/' . $f_name;
+//                $f_image->move(public_path('uploads/product'), $f_name);
+//                $product->save();
+//                $image_resize = Image::make(public_path('uploads/product/'.$f_name));
+//                $image_resize->resize(300, null, function ($constraint) {
+//                    $constraint->aspectRatio();
+//                });
+//                $image_resize->save(public_path('thumbnail/uploads/product/' . $f_name));
+//            } else {
+//                if (!empty($product->FeaturedImage)) {
+//                    if (file_exists(public_path($product->FeaturedImage))) {
+//                        unlink(public_path($product->FeaturedImage));
+//                    }
+//                    if (file_exists(public_path('thumbnail/'.$product->FeaturedImage))) {
+//                        unlink(public_path('thumbnail/'.$product->FeaturedImage));
+//                    }
+//                }
+//                $product->FeaturedImage = null;
+//                $product->save();
+//            }
             $product->inventory->QtyAvail = $request->input('qty');
             $product->inventory->save();
             $check=false;
