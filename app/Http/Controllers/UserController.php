@@ -496,7 +496,7 @@ class UserController extends Controller
                 $sub=$subcategoryTemp->SubCategoryName;
             }
         }
-        $productsQuery = Product::selectRaw('*')->where(function ($query) use ($category_slug,$subcategory_slug,$image,$category_id,$subcategory_id,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+        $productsQuery = Product::where('Hide',0)->where(function ($query) use ($category_slug,$subcategory_slug,$image,$category_id,$subcategory_id,$slug,$product_name,$style,$color,$material,$warehouse,$type){
                 if($image)
                 {
                     $query->whereHas('nextGenImages');
@@ -570,7 +570,7 @@ class UserController extends Controller
                 $page=($request->input('page')-1)*$limit;
             }
         }
-        $products=$productsQuery->where('Hide',0)
+        $products=$productsQuery
             ->offset($page)
             ->limit($limit)
             ->orderByRaw($sort)
