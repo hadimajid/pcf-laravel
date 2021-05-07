@@ -573,6 +573,7 @@ class UserController extends Controller
         $products=$productsQuery
             ->offset($page)
             ->limit($limit)
+            ->orderBy('Featured',"Desc")
             ->orderByRaw($sort)
             ->get();
 
@@ -605,6 +606,9 @@ class UserController extends Controller
                 }
                 , 'ratingUser'
                 , 'ratingUser.user'
+                ,'colors'
+                , 'category'
+                , 'subCategory'
             ];
         }else {
             return [
@@ -647,6 +651,7 @@ class UserController extends Controller
                 }
                 , 'ratingUser'
                 , 'ratingUser.user'
+                ,'colors'
             ];
         }
     }
@@ -698,19 +703,25 @@ class UserController extends Controller
 
         if($cart){
                foreach ($products as $key=>$product){
-
+                   $color=null;
+                   if(isset($product['color']))
+                   {
+                       $color = $product['color'];
+                   }
                     if($this->productQuantityCheck($product['id'],$product['quantity'])){
                         $item=CartItems::where('cart_id','=',$cart->id)->where('product_id','=',$product['id'])->first();
                         if($item){
                             $item->quantity=$product['quantity'];
-                            $item->color=$product['color'];
+                            $item->color=$color;
                             $item->save();
                         }else{
+
+
                             CartItems::create([
                                 'cart_id'=>$cart->id,
                                 'product_id'=>$product['id'],
                                 'quantity'=>$product['quantity'],
-                                'color'=>$product['color']
+                                'color'=>$color
                             ]);
                         }
                     }else{
@@ -727,14 +738,18 @@ class UserController extends Controller
                ]);
 
             foreach ($products as $key=>$product){
-
+                $color=null;
+                if(isset($product['color']))
+                {
+                    $color = $product['color'];
+                }
                 if($this->productQuantityCheck($product['id'],$product['quantity'])){
 
                    CartItems::create([
                        'cart_id' => $cart->id,
                        'product_id' => $product['id'],
                        'quantity' => $product['quantity'],
-                       'color'=>$product['color']
+                       'color'=>$color
                    ]);
                }
             }

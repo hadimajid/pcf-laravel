@@ -97,6 +97,7 @@ class CheckOutSessionCompleted implements ShouldQueue
                         'product_id'=>$product->product_id,
                         'quantity'=>$product->quantity,
                         'price'=>$product->price,
+                        'color'=>$product->color
                     ]);
                 }
                 $payment=new Payment([

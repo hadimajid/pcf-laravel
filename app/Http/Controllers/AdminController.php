@@ -2702,6 +2702,7 @@ class AdminController extends Controller
             }
             ,'ratingUser'
             ,'ratingUser.user'
+            ,'colors'
         ];
     }
     public function productRules($style_id=0,$group_id=0)
@@ -3637,7 +3638,8 @@ class AdminController extends Controller
     {
         $color1 = Product::select('FabricColor as color')->whereNotNull('FabricColor')->groupBy('FabricColor')->get();
         $color2 = Product::select('FinishColor as color')->whereNotNull('FinishColor')->groupBy('FinishColor')->get();
-        $color = $color1->toBase()->merge($color2);
+        $color3 = ProductColor::select('name as color')->groupBy('name')->get();
+        $color = $color1->toBase()->merge($color2,$color3);
         return Response::json([
             'color' => $color->unique()->flatten()
         ]);
