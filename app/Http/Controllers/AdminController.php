@@ -1235,6 +1235,7 @@ class AdminController extends Controller
                     $p=$priceCheck;
                 }
                     foreach ($price->PriceList as $priceList) {
+                        $price=$priceList->Price<=0?1:$priceList->Price;
                         if(empty(ProductPrice::where('ProductNumber','=',$priceList->ProductNumber)->first())) {
 //                            return $priceList->ProductNumber;
                             $pd=Product::where('ProductNumber', '=', $priceList->ProductNumber)->first();
@@ -1243,12 +1244,12 @@ class AdminController extends Controller
                                 $temp=new ProductPrice([
                                     'ProductNumber' => $priceList->ProductNumber,
                                     'ProductId' => Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id,
-                                    'Price' => $priceList->Price,
+                                    'Price' => $price,
                                     'MAP' => $priceList->MAP,
                                     'PriceId' => $p->id
                                 ]);
                                 if($temp->save()){
-                                    $pd->SalePrice=$priceList->Price;
+                                    $pd->SalePrice=$price;
                                     $pd->save();
                                 }
                             }
@@ -1260,10 +1261,10 @@ class AdminController extends Controller
 
                                 $pl = ProductPrice::where('ProductNumber', '=', $priceList->ProductNumber)->first();
 //                                $pl->ProductId = Product::where('ProductNumber', '=', $priceList->ProductNumber)->first()->id;
-                                $pl->Price = $priceList->Price;
+                                $pl->Price = $price;
                                 $pl->MAP = $priceList->MAP;
                                 if($pl->save()){
-                                    $pd->SalePrice=$priceList->Price;
+                                    $pd->SalePrice=$price;
                                     $pd->save();
                                 }
                             }
@@ -3678,6 +3679,27 @@ class AdminController extends Controller
             }
         }
         return Response::json(['message' => 'Product Status Updated.']);
+    }
+    public function statusSubcategory(Request $request)
+    {
+        $request->validate([
+            'subcategory_id' => ['required', 'array', 'min:1'],
+            'subcategory_id.*' => ['required','exists:sub_categories,id'],
+            'type'=>['required']
+        ]);
+        $categoryIds = $request->input('subcategory_id');
+
+        foreach ($categoryIds as $id) {
+            $category = SubCategory::find($id);
+            if ($category) {
+                if($request->input('type')==='1') {
+                    $category->feature = !($category->feature);
+                }
+
+                $category->save();
+            }
+        }
+        return Response::json(['message' => 'SubCategory Status Updated.']);
     }
 //    public function newProduct(Request $request)
 //    {

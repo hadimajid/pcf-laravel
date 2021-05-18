@@ -65,7 +65,7 @@ use Illuminate\Support\Facades\Route;
                 });
                 Route::prefix('order')->group(function (){
                     Route::post('',[UserController::class,'createOrder']);
-                    Route::get('',[UserController::class,'getOrders']);
+                    Route::post('all',[UserController::class,'getOrders']);
                     Route::get('{id}',[UserController::class,'getOrderById']);
                     Route::post('cancel/{id}',[UserController::class,'cancelOrder']);
                 });
@@ -200,6 +200,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('delete-social/{id}',[AdminController::class,'deleteSocialNetwork']);
 //      Store api key and PayPal email
         Route::post('api',[AdminController::class,'addApiKey']);
+        Route::post('subcategory-status',[AdminController::class,'statusSubcategory']);
 });
 //      Sub Admin
         Route::post('sub-admin',[AdminController::class,'addSubAdmin'])->middleware('scope:add-new-sub-admin');

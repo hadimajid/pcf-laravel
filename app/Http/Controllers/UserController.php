@@ -352,7 +352,7 @@ class UserController extends Controller
 
             if(!Hash::check($request->password,$user->password)){
                 return Response::json([
-                        'message'=>'Current password incorrect.',
+                        'message'=>'Current password is incorrect.',
                     ]
                 ,422);
             }
@@ -365,6 +365,7 @@ class UserController extends Controller
         }
     }
     public function getCategories(Request $request){
+        $image=$request->input('image');
         $page=0;
         $limit=Category::all()->count();
         $count=Category::all()->count();
@@ -386,7 +387,15 @@ class UserController extends Controller
                 ->withCount(['subCategories', 'products'=>function($query){
                     $query->where('Hide',0);
                 }])
-                ->with('subCategories')
+                ->with(['subCategories'=>function($query) use ($image){
+                    $query->orderBy('feature',"Desc");
+                    $query->withCount(['products'=> function($query) use ($image){
+                        if ($image)
+                            $query->whereHas('nextGenImages');
+                        $query->where('Hide',0);
+
+                    }]);
+                }])
                 ->offset($page)
                 ->limit($limit)
                 ->get();
@@ -444,6 +453,7 @@ class UserController extends Controller
         $type=$request->input('type');
         $image=$request->input('image');
         $relation=$request->input('relation');
+        $stock=$request->input('stock');
         $page=0;
         $sort='featured desc';
         if($request->input('sort')){
@@ -485,18 +495,19 @@ class UserController extends Controller
         if(!empty($category_slug)){
             $categoryTemp=  Category::where('Slug','like',$category_slug)->first();
             if($categoryTemp){
-                $cat=$categoryTemp->CategoryName;
+                $cat=$categoryTemp;
             }
         }
 
         $sub=null;
         if(!empty($subcategory_slug)){
-            $subcategoryTemp=  SubCategory::where('Slug','like',$subcategory_slug)->first();
+            $subcategoryTemp=  SubCategory::where('Slug','like',$subcategory_slug)->with('category')->first();
             if($subcategoryTemp){
-                $sub=$subcategoryTemp->SubCategoryName;
+                $sub=$subcategoryTemp;
+
             }
         }
-        $productsQuery = Product::where('Hide',0)->where(function ($query) use ($category_slug,$subcategory_slug,$image,$category_id,$subcategory_id,$slug,$product_name,$style,$color,$material,$warehouse,$type){
+        $productsQuery = Product::where('Hide',0)->where(function ($query) use ($stock,$category_slug,$subcategory_slug,$image,$category_id,$subcategory_id,$slug,$product_name,$style,$color,$material,$warehouse,$type){
                 if($image)
                 {
                     $query->whereHas('nextGenImages');
@@ -504,6 +515,11 @@ class UserController extends Controller
                 if($category_slug){
                     $query->whereHas('category',function ($query) use ($category_slug){
                         $query->where('slug',$category_slug);
+                    });
+                }
+                if($stock){
+                    $query->whereHas('inventory',function ($query) {
+                        $query->where('QtyAvail','>','0');
                     });
                 }
                 if($subcategory_slug){
@@ -573,7 +589,7 @@ class UserController extends Controller
         $products=$productsQuery
             ->offset($page)
             ->limit($limit)
-            ->orderBy('Featured',"Desc")
+//            ->orderBy('Featured',"Desc")
             ->orderByRaw($sort)
             ->get();
 
@@ -1121,9 +1137,22 @@ class UserController extends Controller
             $limit=$request->limit;
             $page=($request->page-1)*$limit;
         }
-        $where=" user_id = ".\auth()->guard('user')->id();
-        $orders=Order::whereRaw($where)->with('items','address')->withCount('items')->limit($limit)->offset($page)->get();
-        $total=Order::whereRaw($where)->count();
+
+//        $orders=Order::whereRaw($where)->with('items','address')->withCount('items')->limit($limit)->offset($page)->get();
+        $orders=Order::where(function ($query) use ($request) {
+            $query->where('user_id',\auth()->guard('user')->id());
+            if($request->filter!="")
+            {
+                $query->where('status',$request->filter);
+            }
+        })->with('items','address')->withCount('items')->limit($limit)->offset($page)->get();
+        $total=Order::where(function ($query) use ($request) {
+            $query->where('user_id',\auth()->guard('user')->id());
+            if($request->filter!="")
+            {
+                $query->where('status',$request->filter);
+            }
+        })->count();
 
         return Response::json([
             'orders'=>$orders,
