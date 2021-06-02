@@ -124,6 +124,7 @@ use Illuminate\Support\Facades\Route;
 //      Product
         Route::prefix('product')->group(function (){
                 Route::post('/store',[AdminController::class,'storeProduct'])->middleware('scope:add-new-products');
+                Route::post('/import',[AdminController::class,'importProduct'])->middleware('scope:add-new-products');
                 Route::delete('/delete/{id}',[AdminController::class,'removeProduct'])->middleware('scope:remove-products');
                 Route::post('selected-product-price',[AdminController::class,'changePriceOfSelectedProducts'])->middleware('scope:edit-product');
                 Route::post('selected-product-category-price',[AdminController::class,'changePriceOfProductsWithCategory'])->middleware('scope:edit-product');
@@ -254,6 +255,7 @@ use Illuminate\Support\Facades\Route;
         Route::post('category/new',[UserController::class,'getCategoriesNew']);
         Route::post('contact-us',[UserController::class,'contactUs']);
         Route::post('color',[AdminController::class,'getColor']);
+        Route::get('test',[AdminController::class,'test']);
         Route::fallback(function(){
                 return response()->json(
                     ['message' => 'Invalid Route.'], 404);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ProductImport;
 use App\Models\AdditionalField;
 use App\Models\Admin;
 use App\Models\ApiKey;
@@ -55,12 +56,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Intervention\Image\ImageManagerStatic as Image;
 use Symfony\Component\Console\Input\Input;
-
+use Maatwebsite\Excel\Facades\Excel;
 class AdminController extends Controller
 {
     public function __construct()
@@ -2552,6 +2554,7 @@ class AdminController extends Controller
         $type = $request->input('type');
         $rating = $request->input('rating');
         $coaster = $request->input('coaster');
+        $import = $request->input('import');
         $page = 0;
         $limit = Product::where(function ($query) use ($coaster){
             if($coaster==1){
@@ -2587,7 +2590,7 @@ class AdminController extends Controller
                 $page = ($request->input('page') - 1) * $limit;
             }
         }
-        $productsQuery = Product::where(function ($query) use ($coaster,$rating,$category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type){
+        $productsQuery = Product::where(function ($query) use ($import,$coaster,$rating,$category_name,$subcategory_name,$product_number,$product_name,$style,$color,$material,$warehouse,$type){
                 if($coaster==1){
                     $query->whereNotNull('ProductNumber');
                 }
@@ -2606,6 +2609,12 @@ class AdminController extends Controller
                 }
                 if($subcategory_name){
                     $query->where('SubcategoryId',$subcategory_name);
+                }
+                if($import==1){
+                    $query->where('import',$import);
+                }
+                if($import==0){
+                    $query->where('import',$import);
                 }
                 if($product_number){
                     $query->where('ProductNumber',$product_number);
@@ -2789,6 +2798,44 @@ class AdminController extends Controller
             'features'=>'nullable|array|min:1',
             'colors'=>'nullable|array|min:1'
         ];
+    }
+
+    public function importProduct(Request $request)
+    {
+
+        $Error = array();
+        $excel =$request->file;
+        Session::forget('Errors');
+        Session::forget('count');
+        try {
+            Excel::import(new ProductImport(), $excel);
+        } catch (\Exception $ex) {
+
+            return Response::json(['message' => 'Failed to add product.', 'error' => $ex], 422);
+        }
+        if (Session::has('Errors'))
+        {
+//            dd(Session::get('Errors'));
+            return Response::json(['message' => 'Failed to add product.', 'success'=>Session::get('count') ,'error' => Session::get('Errors')], 422);
+        }
+        else
+        {
+            return Response::json(['message' => Session::get('count')], 200);
+        }
+
+    }
+    public function test(Request $request)
+    {
+        $Error = array();
+        $excel =public_path('products.csv');
+
+            Excel::import(new ProductImport(), $excel);
+//            dd(Session::all());
+        if (Session::has('Errors'))
+        {
+            dd(Session::get('Errors'));
+        }
+//        dd($Error);
     }
     public function storeProduct(Request $request)
     {
