@@ -64,7 +64,8 @@ class ProductImport implements ToCollection, WithHeadingRow
             else{
                 try {
                     DB::beginTransaction();
-                    $category_id = Category::where('CategoryName', $row['category'])->first();
+
+                  $category_id = Category::where('CategoryName', $row['category'])->first();
                     $subcategory_id = SubCategory::where('CategoryId', $category_id->id)->where('SubCategoryName', $row['sub_category'])->first();
                     $group = null;
                     if ($row['group_number']!=null && $row['group_name']!=null) {
@@ -216,6 +217,38 @@ class ProductImport implements ToCollection, WithHeadingRow
                         $product->save();
                     }
                     $count++;
+                    //image here
+                    if (isset($row['images']))
+                    {
+                        $listImage = explode(',', $row['images']);
+                        foreach ($listImage as $image) {
+                            try {
+                                if(!empty($image)){
+                                    $img = Image::make($image);
+                                    $image_resize = Image::make($image);
+                                    $image_resize->resize(300, null, function ($constraint) {
+                                        $constraint->aspectRatio();
+                                    });
+//                                    dd($img);
+                                    $imgdata=getimagesize($image) ;
+
+                                    $extension = explode('/', $imgdata['mime']);
+//                                    dd($extension);
+                                    $name = time() . uniqid()  . '.' . $extension[1];
+                                    $img->save(public_path('uploads/product/' . $name));
+                                    $image_resize->save(public_path('thumbnail/uploads/product/' . $name));
+                                NextGenImage::create([
+                                    'Name' => 'uploads/product/' . $name,
+                                    'ProductId' => $product->id
+                                ]);
+                                }
+
+
+                            } catch (\Exception $ex) {
+
+                            }
+                        }
+                    }
                     DB::commit();
                 }
                 catch (\Exception $ex) {

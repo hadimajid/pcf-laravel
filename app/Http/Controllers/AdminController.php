@@ -895,7 +895,9 @@ class AdminController extends Controller
                                     $image_resize->resize(300, null, function ($constraint) {
                                         $constraint->aspectRatio();
                                     });
-                                    $extension = explode('.', $image);
+                                    $imgdata=getimagesize($image) ;
+
+                                    $extension = explode('/', $imgdata['mime']);
                                     $tempName = explode('/', $image);
                                     $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
                                     $img->save(public_path('uploads/product/' . $name));
@@ -1068,7 +1070,9 @@ class AdminController extends Controller
                             try {
                                 if(!empty(str_replace(' ', '', $image))){
                                     $img = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
-                                    $extension = explode('.', $image);
+                                    $imgdata=getimagesize($image) ;
+
+                                    $extension = explode('/', $imgdata['mime']);
                                     $tempName = explode('/', $image);
                                     $name = time() . uniqid() . $tempName[0] . '.' . $extension[1];
                                     $image_resize = Image::make('https://assets.coastercenter.com/nextgenimages/' . str_replace(' ', '', $image));
